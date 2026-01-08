@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-file-invoice me-2"></i>Order #{{ order.order_number }}</h2>
+            <p class="text-muted mb-0">Order Details</p>
+        </div>
+        <div>
+            <a href="{% url 'supervisor_panel:orders' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Orders
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Order Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Order Number:</th>
+                            <td><strong>{{ order.order_number }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Date:</th>
+                            <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                <span
+                                    class="badge bg-{% if order.status == 'completed' %}success{% elif order.status == 'pending' %}warning{% else %}info{% endif %}">
+                                    {{ order.status|title }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Payment:</th>
+                            <td>{{ order.payment_method|default:"N/A"|title }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>{{ order.customer_user.get_full_name|default:order.customer_user.username }}</strong></p>
+                    <p class="mb-0"><i class="fas fa-envelope me-2"></i>{{ order.customer_user.email }}</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Update Status</h5>
+                </div>
+                <div class="card-body">
+                    <select class="form-select mb-2" id="orderStatus">
+                        <option value="confirmed" {% if order.status=='confirmed' %}selected{% endif %}>Confirmed
+                        </option>
+                        <option value="processing" {% if order.status=='processing' %}selected{% endif %}>Processing
+                        </option>
+                        <option value="shipped" {% if order.status=='shipped' %}selected{% endif %}>Shipped</option>
+                    </select>
+                    <button class="btn btn-primary w-100" onclick="updateOrderStatus()">
+                        <i class="fas fa-save me-2"></i>Update Status
+                    </button>
+                    <small class="text-muted d-block mt-2">You can only update to: Confirmed, Processing, or
+                        Shipped</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-box me-2"></i>Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                <tr>
+                                    <td>{{ item.product.goods_name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹{{ item.price|floatformat:2 }}</td>
+                                    <td>₹{{ item.total|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="text-end">Subtotal:</th>
+                                    <th>₹{{ order.subtotal|floatformat:2 }}</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" class="text-end">Tax:</th>
+                                    <th>₹{{ order.tax_amount|floatformat:2 }}</th>
+                                </tr>
+                                <tr class="table-primary">
+                                    <th colspan="3" class="text-end">Grand Total:</th>
+                                    <th>₹{{ order.grand_total|floatformat:2 }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>{{ order.shipping_name|default:order.customer_user.get_full_name }}</strong>
+                    </p>
+                    <p class="mb-1">{{ order.shipping_address|default:"No address provided" }}</p>
+                    <p class="mb-0"><i class="fas fa-phone me-2"></i>{{ order.shipping_phone|default:"N/A" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateOrderStatus() {
+        const status = document.getElementById('orderStatus').value;
+
+        if (confirm(`Update order status to "${status}"?`)) {
+            fetch(`/supervisor-panel/orders/{{ order.id }}/update-status/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: status })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to update order status');
+                });
+        }
+    }
+</script>
+{% endblock %}

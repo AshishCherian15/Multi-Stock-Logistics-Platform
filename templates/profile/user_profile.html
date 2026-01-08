@@ -1,0 +1,867 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Profile sidebar -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                <div class="card-body text-center p-4">
+                    <div class="profile-avatar mb-3 position-relative" style="display:inline-block;cursor:pointer;" onclick="openAvatarModal()" role="button" tabindex="0" aria-label="View avatar" onkeypress="if(event.key==='Enter')openAvatarModal()">
+                        {% if user.profile.avatar_url %}
+                        <img src="{{ user.profile.avatar_url }}" id="profilePhoto" alt="{{ profile.username }}'s avatar" onerror="this.style.display='none';document.getElementById('profileIcon').style.display='block';"
+                            style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #0014A8;">
+                        <i class="fas fa-user-circle fa-5x text-primary" id="profileIcon" style="font-size: 120px; display: none;" aria-hidden="true"></i>
+                        {% else %}
+                        <div id="profileIcon" style="width:120px;height:120px;border-radius:50%;background:#0014A8;color:white;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:bold;border:4px solid #0014A8;">{{ profile.username|slice:":2"|upper }}</div>
+                        {% endif %}
+                    </div>
+                    <h4 class="mb-1">{{ profile.username }}</h4>
+                    <p class="text-muted mb-2">{{ profile.email }}</p>
+                    <span class="badge" style="background:#0014A8;font-size:0.85rem;padding:6px 12px;border-radius:20px;">{{ user_role|title }}</span>
+                    <button onclick="showEditModal()" class="btn w-100 mt-3" style="background:#0014A8;color:white;border-radius:10px;">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                    <input type="file" id="photoInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:none;" onchange="handleFileSelect(this)">
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card mt-3 shadow-sm border-0" style="border-radius: 15px;">
+                <div class="card-header" style="background:#f8f9fa;border-radius:15px 15px 0 0;border:none;">
+                    <h6 class="mb-0"><i class="fas fa-chart-line me-2 text-primary"></i>Quick Stats</h6>
+                </div>
+                <div class="card-body">
+                    {% for key, value in stats.items %}
+                    <div class="d-flex justify-content-between align-items-center mb-3 p-2" style="background:#f8f9fa;border-radius:8px;">
+                        <span class="text-muted"><i class="fas fa-circle me-2" style="font-size:6px;"></i>{{ key|title }}</span>
+                        <strong style="color:#0014A8;">{{ value }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile content -->
+        <div class="col-md-9">
+            <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                <div class="card-header" style="background:#f8f9fa;border-radius:15px 15px 0 0;border:none;">
+                    <ul class="nav nav-tabs card-header-tabs border-0" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#details" style="border:none;border-radius:10px;"><i class="fas fa-user me-2"></i>Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#credentials" style="border:none;border-radius:10px;"><i class="fas fa-key me-2"></i>Credentials</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#activity" style="border:none;border-radius:10px;"><i class="fas fa-history me-2"></i>Activity</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- Details Tab -->
+                        <div class="tab-pane fade show active" id="details">
+                            <h5 class="mb-4"><i class="fas fa-id-card me-2 text-primary"></i>Profile Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3" style="background:#f8f9fa;border-radius:10px;">
+                                        <small class="text-muted d-block mb-1"><i class="fas fa-user me-2"></i>Username</small>
+                                        <strong data-username="{{ profile.username }}">{{ profile.username }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3" style="background:#f8f9fa;border-radius:10px;">
+                                        <small class="text-muted d-block mb-1"><i class="fas fa-envelope me-2"></i>Email</small>
+                                        <strong data-email="{{ profile.email }}">{{ profile.email }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3" style="background:#f8f9fa;border-radius:10px;">
+                                        <small class="text-muted d-block mb-1"><i class="fas fa-id-badge me-2"></i>Full Name</small>
+                                        <strong><span data-firstname="{{ profile.first_name }}">{{ profile.first_name }}</span> <span data-lastname="{{ profile.last_name }}">{{ profile.last_name }}</span></strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3" style="background:#f8f9fa;border-radius:10px;">
+                                        <small class="text-muted d-block mb-1"><i class="fas fa-shield-alt me-2"></i>Role</small>
+                                        <span class="badge" style="background:#0014A8;">{{ profile.role|title }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3" style="background:#f8f9fa;border-radius:10px;">
+                                        <small class="text-muted d-block mb-1"><i class="fas fa-calendar-plus me-2"></i>Member Since</small>
+                                        <strong>{{ profile.date_joined|date:"F d, Y" }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3" style="background:#f8f9fa;border-radius:10px;">
+                                        <small class="text-muted d-block mb-1"><i class="fas fa-clock me-2"></i>Last Login</small>
+                                        <strong>{{ profile.last_login|date:"F d, Y H:i" }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Credentials Tab -->
+                        <div class="tab-pane fade" id="credentials">
+                            <h5 class="mb-4"><i class="fas fa-lock me-2 text-primary"></i>Change Password</h5>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <form id="passwordChangeForm" onsubmit="changePassword(event)">
+                                        <div class="mb-3">
+                                            <label class="form-label"><i class="fas fa-key me-2"></i>Current Password</label>
+                                            <input type="password" class="form-control" id="currentPassword" required style="border-radius:10px;">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label"><i class="fas fa-lock me-2"></i>New Password</label>
+                                            <input type="password" class="form-control" id="newPassword" required minlength="8" style="border-radius:10px;">
+                                            <small class="text-muted">Minimum 8 characters</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label"><i class="fas fa-check-circle me-2"></i>Confirm Password</label>
+                                            <input type="password" class="form-control" id="confirmPassword" required style="border-radius:10px;">
+                                        </div>
+                                        <button type="submit" class="btn" style="background:#0014A8;color:white;border-radius:10px;">
+                                            <i class="fas fa-save me-2"></i>Change Password
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="alert" style="background:#e3f2fd;border:none;border-radius:10px;">
+                                        <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Password Tips</h6>
+                                        <ul class="mb-0" style="font-size:0.9rem;">
+                                            <li>Use at least 8 characters</li>
+                                            <li>Mix uppercase & lowercase</li>
+                                            <li>Include numbers & symbols</li>
+                                            <li>Avoid common words</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Tab -->
+                        <div class="tab-pane fade" id="activity">
+                            <h5 class="mb-4"><i class="fas fa-history me-2 text-primary"></i>Recent Activity</h5>
+                            <div class="timeline" style="position:relative;padding-left:30px;">
+                                <div class="timeline-item mb-4" style="position:relative;">
+                                    <div class="timeline-marker" style="position:absolute;left:-30px;width:12px;height:12px;border-radius:50%;background:#0014A8;"></div>
+                                    <div class="p-3" style="background:#f8f9fa;border-radius:10px;border-left:3px solid #0014A8;">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="mb-0"><i class="fas fa-sign-in-alt me-2 text-success"></i>Last Login</h6>
+                                            <small class="badge bg-success">{{ profile.last_login|timesince }} ago</small>
+                                        </div>
+                                        <small class="text-muted">Logged in from this device</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item mb-4" style="position:relative;">
+                                    <div class="timeline-marker" style="position:absolute;left:-30px;width:12px;height:12px;border-radius:50%;background:#28a745;"></div>
+                                    <div class="p-3" style="background:#f8f9fa;border-radius:10px;border-left:3px solid #28a745;">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="mb-0"><i class="fas fa-user-check me-2 text-info"></i>Account Created</h6>
+                                            <small class="badge bg-info">{{ profile.date_joined|date:"M d, Y" }}</small>
+                                        </div>
+                                        <small class="text-muted">Member since {{ profile.date_joined|timesince }}</small>
+                                    </div>
+                                </div>
+
+                                {% if user_role == 'superadmin' or user_role == 'admin' %}
+                                <div class="timeline-item mb-4" style="position:relative;">
+                                    <div class="timeline-marker" style="position:absolute;left:-30px;width:12px;height:12px;border-radius:50%;background:#ffc107;"></div>
+                                    <div class="p-3" style="background:#fff3cd;border-radius:10px;border-left:3px solid #ffc107;">
+                                        <h6 class="mb-2"><i class="fas fa-shield-alt me-2 text-warning"></i>Admin Activities</h6>
+                                        <ul class="mb-0" style="font-size:0.9rem;">
+                                            <li>System configuration access</li>
+                                            <li>User management permissions</li>
+                                            <li>Full inventory control</li>
+                                            <li>Financial reports access</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% elif user_role == 'admin' %}
+                                <div class="timeline-item mb-4" style="position:relative;">
+                                    <div class="timeline-marker" style="position:absolute;left:-30px;width:12px;height:12px;border-radius:50%;background:#17a2b8;"></div>
+                                    <div class="p-3" style="background:#d1ecf1;border-radius:10px;border-left:3px solid #17a2b8;">
+                                        <h6 class="mb-2"><i class="fas fa-user-tie me-2 text-info"></i>Manager Activities</h6>
+                                        <ul class="mb-0" style="font-size:0.9rem;">
+                                            <li>Warehouse operations management</li>
+                                            <li>Order processing & approval</li>
+                                            <li>Stock level monitoring</li>
+                                            <li>Team coordination</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% elif user_role == 'staff' %}
+                                <div class="timeline-item mb-4" style="position:relative;">
+                                    <div class="timeline-marker" style="position:absolute;left:-30px;width:12px;height:12px;border-radius:50%;background:#6c757d;"></div>
+                                    <div class="p-3" style="background:#e9ecef;border-radius:10px;border-left:3px solid #6c757d;">
+                                        <h6 class="mb-2"><i class="fas fa-tasks me-2 text-secondary"></i>Staff Activities</h6>
+                                        <ul class="mb-0" style="font-size:0.9rem;">
+                                            <li>Order fulfillment tasks</li>
+                                            <li>Inventory updates</li>
+                                            <li>Product scanning & tracking</li>
+                                            <li>Customer service support</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% elif user_role == 'customer' %}
+                                <div class="timeline-item mb-4" style="position:relative;">
+                                    <div class="timeline-marker" style="position:absolute;left:-30px;width:12px;height:12px;border-radius:50%;background:#007bff;"></div>
+                                    <div class="p-3" style="background:#cfe2ff;border-radius:10px;border-left:3px solid #007bff;">
+                                        <h6 class="mb-2"><i class="fas fa-shopping-cart me-2 text-primary"></i>Customer Activities</h6>
+                                        <ul class="mb-0" style="font-size:0.9rem;">
+                                            <li>Browse products & inventory</li>
+                                            <li>Place & track orders</li>
+                                            <li>View order history</li>
+                                            <li>Manage account settings</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="timeline-item mb-4" style="position:relative;">
+                                    <div class="timeline-marker" style="position:absolute;left:-30px;width:12px;height:12px;border-radius:50%;background:#6f42c1;"></div>
+                                    <div class="p-3" style="background:#f8f9fa;border-radius:10px;border-left:3px solid #6f42c1;">
+                                        <h6 class="mb-2"><i class="fas fa-chart-line me-2" style="color:#6f42c1;"></i>Platform Statistics</h6>
+                                        <div class="row g-2">
+                                            {% for key, value in stats.items %}
+                                            <div class="col-6">
+                                                <div class="p-2" style="background:white;border-radius:8px;text-align:center;">
+                                                    <small class="text-muted d-block">{{ key|title }}</small>
+                                                    <strong style="color:#0014A8;font-size:1.2rem;">{{ value }}</strong>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-item" style="position:relative;">
+                                    <div class="timeline-marker" style="position:absolute;left:-30px;width:12px;height:12px;border-radius:50%;background:#dc3545;"></div>
+                                    <div class="p-3" style="background:#f8d7da;border-radius:10px;border-left:3px solid #dc3545;">
+                                        <h6 class="mb-2"><i class="fas fa-info-circle me-2 text-danger"></i>Account Information</h6>
+                                        <small class="text-muted d-block mb-1"><i class="fas fa-envelope me-2"></i>Email: {{ profile.email }}</small>
+                                        <small class="text-muted d-block mb-1"><i class="fas fa-shield-alt me-2"></i>Role: {{ user_role|title }}</small>
+                                        <small class="text-muted d-block"><i class="fas fa-calendar me-2"></i>Joined: {{ profile.date_joined|date:"F d, Y" }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enlarged Avatar Modal -->
+<div id="avatarModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="avatarModalLabel" aria-hidden="true" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:10000;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:600px;">
+        <div class="modal-content" style="background:transparent;border:none;">
+            <div class="modal-header" style="border:none;position:absolute;right:10px;top:10px;z-index:1;">
+                <button type="button" class="btn-close btn-close-white" onclick="closeAvatarModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                <img id="enlargedAvatar" src="" alt="Enlarged avatar" style="max-width:100%;max-height:80vh;border-radius:10px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showEditModal() {
+    const currentAvatar = document.getElementById('profilePhoto')?.src || '';
+    const initials = '{{ profile.username|slice:":2"|upper }}';
+    
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div class="modal fade show" style="display:block;background:rgba(0,0,0,0.5);z-index:9999;" id="editModal" role="dialog" aria-labelledby="editModalLabel">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius:15px;border:none;">
+                    <div class="modal-header" style="background:#f8f9fa;border-radius:15px 15px 0 0;border:none;">
+                        <h5 id="editModalLabel" style="margin:0;"><i class="fas fa-user-edit me-2 text-primary"></i>Edit Profile</h5>
+                        <button class="btn-close" onclick="closeEditModal()" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="padding:25px;">
+                        <div class="text-center mb-4">
+                            <div class="position-relative d-inline-block">
+                                <div id="editAvatarPreview" style="width:100px;height:100px;border-radius:50%;overflow:hidden;border:3px solid #0014A8;background:#f8f9fa;display:flex;align-items:center;justify-content:center;">
+                                    ${currentAvatar ? `<img src="${currentAvatar}" style="width:100%;height:100%;object-fit:cover;" alt="Avatar preview">` : `<div style="font-size:36px;font-weight:bold;color:#0014A8;">${initials}</div>`}
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('photoInput').click()" style="border-radius:10px;">
+                                    <i class="fas fa-upload me-2"></i>Upload New Image
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeAvatar()" style="border-radius:10px;">
+                                    <i class="fas fa-trash me-2"></i>Remove
+                                </button>
+                            </div>
+                            <small class="text-muted d-block mt-2">Max 2MB • JPG, PNG, WEBP</small>
+                            <div id="uploadProgress" style="display:none;margin-top:10px;">
+                                <div class="progress" style="height:20px;border-radius:10px;">
+                                    <div id="uploadProgressBar" class="progress-bar" role="progressbar" style="width:0%;">0%</div>
+                                </div>
+                            </div>
+                            <div id="uploadError" class="alert alert-danger mt-2" style="display:none;border-radius:10px;"></div>
+                        </div>
+                        <form id="editForm">
+                            <div class="mb-3">
+                                <label class="form-label"><i class="fas fa-user me-2"></i>Username</label>
+                                <input type="text" class="form-control" name="username" value="${document.querySelector('[data-username]')?.dataset.username || '{{ profile.username }}'}" style="border-radius:10px;background:#f8f9fa;" readonly>
+                                <small class="text-muted">Username cannot be changed</small>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><i class="fas fa-id-badge me-2"></i>First Name</label>
+                                    <input type="text" class="form-control" name="first_name" value="${document.querySelector('[data-firstname]')?.dataset.firstname || '{{ profile.first_name }}'}" required style="border-radius:10px;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><i class="fas fa-id-badge me-2"></i>Last Name</label>
+                                    <input type="text" class="form-control" name="last_name" value="${document.querySelector('[data-lastname]')?.dataset.lastname || '{{ profile.last_name }}'}" required style="border-radius:10px;">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><i class="fas fa-envelope me-2"></i>Email</label>
+                                <input type="email" class="form-control" name="email" value="${document.querySelector('[data-email]')?.dataset.email || '{{ profile.email }}'}" required style="border-radius:10px;">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer" style="border:none;padding:20px;">
+                        <button class="btn btn-secondary" onclick="closeEditModal()" style="border-radius:10px;"><i class="fas fa-times me-2"></i>Cancel</button>
+                        <button id="saveBtn" class="btn" onclick="saveProfile()" style="background:#0014A8;color:white;border-radius:10px;"><i class="fas fa-save me-2"></i>Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    trapFocus(document.getElementById('editModal'));
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editModal');
+    if (modal) {
+        modal.remove();
+        pendingAvatarFile = null;
+    }
+}
+
+function trapFocus(element) {
+    const focusableElements = element.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+    
+    element.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (element.id === 'avatarModal') closeAvatarModal();
+            else if (element.id === 'editModal') closeEditModal();
+        }
+        
+        if (e.key === 'Tab') {
+            if (e.shiftKey) {
+                if (document.activeElement === firstFocusable) {
+                    lastFocusable.focus();
+                    e.preventDefault();
+                }
+            } else {
+                if (document.activeElement === lastFocusable) {
+                    firstFocusable.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+    });
+    
+    if (firstFocusable) firstFocusable.focus();
+}
+
+// Close modal on outside click
+document.addEventListener('click', function(e) {
+    const avatarModal = document.getElementById('avatarModal');
+    if (e.target === avatarModal) {
+        closeAvatarModal();
+    }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const avatarModal = document.getElementById('avatarModal');
+        if (avatarModal && avatarModal.style.display === 'flex') {
+            closeAvatarModal();
+        }
+    }
+});
+
+async function saveProfile() {
+    const saveBtn = document.getElementById('saveBtn');
+    const progressDiv = document.getElementById('uploadProgress');
+    const progressBar = document.getElementById('uploadProgressBar');
+    
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+    
+    try {
+        let avatarUrl = null;
+        
+        // Upload avatar if file selected
+        if (pendingAvatarFile) {
+            progressDiv.style.display = 'block';
+            
+            const uploadData = new FormData();
+            uploadData.append('photo', pendingAvatarFile);
+            uploadData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+            
+            const uploadResponse = await fetch('/profile/upload-photo/', {
+                method: 'POST',
+                body: uploadData
+            });
+            
+            const uploadResult = await uploadResponse.json();
+            
+            if (uploadResult.success) {
+                avatarUrl = uploadResult.photo_url;
+                progressBar.style.width = '100%';
+                progressBar.textContent = '100%';
+            } else {
+                throw new Error(uploadResult.error || 'Upload failed');
+            }
+        }
+        
+        // Update profile
+        const form = document.getElementById('editForm');
+        const formData = new FormData(form);
+        formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+        
+        const response = await fetch('/profile/edit/', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            showAlert('Profile updated successfully!', 'success');
+            
+            // Update avatar everywhere
+            if (avatarUrl) {
+                updateAllPhotos(avatarUrl);
+                broadcastAvatarUpdate(avatarUrl);
+            }
+            
+            closeEditModal();
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            throw new Error('Profile update failed');
+        }
+    } catch (error) {
+        console.error('Save error:', error);
+        showUploadError(error.message);
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
+    }
+}
+
+function broadcastAvatarUpdate(avatarUrl) {
+    // Broadcast to other tabs/windows
+    localStorage.setItem('avatar_updated', JSON.stringify({
+        url: avatarUrl,
+        timestamp: Date.now()
+    }));
+    
+    // Trigger custom event
+    window.dispatchEvent(new CustomEvent('avatarUpdated', { detail: { avatarUrl } }));
+}
+
+// Listen for avatar updates from other tabs
+window.addEventListener('storage', function(e) {
+    if (e.key === 'avatar_updated') {
+        const data = JSON.parse(e.newValue);
+        updateAllPhotos(data.url);
+    }
+});
+
+let pendingAvatarFile = null;
+
+function openAvatarModal() {
+    const modal = document.getElementById('avatarModal');
+    const img = document.getElementById('enlargedAvatar');
+    const profilePhoto = document.getElementById('profilePhoto');
+    
+    if (profilePhoto && profilePhoto.src) {
+        img.src = profilePhoto.src;
+    } else {
+        return;
+    }
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.style.opacity = '1', 10);
+    document.body.style.overflow = 'hidden';
+    trapFocus(modal);
+}
+
+function closeAvatarModal() {
+    const modal = document.getElementById('avatarModal');
+    modal.style.opacity = '0';
+    setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }, 300);
+}
+
+function handleFileSelect(input) {
+    if (!input.files || !input.files[0]) return;
+    
+    const file = input.files[0];
+    const errorDiv = document.getElementById('uploadError');
+    
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+        showUploadError('Invalid file type. Please upload JPG, PNG, or WEBP.');
+        input.value = '';
+        return;
+    }
+    
+    // Validate file size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        showUploadError('File too large. Maximum size is 2MB.');
+        input.value = '';
+        return;
+    }
+    
+    // Hide error
+    if (errorDiv) errorDiv.style.display = 'none';
+    
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('editAvatarPreview');
+        if (preview) {
+            preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" alt="Avatar preview">`;
+        }
+        pendingAvatarFile = file;
+    };
+    reader.readAsDataURL(file);
+}
+
+function showUploadError(message) {
+    const errorDiv = document.getElementById('uploadError');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+}
+
+function removeAvatar() {
+    const preview = document.getElementById('editAvatarPreview');
+    const initials = '{{ profile.username|slice:":2"|upper }}';
+    if (preview) {
+        preview.innerHTML = `<div style="font-size:36px;font-weight:bold;color:#0014A8;">${initials}</div>`;
+    }
+    pendingAvatarFile = null;
+    document.getElementById('photoInput').value = '';
+}
+
+function showPreviewModal(src, file) {
+    const existing = document.getElementById('previewModal');
+    if(existing) existing.remove();
+    
+    const modal = document.createElement('div');
+    modal.id = 'previewModal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `
+        <div style="background:white;border-radius:15px;width:90%;max-width:500px;box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+            <div style="padding:20px;border-bottom:1px solid #eee;">
+                <h5 style="margin:0;"><i class="fas fa-image me-2"></i>Preview Photo</h5>
+            </div>
+            <div style="padding:30px;text-align:center;">
+                <img src="${src}" style="max-width:100%;max-height:400px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+            </div>
+            <div style="padding:20px;border-top:1px solid #eee;text-align:right;">
+                <button class="btn btn-secondary" onclick="closePreviewModal()" style="border-radius:10px;margin-right:10px;">Cancel</button>
+                <button class="btn" onclick="confirmUpload('${src}')" style="background:#0014A8;color:white;border-radius:10px;"><i class="fas fa-check me-2"></i>Upload</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    window.currentUploadFile = file;
+}
+
+function closePreviewModal() {
+    const modal = document.getElementById('previewModal');
+    if(modal) modal.remove();
+    window.currentUploadFile = null;
+    document.getElementById('photoInput').value = '';
+}
+
+function confirmUpload(previewSrc) {
+    const file = window.currentUploadFile;
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append('photo', file);
+    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+    
+    fetch('/profile/upload-photo/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            updateAllPhotos(data.photo_url || previewSrc);
+            showAlert(data.message || 'Photo updated successfully!', 'success');
+            closePreviewModal();
+        } else {
+            showAlert(data.error || 'Error uploading photo', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showAlert('Error uploading photo. Please try again.', 'danger');
+    });
+}
+
+function changePassword(event) {
+    event.preventDefault();
+    
+    const current = document.getElementById('currentPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    
+    if (newPass !== confirm) {
+        showAlert('New password and confirm password do not match!', 'danger');
+        return;
+    }
+    
+    if (newPass.length < 8) {
+        showAlert('Password must be at least 8 characters long!', 'danger');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('current_password', current);
+    formData.append('new_password', newPass);
+    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+    
+    fetch('/profile/change-password/', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Password changed successfully!', 'success');
+            document.getElementById('passwordChangeForm').reset();
+        } else {
+            showAlert('Error: ' + (data.error || 'Failed to change password'), 'danger');
+        }
+    })
+    .catch(error => showAlert('Error: ' + error, 'danger'));
+}
+
+function showUrlModal() {
+    const existing = document.getElementById('urlModal');
+    if(existing) existing.remove();
+    
+    const modal = document.createElement('div');
+    modal.id = 'urlModal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `
+        <div style="background:white;border-radius:15px;width:90%;max-width:500px;box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+            <div style="padding:20px;border-bottom:1px solid #eee;">
+                <h5 style="margin:0;"><i class="fas fa-link me-2"></i>Add Photo from URL</h5>
+            </div>
+            <div style="padding:20px;">
+                <input type="url" class="form-control" id="photoUrl" placeholder="https://example.com/photo.jpg" style="border-radius:10px;padding:12px;">
+                <div id="urlPreview" style="margin-top:15px;text-align:center;display:none;">
+                    <img id="urlPreviewImg" style="max-width:100%;max-height:300px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                </div>
+            </div>
+            <div style="padding:20px;border-top:1px solid #eee;text-align:right;">
+                <button class="btn btn-secondary" onclick="closeUrlModal()" style="border-radius:10px;margin-right:10px;">Cancel</button>
+                <button class="btn btn-info" onclick="previewUrl()" style="border-radius:10px;margin-right:10px;"><i class="fas fa-eye me-2"></i>Preview</button>
+                <button class="btn" onclick="uploadFromUrl()" style="background:#0014A8;color:white;border-radius:10px;"><i class="fas fa-upload me-2"></i>Upload</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    setTimeout(() => document.getElementById('photoUrl').focus(), 100);
+}
+
+function previewUrl() {
+    const url = document.getElementById('photoUrl').value.trim();
+    if (!url) {
+        showAlert('Please enter a URL', 'warning');
+        return;
+    }
+    
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        showAlert('URL must start with http:// or https://', 'danger');
+        return;
+    }
+    
+    const preview = document.getElementById('urlPreview');
+    const img = document.getElementById('urlPreviewImg');
+    
+    preview.style.display = 'block';
+    img.style.opacity = '0.5';
+    
+    img.onload = function() {
+        img.style.opacity = '1';
+        showAlert('Image loaded successfully!', 'success');
+    };
+    
+    img.onerror = function() {
+        showAlert('Cannot load image. URL may be blocked by CORS or invalid.', 'warning');
+        img.style.opacity = '1';
+    };
+    
+    img.src = url + '?t=' + Date.now();
+}
+
+function closeUrlModal() {
+    const modal = document.getElementById('urlModal');
+    if(modal) modal.remove();
+}
+
+function updateAllPhotos(src) {
+    // Add cache buster
+    const cacheBuster = '?t=' + Date.now();
+    const finalSrc = src.includes('?') ? src : src + cacheBuster;
+    
+    // Update profile page photo
+    const img = document.getElementById('profilePhoto');
+    const icon = document.getElementById('profileIcon');
+    if(img) {
+        img.src = finalSrc;
+        img.style.display = 'block';
+        img.onerror = function() {
+            this.style.display = 'none';
+            if(icon) icon.style.display = 'block';
+        };
+        if(icon) icon.style.display = 'none';
+    } else if(icon) {
+        // Create img element if doesn't exist
+        const newImg = document.createElement('img');
+        newImg.id = 'profilePhoto';
+        newImg.src = finalSrc;
+        newImg.style.cssText = 'width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #0014A8;';
+        newImg.onerror = function() {
+            this.style.display = 'none';
+            icon.style.display = 'block';
+        };
+        icon.parentNode.insertBefore(newImg, icon);
+        icon.style.display = 'none';
+    }
+    
+    // Update navbar photo
+    const navImg = document.getElementById('navbarUserPhoto');
+    if(navImg) {
+        navImg.src = finalSrc;
+        navImg.style.display = 'block';
+        const navIcon = document.getElementById('navbarUserIcon');
+        if(navIcon) navIcon.style.display = 'none';
+    }
+    
+    // Update dropdown photo
+    const dropImg = document.getElementById('dropdownUserPhoto');
+    if(dropImg) {
+        dropImg.src = finalSrc;
+        dropImg.style.display = 'block';
+        const dropIcon = document.getElementById('dropdownUserIcon');
+        if(dropIcon) dropIcon.style.display = 'none';
+    }
+}
+
+function uploadFromUrl() {
+    const url = document.getElementById('photoUrl').value.trim();
+    if (!url) {
+        showAlert('Please enter a valid URL', 'danger');
+        return;
+    }
+    
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        showAlert('URL must start with http:// or https://', 'danger');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('photo_url', url);
+    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+    
+    fetch('/profile/upload-photo/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            updateAllPhotos(data.photo_url || url);
+            showAlert(data.message || 'Photo updated successfully!', 'success');
+            closeUrlModal();
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showAlert(data.error || 'Error uploading photo', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showAlert('Error uploading photo. Please try again.', 'danger');
+    });
+}
+
+window.addEventListener('load', function() {
+    const profilePhoto = document.getElementById('profilePhoto');
+    const navPhoto = document.getElementById('navbarUserPhoto');
+    
+    if(profilePhoto && profilePhoto.complete && profilePhoto.naturalWidth > 0) {
+        profilePhoto.style.display = 'block';
+        document.getElementById('profileIcon').style.display = 'none';
+    }
+    
+    if(navPhoto && navPhoto.complete && navPhoto.naturalWidth > 0) {
+        navPhoto.style.display = 'block';
+        const navIcon = document.getElementById('navbarUserIcon');
+        if(navIcon) navIcon.style.display = 'none';
+    }
+});
+
+function getCookie(name) {
+    let value = `; ${document.cookie}`;
+    let parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+}
+
+function showAlert(message, type) {
+    if (typeof window.showAlert === 'function') {
+        window.showAlert(message, type);
+    } else {
+        alert(message);
+    }
+}
+</script>
+{% endblock %}
+

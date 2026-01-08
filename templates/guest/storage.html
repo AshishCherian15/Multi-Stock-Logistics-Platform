@@ -1,0 +1,212 @@
+{% extends 'base_guest.html' %}
+{% block title %}Storage Units - MultiStock{% endblock %}
+{% block content %}
+
+<style>
+    :root {
+        --zaffre: #0014A8;
+        --zaffre-dark: #000E75;
+    }
+
+    .storage-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 2px 12px rgba(0, 20, 168, 0.1);
+        transition: all 0.3s;
+        overflow: hidden;
+    }
+
+    .storage-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 20, 168, 0.2);
+    }
+
+    .unit-header {
+        background: linear-gradient(135deg, var(--zaffre), var(--zaffre-dark));
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .status-badge {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-available {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .stats-card {
+        background: linear-gradient(135deg, var(--zaffre), var(--zaffre-dark));
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+    }
+
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+</style>
+
+<div class="container-fluid p-4 mt-5">
+    <div class="alert alert-warning text-center mb-4">
+        <i class="fas fa-lock me-2"></i>
+        <strong>Login Required:</strong> Please <a href="/auth/login-selection/" class="alert-link">login</a> to book storage units, add to cart, or add to wishlist.
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-warehouse me-2"></i>Storage Units</h2>
+        <div>
+            <a href="/auth/login-selection/" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Dashboard -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ total_units }}</div>
+                <div>Total Units</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <div class="stats-number">{{ available_units }}</div>
+                <div>Available</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <div class="stats-number">{{ occupied_units }}</div>
+                <div>Occupied</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <div class="stats-number">{{ maintenance_units }}</div>
+                <div>Maintenance</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Storage Units Grid -->
+    <div class="row g-4" id="storageGrid">
+        {% for unit in units %}
+        <div class="col-md-4 storage-item" data-unit="{{ unit.unit_number|lower }}" data-price="{{ unit.price_per_month }}">
+            <div class="card storage-card">
+                <div class="unit-header">
+                    <h3 class="mb-0">Unit {{ unit.unit_number }}</h3>
+                    <small>{{ unit.get_type_display }}</small>
+                </div>
+
+                {% if unit.image_url %}
+                <div>
+                    <img src="{{ unit.image_url }}" alt="Unit {{ unit.unit_number }}" style="width:100%;height:200px;object-fit:cover;" onerror="this.src='/static/images/no-image.svg';this.onerror=null;">
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <!-- Status -->
+                    <div class="text-center mb-3">
+                        <span class="status-badge status-available">
+                            <i class="fas fa-check-circle me-1"></i>Available
+                        </span>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-map-marker-alt text-primary me-2"></i>Location:</span>
+                            <strong>{{ unit.location }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-building text-primary me-2"></i>Floor:</span>
+                            <strong>{{ unit.floor }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-ruler-combined text-primary me-2"></i>Size:</span>
+                            <strong>{{ unit.size_sqft }} sq ft</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-map-signs text-primary me-2"></i>Zone:</span>
+                            <strong>{{ unit.zone }}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    {% if unit.is_climate_controlled %}
+                    <div class="mb-3 text-center">
+                        <span class="badge bg-info">
+                            <i class="fas fa-snowflake me-1"></i>Climate Controlled
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Price -->
+                    <div class="text-center mb-3">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--zaffre);">₹{{ unit.price_per_month }}</div>
+                        <small class="text-muted">per month</small>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="/auth/login-selection/" class="btn btn-primary w-100">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login to Book
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No storage units available</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if page_obj %}
+<div class="d-flex justify-content-center my-4">
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput')?.addEventListener('input', function (e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('.storage-item');
+
+        items.forEach(item => {
+            const unit = item.dataset.unit;
+            if (unit.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

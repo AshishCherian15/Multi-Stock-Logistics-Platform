@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Rental Agreement - {{ booking.item.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-file-contract me-2"></i>Rental Agreement</h4>
+                    <button onclick="window.print()" class="btn btn-light btn-sm">
+                        <i class="fas fa-print me-2"></i>Print
+                    </button>
+                </div>
+                <div class="card-body" id="agreementContent">
+                    <div class="text-center mb-4">
+                        <h3>RENTAL AGREEMENT</h3>
+                        <p class="text-muted">Agreement #{{ booking.id }}</p>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Rental Company</h5>
+                            <p>
+                                <strong>MultiStock Rentals</strong><br>
+                                123 Business Street<br>
+                                City, State 12345<br>
+                                Phone: (555) 123-4567
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Customer Information</h5>
+                            <p>
+                                <strong>{{ booking.customer.get_full_name|default:booking.customer.username }}</strong><br>
+                                Email: {{ booking.customer.email }}<br>
+                                Booking Date: {{ booking.created_at|date:"F d, Y" }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <h5>Rental Details</h5>
+                    <table class="table table-bordered mb-4">
+                        <tr>
+                            <th width="30%">Item</th>
+                            <td>{{ booking.item.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ booking.item.description }}</td>
+                        </tr>
+                        <tr>
+                            <th>Rental Period</th>
+                            <td>{{ booking.start_date|date:"F d, Y H:i" }} to {{ booking.end_date|date:"F d, Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Delivery Method</th>
+                            <td>{{ booking.get_delivery_option_display }}</td>
+                        </tr>
+                        {% if booking.delivery_address %}
+                        <tr>
+                            <th>Delivery Address</th>
+                            <td>{{ booking.delivery_address }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Rental Amount</th>
+                            <td><strong>${{ booking.total_amount }}</strong></td>
+                        </tr>
+                    </table>
+                    
+                    <h5>Terms and Conditions</h5>
+                    <ol class="small">
+                        <li>The renter agrees to return the item in the same condition as received.</li>
+                        <li>Late returns will incur a penalty of $50 per day or 10% of the rental amount, whichever is higher.</li>
+                        <li>The renter is responsible for any damage or loss during the rental period.</li>
+                        <li>The renter must provide valid identification and contact information.</li>
+                        <li>Payment must be made in full before the rental period begins.</li>
+                        <li>Cancellations must be made at least 24 hours in advance for a full refund.</li>
+                        <li>The rental company reserves the right to refuse service or terminate the rental agreement.</li>
+                        <li>The renter agrees to use the item only for its intended purpose.</li>
+                        <li>Insurance coverage is the responsibility of the renter unless otherwise specified.</li>
+                        <li>This agreement is governed by the laws of the state in which the rental occurs.</li>
+                    </ol>
+                    
+                    <div class="row mt-5">
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Customer Signature:</strong><br>
+                                _________________________<br>
+                                {{ booking.customer.get_full_name|default:booking.customer.username }}<br>
+                                Date: {{ booking.created_at|date:"F d, Y" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Company Representative:</strong><br>
+                                _________________________<br>
+                                MultiStock Rentals<br>
+                                Date: {{ booking.created_at|date:"F d, Y" }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-grid gap-2">
+                        <button onclick="downloadPDF()" class="btn btn-success">
+                            <i class="fas fa-download me-2"></i>Download as PDF
+                        </button>
+                        <a href="{% url 'booking_summary' booking.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Summary
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function downloadPDF() {
+    window.print();
+}
+</script>
+
+<style>
+@media print {
+    .card-header, .card-footer, .btn { display: none !important; }
+    .card { border: none !important; box-shadow: none !important; }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block title %}Shipments - MultiStock{% endblock %}
+{% block content %}
+<style>
+.shipment-card{border:none;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);transition:all 0.3s}
+.shipment-card:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,0.2)}
+.status-badge{padding:6px 12px;border-radius:20px;font-size:0.85rem;font-weight:600}
+</style>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="fas fa-shipping-fast me-2" style="color:#0014A8"></i>Shipments & Delivery</h2>
+            <p class="text-muted mb-0">Track and manage all shipments</p>
+        </div>
+        <div>
+            <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#createShipmentModal"><i class="fas fa-plus me-1"></i>New Shipment</button>
+            <a href="/shipping/carriers/" class="btn btn-outline-primary me-2"><i class="fas fa-truck me-1"></i>Carriers</a>
+            <a href="/shipping/rates/" class="btn btn-outline-secondary"><i class="fas fa-dollar-sign me-1"></i>Rates</a>
+        </div>
+    </div>
+    
+    <div class="card mb-4 shadow-sm" style="border:none;border-radius:15px">
+        <div class="card-header bg-light">
+            <h6 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Shipments</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="processing" {% if selected_status == 'processing' %}selected{% endif %}>Processing</option>
+                        <option value="picked" {% if selected_status == 'picked' %}selected{% endif %}>Picked Up</option>
+                        <option value="in_transit" {% if selected_status == 'in_transit' %}selected{% endif %}>In Transit</option>
+                        <option value="delivered" {% if selected_status == 'delivered' %}selected{% endif %}>Delivered</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="carrier" class="form-select">
+                        <option value="">All Carriers</option>
+                        {% for carrier in carriers %}
+                        <option value="{{ carrier.id }}" {% if selected_carrier == carrier.id|stringformat:'s' %}selected{% endif %}>{{ carrier.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Search by tracking number..." value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i>Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        {% for shipment in shipments %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card shipment-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h6 class="mb-1 fw-bold">{{ shipment.shipment_number }}</h6>
+                            <small class="text-muted">{{ shipment.carrier.name }}</small>
+                        </div>
+                        <span class="status-badge bg-primary text-white">{{ shipment.get_status_display }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <p class="mb-1 small"><i class="fas fa-barcode me-2"></i><strong>Tracking:</strong> {{ shipment.tracking_number|default:"Not assigned" }}</p>
+                        <p class="mb-1 small"><i class="fas fa-box me-2"></i><strong>Service:</strong> {{ shipment.service_type }}</p>
+                        <p class="mb-1 small"><i class="fas fa-weight me-2"></i><strong>Weight:</strong> {{ shipment.weight }} kg</p>
+                    </div>
+                    <div class="border-top pt-3">
+                        <p class="mb-1 small"><strong>To:</strong> {{ shipment.recipient_name }}</p>
+                        <p class="mb-1 small text-muted">{{ shipment.recipient_city }}</p>
+                        <p class="mb-0 small"><i class="fas fa-calendar me-1"></i>{{ shipment.created_at|date:"M d, Y" }}</p>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <span class="text-primary fw-bold">₹{{ shipment.total_cost }}</span>
+                        <div>
+                            <a href="/shipping/tracking/{{ shipment.id }}/" class="btn btn-sm btn-outline-info" title="View"><i class="fas fa-eye"></i></a>
+                            <button class="btn btn-sm btn-outline-warning" onclick="editShipment({{ shipment.id }})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <a href="/shipping/{{ shipment.id }}/delete/" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete shipment?')" title="Delete"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center py-5">
+                <i class="fas fa-shipping-fast fa-3x mb-3" style="opacity:0.3"></i>
+                <h5>No shipments found</h5>
+                <p class="mb-0">Shipments will appear here when orders are shipped</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Create Shipment Modal -->
+<div class="modal" id="createShipmentModal">
+    <div class="modal-dialog modal-lg">
+        <form method="post" action="/shipping/create/">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Shipment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label>Carrier</label>
+                            <select name="carrier_id" class="form-select" required>
+                                {% for carrier in carriers %}
+                                <option value="{{ carrier.id }}">{{ carrier.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Service Type</label>
+                            <input type="text" name="service_type" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Sender Name</label>
+                            <input type="text" name="sender_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Sender Phone</label>
+                            <input type="text" name="sender_phone" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label>Sender Address</label>
+                            <input type="text" name="sender_address" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Sender City</label>
+                            <input type="text" name="sender_city" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Recipient Name</label>
+                            <input type="text" name="recipient_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Recipient Phone</label>
+                            <input type="text" name="recipient_phone" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label>Recipient Address</label>
+                            <input type="text" name="recipient_address" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Recipient City</label>
+                            <input type="text" name="recipient_city" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Weight (kg)</label>
+                            <input type="number" step="0.01" name="weight" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Shipping Cost</label>
+                            <input type="number" step="0.01" name="shipping_cost" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Total Cost</label>
+                            <input type="number" step="0.01" name="total_cost" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Pickup Date</label>
+                            <input type="date" name="pickup_date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Estimated Delivery</label>
+                            <input type="date" name="estimated_delivery" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Shipment Modal -->
+<div class="modal" id="editShipmentModal" data-bs-backdrop="false">
+    <div class="modal-dialog">
+        <form method="post" id="editShipmentForm">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Shipment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Status</label>
+                        <select name="status" class="form-select" id="editStatus">
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="picked">Picked Up</option>
+                            <option value="in_transit">In Transit</option>
+                            <option value="delivered">Delivered</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Service Type</label>
+                        <input type="text" name="service_type" class="form-control" id="editServiceType">
+                    </div>
+                    <div class="mb-3">
+                        <label>Weight (kg)</label>
+                        <input type="number" step="0.01" name="weight" class="form-control" id="editWeight">
+                    </div>
+                    <div class="mb-3">
+                        <label>Shipping Cost</label>
+                        <input type="number" step="0.01" name="shipping_cost" class="form-control" id="editShippingCost">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function editShipment(id) {
+    document.getElementById('editShipmentForm').action = '/shipping/' + id + '/update/';
+    const modal = new bootstrap.Modal(document.getElementById('editShipmentModal'), {backdrop: false});
+    modal.show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,680 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ conversation.name }} - Messages{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'messaging/css/chat.css' %}">
+<style>
+    .chat-container {
+        height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        background: linear-gradient(135deg, #0014A8, #1e3c72);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-info h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .chat-info small {
+        opacity: 0.8;
+    }
+
+    .chat-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #f8f9fa;
+    }
+
+    .message {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .message.mine {
+        justify-content: flex-end;
+    }
+
+    .message-bubble {
+        max-width: 70%;
+        padding: 12px 16px;
+        border-radius: 18px;
+        position: relative;
+        word-wrap: break-word;
+    }
+
+    .message.mine .message-bubble {
+        background: #0014A8;
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+
+    .message:not(.mine) .message-bubble {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-bottom-left-radius: 4px;
+    }
+
+    .message-info {
+        font-size: 0.75rem;
+        opacity: 0.7;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .delivery-status {
+        font-size: 0.7rem;
+    }
+
+    .delivery-status.sent {
+        color: #6c757d;
+    }
+
+    .delivery-status.delivered {
+        color: #28a745;
+    }
+
+    .delivery-status.read {
+        color: #007bff;
+    }
+
+    .message-reactions {
+        margin-top: 5px;
+        display: flex;
+        gap: 5px;
+    }
+
+    .reaction {
+        background: rgba(0, 20, 168, 0.1);
+        border: 1px solid rgba(0, 20, 168, 0.2);
+        border-radius: 12px;
+        padding: 2px 6px;
+        font-size: 0.75rem;
+        cursor: pointer;
+    }
+
+    .typing-indicator {
+        padding: 10px 20px;
+        font-style: italic;
+        color: #6c757d;
+        background: rgba(0, 20, 168, 0.05);
+    }
+
+    .chat-input {
+        padding: 20px;
+        background: white;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .input-group {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+    .message-input {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        padding: 10px 15px;
+        resize: none;
+        max-height: 100px;
+    }
+
+    .send-btn {
+        background: #0014A8;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .message-actions {
+        position: absolute;
+        top: -30px;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 5px;
+        display: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .message:hover .message-actions {
+        display: flex;
+    }
+
+    .action-btn {
+        background: none;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .action-btn:hover {
+        background: #f0f0f0;
+    }
+
+    .pinned-messages {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .group-info-sidebar {
+        width: 300px;
+        background: white;
+        border-left: 1px solid #e0e0e0;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .member-list {
+        margin-top: 20px;
+    }
+
+    .member-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .member-status {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .member-status.online {
+        background: #28a745;
+    }
+
+    .member-status.offline {
+        background: #6c757d;
+    }
+
+    .admin-badge {
+        background: #0014A8;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        margin-left: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="chat-container">
+                <!-- Chat Header -->
+                <div class="chat-header">
+                    <div class="chat-info">
+                        <h5>
+                            {{ conversation.name }}
+                            {% if conversation.is_group %}
+                            <i class="fas fa-users ms-2"></i>
+                            <span class="badge bg-light text-dark ms-2">{{ conversation.members.count }} members</span>
+                            {% endif %}
+                        </h5>
+                        <small id="typing-status"></small>
+                    </div>
+                    <div class="chat-actions">
+                        {% if conversation.is_group %}
+                        <button class="btn btn-outline-light btn-sm" onclick="toggleGroupInfo()">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                        {% endif %}
+                        <button class="btn btn-outline-light btn-sm" onclick="togglePin({{ conversation.id }})">
+                            <i class="fas fa-thumbtack" id="pin-icon"></i>
+                        </button>
+                        <button class="btn btn-outline-light btn-sm" onclick="toggleMute({{ conversation.id }})">
+                            <i class="fas fa-volume-mute" id="mute-icon"></i>
+                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="searchMessages()">
+                                        <i class="fas fa-search me-2"></i>Search Messages
+                                    </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="exportChat()">
+                                        <i class="fas fa-download me-2"></i>Export Chat
+                                    </a></li>
+                                {% if conversation.is_group and conversation.is_admin %}
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item"
+                                        href="{% url 'messaging:group_settings' conversation.id %}">
+                                        <i class="fas fa-cog me-2"></i>Group Settings
+                                    </a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pinned Messages -->
+                <div id="pinned-messages" class="pinned-messages" style="display: none;">
+                    <strong><i class="fas fa-thumbtack me-2"></i>Pinned Messages</strong>
+                    <div id="pinned-content"></div>
+                </div>
+
+                <div class="d-flex" style="flex: 1;">
+                    <!-- Messages Area -->
+                    <div class="flex-fill d-flex flex-column">
+                        <div class="chat-messages" id="messages-container">
+                            <!-- Messages will be loaded here -->
+                        </div>
+
+                        <!-- Typing Indicator -->
+                        <div id="typing-indicator" class="typing-indicator" style="display: none;"></div>
+
+                        <!-- Chat Input -->
+                        <div class="chat-input">
+                            <div class="input-group">
+                                <textarea id="message-input" class="message-input" placeholder="Type a message..."
+                                    rows="1"></textarea>
+                                <button class="send-btn" onclick="sendMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group Info Sidebar -->
+                    {% if conversation.is_group %}
+                    <div id="group-info-sidebar" class="group-info-sidebar" style="display: none;">
+                        <h6>Group Information</h6>
+                        <p><strong>Description:</strong> {{ conversation.description|default:"No description" }}</p>
+                        <p><strong>Created:</strong> {{ conversation.created_at|date:"M d, Y" }}</p>
+                        <p><strong>Visibility:</strong> {{ conversation.get_visibility_display }}</p>
+
+                        <div class="member-list">
+                            <h6>Members ({{ conversation.members.count }})</h6>
+                            <div id="members-list">
+                                <!-- Members will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message Context Menu -->
+<div id="message-context-menu" class="dropdown-menu" style="display: none; position: absolute;">
+    <a class="dropdown-item" href="#" onclick="replyToMessage()">
+        <i class="fas fa-reply me-2"></i>Reply
+    </a>
+    <a class="dropdown-item" href="#" onclick="forwardMessage()">
+        <i class="fas fa-share me-2"></i>Forward
+    </a>
+    <a class="dropdown-item" href="#" onclick="starMessage()">
+        <i class="fas fa-star me-2"></i>Star
+    </a>
+    <a class="dropdown-item" href="#" onclick="copyMessage()">
+        <i class="fas fa-copy me-2"></i>Copy
+    </a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item text-danger" href="#" onclick="deleteMessage()">
+        <i class="fas fa-trash me-2"></i>Delete
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let conversationId = {{ conversation.id }};
+    let currentUser = '{{ request.user.username }}';
+    let currentUserId = {{ request.user.id }};
+    let isTyping = false;
+    let typingTimeout;
+    let selectedMessageId = null;
+
+    // Initialize chat
+    $(document).ready(function () {
+        loadMessages();
+        loadConversationInfo();
+        setupEventListeners();
+        startPolling();
+
+        // Auto-resize textarea
+        $('#message-input').on('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    });
+
+    function setupEventListeners() {
+        // Send message on Enter
+        $('#message-input').keypress(function (e) {
+            if (e.which == 13 && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Typing indicator
+        $('#message-input').on('input', function () {
+            if (!isTyping) {
+                isTyping = true;
+                sendTypingIndicator(true);
+            }
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                isTyping = false;
+                sendTypingIndicator(false);
+            }, 1000);
+        });
+
+        // Right-click context menu
+        $(document).on('contextmenu', '.message-bubble', function (e) {
+            e.preventDefault();
+            selectedMessageId = $(this).closest('.message').data('message-id');
+            showContextMenu(e.pageX, e.pageY);
+        });
+
+        // Hide context menu on click
+        $(document).click(function () {
+            $('#message-context-menu').hide();
+        });
+    }
+
+    function loadMessages() {
+        $.get(`/messages/api/load/${conversationId}/`, function (data) {
+            if (data.success) {
+                displayMessages(data.messages);
+                scrollToBottom();
+            }
+        });
+    }
+
+    function loadConversationInfo() {
+        $.get(`/messages/api/conversations/${conversationId}/info/`, function (data) {
+            updateConversationInfo(data);
+        });
+    }
+
+    function displayMessages(messages) {
+        const container = $('#messages-container');
+        container.empty();
+
+        messages.forEach(msg => {
+            const messageHtml = createMessageHtml(msg);
+            container.append(messageHtml);
+        });
+    }
+
+    function createMessageHtml(msg) {
+        const isMine = msg.sender_id === currentUserId;
+        const deliveryStatus = msg.delivery_status ? `<span class="delivery-status ${msg.delivery_status}">${getDeliveryIcon(msg.delivery_status)}</span>` : '';
+
+        let reactionsHtml = '';
+        if (msg.reactions && Object.keys(msg.reactions).length > 0) {
+            reactionsHtml = '<div class="message-reactions">';
+            for (const [emoji, users] of Object.entries(msg.reactions)) {
+                reactionsHtml += `<span class="reaction" onclick="toggleReaction('${msg.id}', '${emoji}')">${emoji} ${users.length}</span>`;
+            }
+            reactionsHtml += '</div>';
+        }
+
+        const replyHtml = msg.reply_to ?
+            `<div class="reply-preview">
+            <small><strong>${msg.reply_to.sender}:</strong> ${msg.reply_to.content}</small>
+        </div>` : '';
+
+        return `
+        <div class="message ${isMine ? 'mine' : ''}" data-message-id="${msg.id}">
+            <div class="message-bubble">
+                ${replyHtml}
+                <div class="message-content">${msg.content}</div>
+                <div class="message-info">
+                    <span class="timestamp">${msg.timestamp}</span>
+                    ${deliveryStatus}
+                    ${msg.is_edited ? '<i class="fas fa-edit" title="Edited"></i>' : ''}
+                    ${msg.is_pinned ? '<i class="fas fa-thumbtack" title="Pinned"></i>' : ''}
+                    ${msg.is_starred ? '<i class="fas fa-star text-warning" title="Starred"></i>' : ''}
+                </div>
+                ${reactionsHtml}
+                <div class="message-actions">
+                    <button class="action-btn" onclick="addReaction('${msg.id}', '👍')" title="Like">
+                        <i class="fas fa-thumbs-up"></i>
+                    </button>
+                    <button class="action-btn" onclick="replyToMessage('${msg.id}')" title="Reply">
+                        <i class="fas fa-reply"></i>
+                    </button>
+                    <button class="action-btn" onclick="starMessage('${msg.id}')" title="Star">
+                        <i class="fas fa-star"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    }
+
+    function getDeliveryIcon(status) {
+        switch (status) {
+            case 'sent': return '✓';
+            case 'delivered': return '✓✓';
+            case 'read': return '✓✓';
+            default: return '';
+        }
+    }
+
+    function sendMessage() {
+        const input = $('#message-input');
+        const content = input.val().trim();
+
+        if (!content) return;
+
+        $.post(`/messages/api/send/${conversationId}/`, {
+            content: content
+        }, function (data) {
+            if (data.success) {
+                input.val('');
+                input.css('height', 'auto');
+                loadMessages(); // Reload to show new message
+            }
+        }).fail(function () {
+            alert('Failed to send message');
+        });
+    }
+
+    function sendTypingIndicator(typing) {
+        $.post(`/messages/api/status/typing/${conversationId}/`, {
+            is_typing: typing
+        });
+    }
+
+    function toggleReaction(messageId, emoji) {
+        $.post(`/messages/api/messages/${messageId}/react/`, {
+            emoji: emoji
+        }, function (data) {
+            if (data.success) {
+                loadMessages(); // Reload to show updated reactions
+            }
+        });
+    }
+
+    function togglePin(conversationId) {
+        $.post(`/messages/conversations/${conversationId}/pin/`, function (data) {
+            if (data.success) {
+                const icon = $('#pin-icon');
+                if (data.pinned) {
+                    icon.addClass('text-warning');
+                } else {
+                    icon.removeClass('text-warning');
+                }
+            }
+        });
+    }
+
+    function toggleMute(conversationId) {
+        $.post(`/messages/conversations/${conversationId}/mute/`, function (data) {
+            if (data.success) {
+                const icon = $('#mute-icon');
+                if (data.muted) {
+                    icon.addClass('text-warning');
+                } else {
+                    icon.removeClass('text-warning');
+                }
+            }
+        });
+    }
+
+    function toggleGroupInfo() {
+        $('#group-info-sidebar').toggle();
+    }
+
+    function showContextMenu(x, y) {
+        const menu = $('#message-context-menu');
+        menu.css({
+            display: 'block',
+            left: x + 'px',
+            top: y + 'px'
+        });
+    }
+
+    function getSelectedMessageId() {
+        return selectedMessageId; // Assuming selectedMessageId is a global variable set by context menu
+    }
+
+    function replyToMessage(messageId) {
+        // Reply to message logic
+        showNotification('Reply feature coming soon', 'info');
+    }
+
+    function forwardMessage() {
+        // Forward message logic
+        const selectedMessageId = getSelectedMessageId();
+        if (selectedMessageId) {
+            showNotification('Forward feature coming soon', 'info');
+        }
+    }
+
+    function starMessage(messageId) {
+        $.post(`/messages/api/messages/${messageId || selectedMessageId}/star/`, function (data) {
+            if (data.success) {
+                loadMessages();
+            }
+        });
+    }
+
+    function copyMessage() {
+        // Copy message to clipboard
+        const selectedMessageId = getSelectedMessageId();
+        if (selectedMessageId) {
+            navigator.clipboard.writeText('Message copied');
+            showNotification('Message copied to clipboard', 'success');
+        }
+    }
+
+    function deleteMessage() {
+        if (confirm('Delete this message?')) {
+            $.post(`/messages/api/messages/${selectedMessageId}/delete/`, {
+                delete_for_everyone: false
+            }, function (data) {
+                if (data.success) {
+                    loadMessages();
+                }
+            });
+        }
+    }
+
+    function scrollToBottom() {
+        const container = $('#messages-container');
+        container.scrollTop(container[0].scrollHeight);
+    }
+
+    function startPolling() {
+        // Poll for new messages every 3 seconds
+        setInterval(() => {
+            loadMessages();
+            checkTypingUsers();
+        }, 3000);
+    }
+
+    function checkTypingUsers() {
+        $.get(`/messages/api/conversations/${conversationId}/info/`, function (data) {
+            const typingUsers = data.typing_users || [];
+            const indicator = $('#typing-indicator');
+
+            if (typingUsers.length > 0) {
+                const names = typingUsers.join(', ');
+                indicator.text(`${names} ${typingUsers.length === 1 ? 'is' : 'are'} typing...`).show();
+            } else {
+                indicator.hide();
+            }
+        });
+    }
+
+    function updateConversationInfo(data) {
+        // Update member list if group
+        if (data.is_group) {
+            const membersList = $('#members-list');
+            membersList.empty();
+
+            data.members.forEach(member => {
+                const statusClass = member.is_online ? 'online' : 'offline';
+                const adminBadge = member.is_admin ? '<span class="admin-badge">Admin</span>' : '';
+
+                membersList.append(`
+                <div class="member-item">
+                    <div class="member-status ${statusClass}"></div>
+                    <span>${member.username}</span>
+                    ${adminBadge}
+                </div>
+            `);
+            });
+        }
+    }
+
+    // CSRF token setup
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", $('[name=csrfmiddlewaretoken]').val());
+            }
+        }
+    });
+</script>
+{% endblock %}

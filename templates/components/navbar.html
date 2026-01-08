@@ -1,0 +1,82 @@
+{% load static %}
+
+{% if not user.is_authenticated %}
+<!-- Guest Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top"
+    style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3); z-index: 1050; height: 65px; backdrop-filter: blur(10px);">
+    <div class="container-fluid px-4">
+        <button class="btn me-2" onclick="window.history.back()"
+            style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 8px 12px; transition: all 0.3s ease; {% if request.path == '/' or request.path == '/home/' %}display:none;{% endif %}"
+            title="Go Back">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center" href="/"
+            style="font-weight: 700; font-size: 1.5rem; text-decoration: none;">
+            <svg width="32" height="32" viewBox="0 0 512 512" fill="#fff" style="margin-right: 10px;">
+                <path
+                    d="M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6V377.4c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4V134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1v-188L288 246.6v188z" />
+            </svg>
+            MultiStock <span class="badge"
+                style="background: rgba(255,255,255,0.2); font-size: 0.5rem; padding: 4px 8px; margin-left: 8px;">Guest</span>
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a href="/marketplace/" class="btn btn-link text-white" style="text-decoration: none;">
+                <i class="fas fa-store me-1"></i>Marketplace
+            </a>
+            <a href="/guest/rentals/" class="btn btn-link text-white" style="text-decoration: none;">
+                <i class="fas fa-key me-1"></i>Rentals
+            </a>
+            <a href="/guest/storage/" class="btn btn-link text-white" style="text-decoration: none;">
+                <i class="fas fa-warehouse me-1"></i>Storage
+            </a>
+            <a href="/guest/lockers/" class="btn btn-link text-white" style="text-decoration: none;">
+                <i class="fas fa-box me-1"></i>Lockers
+            </a>
+            <a href="/forums/" class="btn btn-link text-white" style="text-decoration: none;">
+                <i class="fas fa-comments me-1"></i>Forums
+            </a>
+
+            <a href="/auth/login-selection/" class="btn"
+                style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; border-radius: 10px; padding: 8px 16px;">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+        </div>
+    </div>
+</nav>
+{% endif %}
+
+{% if user.is_authenticated %}
+<!-- Top Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top"
+    style="background: linear-gradient(135deg, #0014A8 0%, #000E75 100%); box-shadow: 0 4px 20px rgba(0, 20, 168, 0.3); z-index: 1050; height: 65px; backdrop-filter: blur(10px);">
+    <div class="container-fluid px-4">
+        <button class="btn me-2" onclick="window.history.back()"
+            style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 8px 12px; transition: all 0.3s ease; {% if request.path == '/dashboard/' or request.path == '/dashboard/staff/' or request.path == '/dashboard/customer/' %}display:none;{% endif %}"
+            title="Go Back">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="btn me-3" id="sidebarToggle"
+            style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 8px 12px; transition: all 0.3s ease;">
+            <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center" href="/dashboard/"
+            style="font-weight: 700; font-size: 1.5rem; text-decoration: none;">
+            <svg width="32" height="32" viewBox="0 0 512 512" fill="#fff" style="margin-right: 10px;">
+                <path
+                    d="M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6V377.4c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4V134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1v-188L288 246.6v188z" />
+            </svg>
+            MultiStock
+        </a>
+
+        {% include 'components/search.html' %}
+        
+        <button class="btn me-2" id="themeToggle" onclick="toggleTheme()"
+            style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 8px 12px;"
+            title="Toggle Theme">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        
+        {% include 'components/navbar_actions.html' %}
+    </div>
+</nav>
+{% endif %}

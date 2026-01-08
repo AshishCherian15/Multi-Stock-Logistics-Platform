@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reports & Analytics - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-chart-bar me-2"></i>Reports & Analytics</h2>
+            <p class="text-muted mb-0">View business reports and analytics</p>
+        </div>
+        <div>
+            <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Date Range</label>
+                    <select class="form-select" name="days" onchange="this.form.submit()">
+                        <option value="7" {% if days==7 %}selected{% endif %}>Last 7 Days</option>
+                        <option value="30" {% if days==30 %}selected{% endif %}>Last 30 Days</option>
+                        <option value="90" {% if days==90 %}selected{% endif %}>Last 90 Days</option>
+                        <option value="365" {% if days==365 %}selected{% endif %}>Last Year</option>
+                    </select>
+                </div>
+                <div class="col-md-9 text-end">
+                    <button type="button" class="btn btn-success" onclick="alert('Export feature coming soon!')">
+                        <i class="fas fa-file-excel me-2"></i>Export to Excel
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="alert('Export feature coming soon!')">
+                        <i class="fas fa-file-pdf me-2"></i>Export to PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sales Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-rupee-sign text-success mb-2" style="font-size: 2.5rem;"></i>
+                    <h3 class="mb-0">₹{{ total_sales|floatformat:0 }}</h3>
+                    <small class="text-muted">Total Sales</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart text-primary mb-2" style="font-size: 2.5rem;"></i>
+                    <h3 class="mb-0">{{ total_orders }}</h3>
+                    <small class="text-muted">Total Orders</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-calculator text-warning mb-2" style="font-size: 2.5rem;"></i>
+                    <h3 class="mb-0">₹{{ avg_order_value|floatformat:0 }}</h3>
+                    <small class="text-muted">Avg Order Value</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-users text-info mb-2" style="font-size: 2.5rem;"></i>
+                    <h3 class="mb-0">{{ new_customers }}</h3>
+                    <small class="text-muted">New Customers</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-star me-2"></i>Top Products</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Product Code</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in top_products %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><code>{{ product.goods_code }}</code></td>
+                            <td><strong>{{ product.goods_name }}</strong></td>
+                            <td>{{ product.goods_class|default:"-" }}</td>
+                            <td>₹{{ product.goods_price|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No products found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Stats -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Customer Statistics</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Total Customers:</span>
+                        <strong>{{ total_customers }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>New Customers ({{ days }} days):</span>
+                        <strong class="text-success">{{ new_customers }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Total Orders:</span>
+                        <strong>{{ total_orders }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Total Revenue:</span>
+                        <strong class="text-success">₹{{ total_sales|floatformat:0 }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

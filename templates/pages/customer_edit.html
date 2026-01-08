@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% block title %}Edit Customer - {{ customer.customer_name }}{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-edit me-2" style="color:#0014A8;"></i>
+            Edit Customer
+        </h2>
+        <div class="btn-group">
+            <a href="{% url 'pages:customer_detail' customer.id %}" class="btn btn-secondary">
+                <i class="fas fa-times me-2"></i>Cancel
+            </a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-edit me-2"></i>Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" id="customerEditForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Customer Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_name" class="form-label">
+                                    <i class="fas fa-user me-2 text-primary"></i>Customer Name
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="customer_name" 
+                                    name="customer_name" 
+                                    value="{{ customer.customer_name }}"
+                                    required
+                                    placeholder="Enter customer name">
+                            </div>
+
+                            <!-- Contact Number -->
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_contact" class="form-label">
+                                    <i class="fas fa-phone me-2 text-success"></i>Contact Number
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="customer_contact" 
+                                    name="customer_contact" 
+                                    value="{{ customer.customer_contact }}"
+                                    required
+                                    placeholder="Enter contact number">
+                            </div>
+
+                            <!-- City -->
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_city" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-2 text-danger"></i>City
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="customer_city" 
+                                    name="customer_city" 
+                                    value="{{ customer.customer_city }}"
+                                    required
+                                    placeholder="Enter city">
+                            </div>
+
+                            <!-- Account Manager -->
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_manager" class="form-label">
+                                    <i class="fas fa-user-tie me-2 text-info"></i>Account Manager
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="customer_manager" 
+                                    name="customer_manager" 
+                                    value="{{ customer.customer_manager }}"
+                                    required
+                                    placeholder="Enter account manager">
+                            </div>
+
+                            <!-- Address -->
+                            <div class="col-12 mb-3">
+                                <label for="customer_address" class="form-label">
+                                    <i class="fas fa-home me-2 text-primary"></i>Address
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <textarea 
+                                    class="form-control" 
+                                    id="customer_address" 
+                                    name="customer_address" 
+                                    rows="3"
+                                    required
+                                    placeholder="Enter full address">{{ customer.customer_address }}</textarea>
+                            </div>
+
+                            <!-- Customer Level -->
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_level" class="form-label">
+                                    <i class="fas fa-star me-2 text-warning"></i>Customer Level
+                                </label>
+                                <select class="form-select" id="customer_level" name="customer_level">
+                                    <option value="1" {% if customer.customer_level == 1 %}selected{% endif %}>Level 1 - Bronze</option>
+                                    <option value="2" {% if customer.customer_level == 2 %}selected{% endif %}>Level 2 - Silver</option>
+                                    <option value="3" {% if customer.customer_level == 3 %}selected{% endif %}>Level 3 - Gold</option>
+                                    <option value="4" {% if customer.customer_level == 4 %}selected{% endif %}>Level 4 - Platinum</option>
+                                    <option value="5" {% if customer.customer_level == 5 %}selected{% endif %}>Level 5 - Diamond</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{% url 'pages:customer_detail' customer.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Info Card -->
+            <div class="card shadow mt-4">
+                <div class="card-body">
+                    <h6 class="text-muted mb-3">
+                        <i class="fas fa-info-circle me-2"></i>Customer Information
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Customer ID:</strong> #{{ customer.id }}
+                            </p>
+                            <p class="mb-2">
+                                <strong>Created:</strong> {{ customer.create_time|date:"M d, Y h:i A" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Last Updated:</strong> {{ customer.update_time|date:"M d, Y h:i A" }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 12px;
+    }
+    
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #0014A8;
+        box-shadow: 0 0 0 0.2rem rgba(0, 20, 168, 0.25);
+    }
+    
+    .btn {
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+    
+    .alert {
+        border-radius: 8px;
+    }
+</style>
+
+<script>
+    // Form validation
+    document.getElementById('customerEditForm').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+    
+    // Remove invalid class on input
+    document.querySelectorAll('.form-control, .form-select').forEach(field => {
+        field.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    });
+</script>
+{% endblock %}

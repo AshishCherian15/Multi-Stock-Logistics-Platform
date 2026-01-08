@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Edit User{% endblock %}
+{% block content %}
+<style>
+.form-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:40px;box-shadow:0 4px 15px rgba(0,20,168,0.08)}
+.form-label{color:#0014A8;font-weight:600;margin-bottom:8px}
+.form-control{border:2px solid rgba(0,20,168,0.2);border-radius:8px;padding:12px;transition:all .3s}
+.form-control:focus{border-color:#0014A8;box-shadow:0 0 0 3px rgba(0,20,168,0.1)}
+.btn-submit{background:linear-gradient(135deg,#0014A8,#000E75);color:#fff;padding:12px 40px;border-radius:10px;font-weight:600;border:none}
+.btn-cancel{background:#fff;color:#0014A8;border:2px solid #0014A8;padding:12px 40px;border-radius:10px;font-weight:600}
+</style>
+
+<div class="container" style="padding:30px;max-width:800px">
+    <div class="mb-4">
+        <a href="{% url 'user_detail' user_obj.id %}" style="color:#0014A8;text-decoration:none"><i class="fas fa-arrow-left me-2"></i>Back</a>
+        <h2 style="color:#0014A8;font-weight:700;margin-top:15px"><i class="fas fa-user-edit me-2"></i>Edit User</h2>
+    </div>
+
+    <div class="form-card">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">First Name</label>
+                    <input type="text" name="first_name" class="form-control" value="{{ user_obj.first_name }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" name="last_name" class="form-control" value="{{ user_obj.last_name }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email *</label>
+                <input type="email" name="email" class="form-control" value="{{ user_obj.email }}" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Role *</label>
+                    <select name="role" class="form-control" required>
+                        <option value="staff" {% if user_obj.profile.role == 'staff' %}selected{% endif %}>Staff</option>
+                        <option value="manager" {% if user_obj.profile.role == 'manager' %}selected{% endif %}>Manager</option>
+                        <option value="admin" {% if user_obj.profile.role == 'admin' %}selected{% endif %}>Admin</option>
+                        <option value="superadmin" {% if user_obj.profile.role == 'superadmin' %}selected{% endif %}>SuperAdmin</option>
+                        <option value="customer" {% if user_obj.profile.role == 'customer' %}selected{% endif %}>Customer</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone</label>
+                    <input type="text" name="phone" class="form-control" value="{{ user_obj.profile.phone }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Department</label>
+                <input type="text" name="department" class="form-control" value="{{ user_obj.profile.department }}">
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" name="is_active" class="form-check-input" id="isActive" {% if user_obj.profile.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="isActive" style="color:#0014A8;font-weight:600">Active User</label>
+                </div>
+            </div>
+            <div class="d-flex gap-3 mt-4">
+                <button type="submit" class="btn btn-submit"><i class="fas fa-save me-2"></i>Save Changes</button>
+                <a href="{% url 'user_detail' user_obj.id %}" class="btn btn-cancel"><i class="fas fa-times me-2"></i>Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

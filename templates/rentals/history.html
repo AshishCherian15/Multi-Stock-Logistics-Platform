@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Rental History - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-history me-2"></i>Rental History</h2>
+        <a href="{% url 'rentals_list' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Rental
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Item</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Amount</th>
+                            <th>Penalty</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>#{{ booking.id }}</td>
+                            <td>
+                                <strong>{{ booking.item.name }}</strong><br>
+                                <small class="text-muted">{{ booking.item.category.name }}</small>
+                            </td>
+                            <td>{{ booking.start_date|date:"M d, Y H:i" }}</td>
+                            <td>{{ booking.end_date|date:"M d, Y H:i" }}</td>
+                            <td><strong>${{ booking.total_amount }}</strong></td>
+                            <td>
+                                {% if booking.penalty_amount > 0 %}
+                                <span class="text-danger">${{ booking.penalty_amount }}</span>
+                                {% else %}
+                                <span class="text-muted">$0.00</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if booking.status == 'completed' %}bg-success
+                                    {% elif booking.status == 'active' %}bg-primary
+                                    {% elif booking.status == 'overdue' %}bg-danger
+                                    {% elif booking.status == 'cancelled' %}bg-secondary
+                                    {% else %}bg-warning{% endif %}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'booking_summary' booking.id %}" class="btn btn-outline-primary" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'rental_agreement' booking.id %}" class="btn btn-outline-secondary" title="View Agreement">
+                                        <i class="fas fa-file-contract"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3 d-block"></i>
+                                <p class="text-muted">No rental history found.</p>
+                                <a href="{% url 'rentals_list' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Make Your First Rental
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    {% if bookings %}
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ bookings|length }}</h3>
+                    <p class="text-muted mb-0">Total Rentals</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">{{ bookings|length }}</h3>
+                    <p class="text-muted mb-0">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-warning">0</h3>
+                    <p class="text-muted mb-0">Active</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-danger">0</h3>
+                    <p class="text-muted mb-0">Overdue</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

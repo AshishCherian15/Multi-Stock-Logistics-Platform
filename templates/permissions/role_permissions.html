@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}{{ role|title }} Permissions{% endblock %}
+{% block content %}
+<style>
+.perm-checkbox{padding:15px;border:1px solid rgba(0,20,168,0.1);border-radius:8px;margin-bottom:10px;transition:all .3s;cursor:pointer}
+.perm-checkbox:hover{background:rgba(0,20,168,0.05)}
+.perm-checkbox input{margin-right:10px}
+.btn-save{background:linear-gradient(135deg,#0014A8,#000E75);color:#fff;padding:12px 40px;border-radius:10px;font-weight:600;border:none}
+</style>
+
+<div class="container-fluid" style="padding:30px">
+    <div class="mb-4">
+        <a href="{% url 'permission_list' %}" style="color:#0014A8;text-decoration:none"><i class="fas fa-arrow-left me-2"></i>Back</a>
+        <h2 style="color:#0014A8;font-weight:700;margin-top:15px"><i class="fas fa-user-shield me-2"></i>{{ role|title }} Permissions</h2>
+        <p style="color:#666">Manage permissions for {{ role }} role</p>
+    </div>
+
+    <div style="background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:30px">
+        <form method="post">
+            {% csrf_token %}
+            {% regroup all_permissions by module as module_list %}
+            {% for module_group in module_list %}
+            <h4 style="color:#0014A8;margin:30px 0 15px 0">{{ module_group.grouper|upper }}</h4>
+            {% for perm in module_group.list %}
+            <label class="perm-checkbox">
+                <input type="checkbox" name="permissions" value="{{ perm.id }}" {% if perm.id in granted_ids %}checked{% endif %}>
+                <strong>{{ perm.name }}</strong> - {{ perm.description }}
+            </label>
+            {% endfor %}
+            {% endfor %}
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-save"><i class="fas fa-save me-2"></i>Save Permissions</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

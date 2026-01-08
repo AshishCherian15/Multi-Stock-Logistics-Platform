@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %}Customer Details - {{ customer.customer_name }}{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-user me-2" style="color:#0014A8;"></i>
+            Customer Details
+        </h2>
+        <div class="btn-group">
+            <a href="{% url 'pages:customers' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+            <a href="{% url 'pages:customer_edit' customer.id %}" class="btn btn-primary">
+                <i class="fas fa-edit me-2"></i>Edit
+            </a>
+            <a href="{% url 'messaging:customer_chat' customer.id %}" class="btn btn-success">
+                <i class="fas fa-comment me-2"></i>Message
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Customer Information Card -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="avatar-large mx-auto mb-3" style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 48px; font-weight: bold;">
+                            {{ customer.customer_name|slice:":2"|upper }}
+                        </div>
+                    </div>
+                    <h3 class="mb-1">{{ customer.customer_name }}</h3>
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        Level {{ customer.customer_level }}
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'messaging:customer_chat' customer.id %}" class="btn btn-primary">
+                            <i class="fas fa-comment me-2"></i>Send Message
+                        </a>
+                        <a href="{% url 'pages:customer_edit' customer.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-edit me-2"></i>Edit Customer
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Card -->
+            <div class="card shadow mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-chart-line me-2"></i>Quick Stats
+                    </h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><i class="fas fa-shopping-cart me-2 text-primary"></i>Total Orders</span>
+                        <strong>{{ orders|length }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><i class="fas fa-calendar-alt me-2 text-success"></i>Member Since</span>
+                        <strong>{{ customer.create_time|date:"M Y" }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span><i class="fas fa-clock me-2 text-info"></i>Last Updated</span>
+                        <strong>{{ customer.update_time|date:"M d, Y" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details and Orders -->
+        <div class="col-lg-8">
+            <!-- Contact Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-address-card me-2"></i>Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Customer Name</label>
+                            <p class="mb-0"><strong>{{ customer.customer_name }}</strong></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Contact Number</label>
+                            <p class="mb-0">
+                                <i class="fas fa-phone me-2 text-success"></i>
+                                <strong>{{ customer.customer_contact }}</strong>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">City</label>
+                            <p class="mb-0">
+                                <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                                <strong>{{ customer.customer_city }}</strong>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Account Manager</label>
+                            <p class="mb-0">
+                                <i class="fas fa-user-tie me-2 text-info"></i>
+                                <strong>{{ customer.customer_manager }}</strong>
+                            </p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="text-muted small">Address</label>
+                            <p class="mb-0">
+                                <i class="fas fa-home me-2 text-primary"></i>
+                                <strong>{{ customer.customer_address }}</strong>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Customer Level</label>
+                            <p class="mb-0">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-star me-1"></i>Level {{ customer.customer_level }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-shopping-bag me-2"></i>Recent Orders</h5>
+                </div>
+                <div class="card-body">
+                    {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td><strong>#{{ order.id }}</strong></td>
+                                    <td>{{ order.create_time|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ order.order_status|default:"Processing" }}</span>
+                                    </td>
+                                    <td><strong>${{ order.order_amount|default:"0.00" }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                        <p class="mb-0">No orders yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 12px;
+        transition: transform 0.2s;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+    }
+    
+    .avatar-large {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #666;
+    }
+</style>
+{% endblock %}

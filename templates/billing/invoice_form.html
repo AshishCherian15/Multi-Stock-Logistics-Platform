@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+{% block title %}Create Invoice{% endblock %}
+{% block content %}
+<style>
+    :root {
+        --zaffre: #0014A8
+    }
+
+    .form-card {
+        background: #fff;
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 20, 168, 0.12);
+        padding: 2rem
+    }
+
+    .form-section {
+        background: linear-gradient(135deg, rgba(0, 20, 168, 0.03), rgba(0, 20, 168, 0.08));
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--zaffre)
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem
+    }
+
+    .form-control,
+    .form-select {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 0.75rem;
+        transition: all 0.3s
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--zaffre);
+        box-shadow: 0 0 0 0.2rem rgba(0, 20, 168, 0.15)
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--zaffre), #000E75);
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: 600
+    }
+
+    .btn-outline-primary {
+        border: 2px solid var(--zaffre);
+        color: var(--zaffre);
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: 600
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--zaffre);
+        color: #fff
+    }
+
+    .item-row {
+        background: #fff;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s
+    }
+
+    .item-row:hover {
+        border-color: var(--zaffre);
+        box-shadow: 0 2px 8px rgba(0, 20, 168, 0.1)
+    }
+
+    .btn-add-item {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.5rem;
+        color: #fff;
+        font-weight: 600
+    }
+
+    .btn-remove-item {
+        background: #dc3545;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        color: #fff
+    }
+
+    .summary-box {
+        background: linear-gradient(135deg, var(--zaffre), #000E75);
+        color: #fff;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 20, 168, 0.3)
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+        font-size: 1.3rem;
+        font-weight: 700;
+        padding-top: 1rem
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-file-invoice me-2" style="color:var(--zaffre)"></i>Create Invoice</h2>
+                    <a href="{% url 'billing:invoice_list' %}" class="btn btn-outline-primary"><i
+                            class="fas fa-arrow-left me-1"></i>Back</a>
+                </div>
+
+                <form method="post" id="invoiceForm">
+                    {% csrf_token %}
+
+                    <!-- Customer Information -->
+                    <div class="form-section">
+                        <h5 class="mb-3"><i class="fas fa-user me-2" style="color:var(--zaffre)"></i>Customer
+                            Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Customer Name *</label>
+                                <input type="text" name="customer_name" class="form-control" required
+                                    placeholder="Enter customer name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email *</label>
+                                <input type="email" name="customer_email" class="form-control" required
+                                    placeholder="customer@example.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone *</label>
+                                <input type="text" name="customer_phone" class="form-control" required
+                                    placeholder="+91 XXXXX XXXXX">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Invoice Type *</label>
+                                <select name="invoice_type" class="form-select" required>
+                                    <option value="">Select Type</option>
+                                    {% for value, label in invoice_types %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address *</label>
+                                <textarea name="customer_address" class="form-control" rows="2" required
+                                    placeholder="Enter complete address"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Details -->
+                    <div class="form-section">
+                        <h5 class="mb-3"><i class="fas fa-calendar-alt me-2" style="color:var(--zaffre)"></i>Invoice
+                            Details</h5>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Due Date *</label>
+                                <input type="date" name="due_date" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Items -->
+                    <div class="form-section">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0"><i class="fas fa-list me-2" style="color:var(--zaffre)"></i>Invoice Items
+                            </h5>
+                            <button type="button" class="btn btn-add-item" onclick="addItem()"><i
+                                    class="fas fa-plus me-1"></i>Add Item</button>
+                        </div>
+                        <div id="itemsContainer">
+                            <div class="item-row">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-5">
+                                        <label class="form-label">Description *</label>
+                                        <input type="text" name="item_description[]" class="form-control" required
+                                            placeholder="Item description">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Quantity *</label>
+                                        <input type="number" name="item_quantity[]" class="form-control item-qty"
+                                            min="1" value="1" required onchange="calculateItem(this)">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Price (₹) *</label>
+                                        <input type="number" name="item_price[]" class="form-control item-price" min="0"
+                                            step="0.01" required onchange="calculateItem(this)" placeholder="0.00">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Amount (₹)</label>
+                                        <input type="text" class="form-control item-amount" readonly value="0.00"
+                                            style="background:#f8f9fa;font-weight:600">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="btn btn-remove-item w-100"
+                                            onclick="removeItem(this)" style="visibility:hidden"><i
+                                                class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calculations -->
+                    <div class="row">
+                        <div class="col-md-7">
+                            <!-- Payment Details -->
+                            <div class="form-section">
+                                <h5 class="mb-3"><i class="fas fa-credit-card me-2"
+                                        style="color:var(--zaffre)"></i>Payment Details (Optional)</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Payment Method</label>
+                                        <select name="payment_method" class="form-select">
+                                            <option value="">Select Method</option>
+                                            <option value="bank_transfer">Bank Transfer</option>
+                                            <option value="cash">Cash</option>
+                                            <option value="card">Card</option>
+                                            <option value="upi">UPI</option>
+                                            <option value="cheque">Cheque</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Account Number</label>
+                                        <input type="text" name="account_number" class="form-control"
+                                            placeholder="Account number">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Terms & Notes -->
+                            <div class="form-section">
+                                <h5 class="mb-3"><i class="fas fa-file-alt me-2" style="color:var(--zaffre)"></i>Terms &
+                                    Notes</h5>
+                                <div class="mb-3">
+                                    <label class="form-label">Terms & Conditions</label>
+                                    <textarea name="terms_conditions" class="form-control" rows="2"
+                                        placeholder="Payment terms, return policy, etc."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="summary-box">
+                                <h5 class="mb-3"><i class="fas fa-calculator me-2"></i>Summary</h5>
+                                <div class="summary-row">
+                                    <span>Subtotal:</span>
+                                    <span>₹<span id="subtotalDisplay">0.00</span></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" style="color:#fff;margin-top:1rem">Tax Rate (%)</label>
+                                    <input type="number" name="tax_rate" id="taxRate" class="form-control" min="0"
+                                        max="100" step="0.01" value="0" onchange="calculateTotals()" placeholder="0">
+                                </div>
+                                <div class="summary-row">
+                                    <span>Tax Amount:</span>
+                                    <span>₹<span id="taxDisplay">0.00</span></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" style="color:#fff;margin-top:1rem">Discount (₹)</label>
+                                    <input type="number" name="discount_amount" id="discountAmount" class="form-control"
+                                        min="0" step="0.01" value="0" onchange="calculateTotals()" placeholder="0.00">
+                                </div>
+                                <div class="summary-row">
+                                    <span>Discount:</span>
+                                    <span>-₹<span id="discountDisplay">0.00</span></span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Grand Total:</span>
+                                    <span>₹<span id="grandTotalDisplay">0.00</span></span>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <button type="submit" class="btn btn-primary btn-lg"><i
+                                        class="fas fa-save me-2"></i>Create Invoice</button>
+                                <a href="{% url 'billing:invoice_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let itemCount = 1;
+
+    function addItem() {
+        itemCount++;
+        const container = document.getElementById('itemsContainer');
+        const newItem = document.createElement('div');
+        newItem.className = 'item-row';
+        newItem.innerHTML = `
+        <div class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label">Description *</label>
+                <input type="text" name="item_description[]" class="form-control" required placeholder="Item description">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Quantity *</label>
+                <input type="number" name="item_quantity[]" class="form-control item-qty" min="1" value="1" required onchange="calculateItem(this)">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Price (₹) *</label>
+                <input type="number" name="item_price[]" class="form-control item-price" min="0" step="0.01" required onchange="calculateItem(this)" placeholder="0.00">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Amount (₹)</label>
+                <input type="text" class="form-control item-amount" readonly value="0.00" style="background:#f8f9fa;font-weight:600">
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-remove-item w-100" onclick="removeItem(this)"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    `;
+        container.appendChild(newItem);
+        updateRemoveButtons();
+    }
+
+    function removeItem(btn) {
+        btn.closest('.item-row').remove();
+        itemCount--;
+        updateRemoveButtons();
+        calculateTotals();
+    }
+
+    function updateRemoveButtons() {
+        const items = document.querySelectorAll('.item-row');
+        items.forEach((item, index) => {
+            const removeBtn = item.querySelector('.btn-remove-item');
+            if (items.length === 1) {
+                removeBtn.style.visibility = 'hidden';
+            } else {
+                removeBtn.style.visibility = 'visible';
+            }
+        });
+    }
+
+    function calculateItem(input) {
+        const row = input.closest('.item-row');
+        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+        const price = parseFloat(row.querySelector('.item-price').value) || 0;
+        const amount = qty * price;
+        row.querySelector('.item-amount').value = amount.toFixed(2);
+        calculateTotals();
+    }
+
+    function calculateTotals() {
+        let subtotal = 0;
+        document.querySelectorAll('.item-amount').forEach(input => {
+            subtotal += parseFloat(input.value) || 0;
+        });
+
+        const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+        const discount = parseFloat(document.getElementById('discountAmount').value) || 0;
+
+        const taxAmount = (subtotal * taxRate) / 100;
+        const grandTotal = subtotal + taxAmount - discount;
+
+        document.getElementById('subtotalDisplay').textContent = subtotal.toFixed(2);
+        document.getElementById('taxDisplay').textContent = taxAmount.toFixed(2);
+        document.getElementById('discountDisplay').textContent = discount.toFixed(2);
+        document.getElementById('grandTotalDisplay').textContent = grandTotal.toFixed(2);
+    }
+
+    // Auto-fill form defaults
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set default due date to 30 days from now
+        const dueDateInput = document.querySelector('input[name="due_date"]');
+        const today = new Date();
+        today.setDate(today.getDate() + 30);
+        dueDateInput.value = today.toISOString().split('T')[0];
+        dueDateInput.min = new Date().toISOString().split('T')[0];
+
+        // Auto-fill tax rate with 18% (GST)
+        const taxRateInput = document.getElementById('taxRate');
+        if (taxRateInput.value === '0') {
+            taxRateInput.value = '18';
+            calculateTotals();
+        }
+
+        // Invoice form initialized with default values
+    });
+
+    // Quick fill customer details (for demo)
+    function quickFillCustomer(type) {
+        if (type === 'sample') {
+            document.querySelector('input[name="customer_name"]').value = 'Sample Customer';
+            document.querySelector('input[name="customer_email"]').value = 'customer@example.com';
+            document.querySelector('input[name="customer_phone"]').value = '+91 98765 43210';
+            document.querySelector('textarea[name="customer_address"]').value = 'Mumbai, Maharashtra, India';
+        }
+    }
+</script>
+{% endblock %}

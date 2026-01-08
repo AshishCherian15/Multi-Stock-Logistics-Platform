@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% block title %}My Locker Bookings - MultiStock{% endblock %}
+{% block content %}
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-calendar-check me-2"></i>My Locker Bookings</h2>
+            <p class="text-muted mb-0">View and manage your locker reservations</p>
+        </div>
+        <a href="/lockers/" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Book New Locker
+        </a>
+    </div>
+
+    {% if bookings %}
+    <!-- Bookings Summary -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase">Total Bookings</h6>
+                    <h2>{{ bookings|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase">Active</h6>
+                    <h2>{{ active_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase">Pending</h6>
+                    <h2>{{ pending_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase">Completed</h6>
+                    <h2>{{ completed_count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookings List -->
+    <div class="card shadow">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Booking History</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Booking #</th>
+                            <th>Locker</th>
+                            <th>Location</th>
+                            <th>Duration</th>
+                            <th>Dates</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Access Code</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>
+                                <strong>{{ booking.booking_number }}</strong>
+                                <br>
+                                <small class="text-muted">{{ booking.created_at|date:"M d, Y" }}</small>
+                            </td>
+                            <td>
+                                <i class="fas fa-lock me-1"></i>
+                                <strong>{{ booking.locker.locker_number }}</strong>
+                                <br>
+                                <small class="text-muted">{{ booking.locker.locker_type.name }}</small>
+                            </td>
+                            <td>
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                {{ booking.locker.location }}
+                            </td>
+                            <td>
+                                {{ booking.duration_count }} {{ booking.get_duration_type_display }}
+                            </td>
+                            <td>
+                                <small>
+                                    <strong>Start:</strong> {{ booking.start_date|date:"M d, Y H:i" }}<br>
+                                    <strong>End:</strong> {{ booking.end_date|date:"M d, Y H:i" }}
+                                </small>
+                            </td>
+                            <td>
+                                <strong>₹{{ booking.total_amount|floatformat:2 }}</strong>
+                                <br>
+                                {% if booking.paid %}
+                                <span class="badge bg-success text-white small">Paid</span>
+                                {% else %}
+                                <span class="badge bg-danger text-white small">Unpaid</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span
+                                    class="badge bg-{% if booking.status == 'active' %}success{% elif booking.status == 'pending' %}warning{% elif booking.status == 'completed' %}secondary{% elif booking.status == 'cancelled' %}danger{% else %}info{% endif %}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if booking.status == 'active' %}
+                                <div class="access-code-box">
+                                    <code
+                                        class="bg-dark text-warning p-2 rounded d-inline-block">{{ booking.access_code }}</code>
+                                    <button class="btn btn-sm btn-outline-secondary ms-1"
+                                        onclick="copyCode('{{ booking.access_code }}')" title="Copy code">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="/lockers/{{ booking.locker.id }}/" class="btn btn-outline-primary"
+                                        title="View Locker">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if booking.status == 'active' and not booking.paid %}
+                                    <button class="btn btn-outline-success" onclick="makePayment({{ booking.id }})"
+                                        title="Make Payment">
+                                        <i class="fas fa-credit-card"></i>
+                                    </button>
+                                    {% endif %}
+                                    {% if booking.status == 'pending' %}
+                                    <button class="btn btn-outline-danger" onclick="cancelBooking({{ booking.id }})"
+                                        title="Cancel">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% if booking.items_description %}
+                        <tr class="bg-light">
+                            <td colspan="9" class="py-2">
+                                <small>
+                                    <i class="fas fa-box text-muted me-1"></i>
+                                    <strong>Items:</strong> {{ booking.items_description }}
+                                </small>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-inbox fa-5x text-muted"></i>
+        </div>
+        <h4 class="text-muted mb-3">No Bookings Yet</h4>
+        <p class="text-muted mb-4">You haven't booked any lockers yet. Start by browsing available lockers.</p>
+        <a href="/lockers/" class="btn btn-primary btn-lg">
+            <i class="fas fa-search me-2"></i>Browse Available Lockers
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Copy Notification Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="copyToast" class="toast hide" role="alert">
+        <div class="toast-header">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            Access code copied to clipboard!
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyCode(code) {
+        navigator.clipboard.writeText(code).then(function () {
+            // Show toast notification
+            const toast = new bootstrap.Toast(document.getElementById('copyToast'));
+            toast.show();
+        }).catch(function (err) {
+            alert('Failed to copy: ' + err);
+        });
+    }
+
+    function makePayment(bookingId) {
+        if (confirm('Proceed to payment?')) {
+            window.location.href = `/payments/booking/${bookingId}/`;
+        }
+    }
+
+    function cancelBooking(bookingId) {
+        if (confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+            fetch(`/lockers/api/booking/${bookingId}/cancel/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Booking cancelled successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to cancel booking: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(err => {
+                    alert('Error cancelling booking');
+                });
+        }
+    }
+
+    function getCookie(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return '';
+    }
+</script>
+
+<style>
+    .table th {
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #666;
+    }
+
+    .access-code-box code {
+        font-size: 1rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .card {
+        border-radius: 8px;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 20, 168, 0.05);
+    }
+</style>
+
+{% endblock %}

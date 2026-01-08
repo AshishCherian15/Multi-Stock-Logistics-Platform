@@ -1,0 +1,39 @@
+<!-- Quick Actions Component -->
+<div class="quick-actions-bar" style="position:fixed;bottom:20px;right:20px;z-index:1000;">
+    <div class="btn-group-vertical" role="group">
+        {% if user.is_superuser or user.is_staff %}
+        <button type="button" class="btn btn-primary btn-lg mb-2" onclick="window.location.href='/products/'" title="Add Product">
+            <i class="fas fa-plus-circle"></i>
+        </button>
+        <button type="button" class="btn btn-success btn-lg mb-2" onclick="window.location.href='/orders/sales/'" title="New Order">
+            <i class="fas fa-shopping-cart"></i>
+        </button>
+        <button type="button" class="btn btn-info btn-lg mb-2" onclick="window.location.href='/customers/'" title="Add Customer">
+            <i class="fas fa-user-plus"></i>
+        </button>
+        <button type="button" class="btn btn-warning btn-lg" onclick="scrollToTop()" title="Scroll to Top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.quick-actions-bar .btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s;
+}
+.quick-actions-bar .btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+</style>
+
+<script>
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>

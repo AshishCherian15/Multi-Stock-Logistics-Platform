@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Track Shipment - MultiStock{% endblock %}
+{% block content %}
+<style>
+.timeline{position:relative;padding:20px 0}
+.timeline-item{position:relative;padding-left:40px;padding-bottom:30px}
+.timeline-item:before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:#e9ecef}
+.timeline-item:last-child:before{display:none}
+.timeline-dot{position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:#0014A8;border:3px solid #fff;box-shadow:0 0 0 3px #e9ecef}
+.timeline-dot.active{background:#28a745;box-shadow:0 0 0 3px #d4edda}
+</style>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm" style="border:none;border-radius:15px">
+                <div class="card-header" style="background:linear-gradient(135deg,#0014A8,#000E75);color:#fff;border-radius:15px 15px 0 0">
+                    <h4 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Track Shipment</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="mb-3">Shipment Details</h5>
+                            <p class="mb-2"><strong>Shipment #:</strong> {{ shipment.shipment_number }}</p>
+                            <p class="mb-2"><strong>Tracking #:</strong> {{ shipment.tracking_number }}</p>
+                            <p class="mb-2"><strong>Carrier:</strong> {{ shipment.carrier.name }}</p>
+                            <p class="mb-2"><strong>Service:</strong> {{ shipment.service_type }}</p>
+                            <p class="mb-0"><strong>Status:</strong> <span class="badge bg-primary">{{ shipment.get_status_display }}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="mb-3">Delivery Information</h5>
+                            <p class="mb-2"><strong>Recipient:</strong> {{ shipment.recipient_name }}</p>
+                            <p class="mb-2"><strong>Address:</strong> {{ shipment.recipient_address }}</p>
+                            <p class="mb-2"><strong>City:</strong> {{ shipment.recipient_city }}</p>
+                            <p class="mb-2"><strong>Phone:</strong> {{ shipment.recipient_phone }}</p>
+                            <p class="mb-0"><strong>Est. Delivery:</strong> {{ shipment.estimated_delivery|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h5 class="mb-4">Tracking History</h5>
+                    <div class="timeline">
+                        {% for event in events %}
+                        <div class="timeline-item">
+                            <div class="timeline-dot {% if forloop.first %}active{% endif %}"></div>
+                            <div>
+                                <h6 class="mb-1">{{ event.status }}</h6>
+                                <p class="mb-1 text-muted small">{{ event.location }}</p>
+                                <p class="mb-1">{{ event.description }}</p>
+                                <small class="text-muted"><i class="fas fa-clock me-1"></i>{{ event.event_time|date:"M d, Y H:i" }}</small>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>No tracking events yet
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/shipping/" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Shipments</a>
+                        <button onclick="window.print()" class="btn btn-outline-primary"><i class="fas fa-print me-2"></i>Print</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

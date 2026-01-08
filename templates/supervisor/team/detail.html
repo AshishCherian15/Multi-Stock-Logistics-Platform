@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Team Member - {{ member.username }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-user me-2"></i>Team Member Details</h2>
+            <p class="text-muted mb-0">{{ member.username }}</p>
+        </div>
+        <div>
+            <a href="{% url 'supervisor_panel:team' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Team
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Member Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="avatar-circle bg-primary text-white mx-auto"
+                            style="width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                            {{ member.username.0|upper }}
+                        </div>
+                    </div>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Username:</th>
+                            <td><strong>{{ member.username }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ member.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Full Name:</th>
+                            <td>{{ member.get_full_name|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Role:</th>
+                            <td><span class="badge bg-info">Staff</span></td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                <span class="badge bg-{% if member.is_active %}success{% else %}danger{% endif %}">
+                                    {{ member.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Joined:</th>
+                            <td>{{ member.date_joined|date:"M d, Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Last Login:</th>
+                            <td>{{ member.last_login|date:"M d, Y H:i"|default:"Never" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td>#{{ order.order_number }}</td>
+                                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                    <td>₹{{ order.grand_total }}</td>
+                                    <td>
+                                        <span
+                                            class="badge bg-{% if order.status == 'completed' %}success{% elif order.status == 'pending' %}warning{% else %}info{% endif %}">
+                                            {{ order.status|title }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No recent activity</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

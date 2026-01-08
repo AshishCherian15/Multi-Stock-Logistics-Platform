@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Customer Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <h2 class="mb-4"><i class="fas fa-user me-2"></i>My Profile</h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <h5 class="mb-3"><i class="fas fa-camera me-2"></i>Profile Picture</h5>
+                    {% if profile.avatar %}
+                    <img id="avatar-preview" src="{{ profile.avatar.url }}" class="rounded-circle mb-3"
+                        style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                    <img id="avatar-preview" src="{% static 'images/logo.svg' %}" class="rounded-circle mb-3"
+                        style="width: 150px; height: 150px; object-fit: cover;">
+                    {% endif %}
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="update_avatar" value="1">
+                        <input type="file" name="avatar" id="avatarInput" class="form-control mb-2" accept="image/*"
+                            onchange="previewAvatar(this)">
+                        <button type="submit" id="upload-btn" class="btn btn-primary" style="display: none;">Upload
+                            Avatar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Personal Information</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}"
+                                    required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}"
+                                    required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" name="phone"
+                                    value="{{ profile.phone|default:'' }}">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" name="address"
+                                    rows="3">{{ profile.address|default:'' }}</textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save me-2"></i>Update
+                            Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="fas fa-lock me-2"></i>Change Password</h5>
+                    <form id="passwordForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" name="old_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" name="new_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" name="confirm_password" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning"><i class="fas fa-key me-2"></i>Change
+                            Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Avatar preview
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('avatar-preview').src = e.target.result;
+                document.getElementById('upload-btn').style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Handle avatar form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const avatarForm = document.querySelector('form[enctype="multipart/form-data"]');
+        if (avatarForm) {
+            avatarForm.addEventListener('submit', function(e) {
+                // The form will be submitted and page will reload
+                // After reload, the browser cache will be cleared for the image
+            });
+        }
+    });
+
+    // Password change handler
+    document.getElementById('passwordForm')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = {
+            old_password: formData.get('old_password'),
+            new_password: formData.get('new_password'),
+            confirm_password: formData.get('confirm_password')
+        };
+
+        fetch('{% url "customers:change_password" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✓ ' + data.message);
+                    this.reset();
+                } else {
+                    alert('✗ Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('✗ Failed to change password. Please try again.');
+            });
+    });
+</script>
+{% endblock %}

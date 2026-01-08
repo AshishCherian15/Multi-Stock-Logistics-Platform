@@ -1,0 +1,592 @@
+{% extends 'base.html' %}
+{% block title %}Inventory Management{% endblock %}
+{% block content %}
+<style>
+.stat-card{border-radius:12px;border:none;box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:transform .3s}
+.stat-card:hover{transform:translateY(-3px)}
+.alert-badge{padding:5px 10px;border-radius:8px;font-size:12px;font-weight:600}
+/* Remove modal backdrop fade effect */
+.modal-backdrop{opacity:0 !important;display:none !important}
+body.modal-open{overflow:auto !important;padding-right:0 !important}
+/* Embedded Panel Styles */
+.embedded-panel{display:none;background:#fff;border:2px solid #0014A8;border-radius:8px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,20,168,0.2);animation:slideDown 0.3s ease-out}
+.embedded-panel.active{display:block}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.panel-header{background:linear-gradient(135deg,#0014A8 0%,#000E75 100%);color:#fff;padding:15px 20px;border-radius:6px 6px 0 0;display:flex;justify-content:space-between;align-items:center}
+.panel-header h5{margin:0;font-weight:600}
+.panel-body{padding:25px;max-height:70vh;overflow-y:auto}
+.panel-footer{padding:15px 20px;border-top:1px solid #dee2e6;background:#f8f9fa;border-radius:0 0 6px 6px;display:flex;justify-content:flex-end;gap:10px}
+.close-panel-btn{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:4px;padding:5px 12px;cursor:pointer;transition:all 0.2s}
+.close-panel-btn:hover{background:rgba(255,255,255,0.3);transform:scale(1.05)}
+.multistock-badge{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;display:inline-block;margin-left:5px}
+</style>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 style="color:#0014A8;font-weight:700"><i class="fas fa-boxes me-2"></i>Inventory Management</h2>
+            <p class="text-muted">Real-time stock levels, movements, and alerts across all warehouses</p>
+        </div>
+        <div>
+            <button class="btn btn-success me-2" onclick="togglePanel('addStockPanel')"><i class="fas fa-plus me-1"></i>Add Stock</button>
+            <button class="btn btn-outline-primary" onclick="togglePanel('bulkUploadPanel')"><i class="fas fa-upload me-1"></i>Bulk Upload</button>
+        </div>
+    </div>
+
+    <!-- Add Stock Panel (Embedded below AppBar) -->
+    <div id="addStockPanel" class="embedded-panel">
+        <div class="panel-header">
+            <h5><i class="fas fa-plus-circle me-2"></i><span id="stockPanelTitle">Add New Stock</span></h5>
+            <button class="close-panel-btn" onclick="closePanel('addStockPanel')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="panel-body">
+            <form id="stockForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" id="stockId" name="stock_id">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Product Code *</label>
+                        <input type="text" class="form-control" id="goodsCode" name="goods_code" required placeholder="Enter product code">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Description *</label>
+                        <input type="text" class="form-control" id="goodsDesc" name="goods_desc" required placeholder="Enter description">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">On Hand Stock</label>
+                        <input type="number" class="form-control" id="onhandStock" name="onhand_stock" value="0" min="0">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">Available Stock</label>
+                        <input type="number" class="form-control" id="canOrderStock" name="can_order_stock" value="0" min="0">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">Ordered Stock</label>
+                        <input type="number" class="form-control" id="orderedStock" name="ordered_stock" value="0" min="0">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">Damage Stock</label>
+                        <input type="number" class="form-control" id="damageStock" name="damage_stock" value="0" min="0">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Supplier</label>
+                        <input type="text" class="form-control" id="supplier" name="supplier" placeholder="Supplier name">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Product Image</label>
+                        <input type="file" class="form-control" id="goodsImage" name="goods_image" accept="image/*" onchange="previewImage(event)">
+                    </div>
+                    <div class="col-md-12 mb-3" id="imagePreview" style="display:none">
+                        <img id="previewImg" src="" style="max-width:200px;border-radius:8px;border:2px solid #0014A8">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="btn btn-secondary" onclick="closePanel('addStockPanel')">
+                <i class="fas fa-times me-1"></i>Cancel
+            </button>
+            <button type="button" class="btn btn-success" onclick="saveStock()">
+                <i class="fas fa-check me-1"></i>Save Stock
+            </button>
+        </div>
+    </div>
+
+    <!-- Bulk Upload Panel (Embedded below AppBar) -->
+    <div id="bulkUploadPanel" class="embedded-panel">
+        <div class="panel-header">
+            <h5><i class="fas fa-file-upload me-2"></i>Bulk Upload Stock Data</h5>
+            <button class="close-panel-btn" onclick="closePanel('bulkUploadPanel')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="panel-body">
+            <div class="alert alert-info mb-3">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>CSV/Excel Format:</strong> goods_code, goods_desc, onhand_stock, can_order_stock, supplier
+            </div>
+            <form id="bulkUploadForm">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Choose File</label>
+                    <input type="file" class="form-control" id="bulkFile" accept=".csv,.xlsx,.xls">
+                </div>
+                <div id="uploadResult" class="mt-3"></div>
+                <div id="uploadPreview" class="mt-3"></div>
+            </form>
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="btn btn-secondary" onclick="closePanel('bulkUploadPanel')">
+                <i class="fas fa-times me-1"></i>Cancel
+            </button>
+            <button type="button" class="btn btn-primary" onclick="uploadBulk()">
+                <i class="fas fa-upload me-1"></i>Upload & Import
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card text-white" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+                <div class="card-body text-center">
+                    <i class="fas fa-box fa-2x mb-2"></i>
+                    <h3>{{ total_products }}</h3>
+                    <small>Total Products</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card text-white" style="background:linear-gradient(135deg,#f093fb,#f5576c)">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                    <h3>{{ low_stock_count }}</h3>
+                    <small>Low Stock</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card text-white" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">
+                <div class="card-body text-center">
+                    <i class="fas fa-times-circle fa-2x mb-2"></i>
+                    <h3>{{ out_of_stock_count }}</h3>
+                    <small>Out of Stock</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card text-white" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">
+                <div class="card-body text-center">
+                    <i class="fas fa-rupee-sign fa-2x mb-2"></i>
+                    <h3>₹{{ total_value|floatformat:0 }}</h3>
+                    <small>Total Value</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    {% if alerts %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5><i class="fas fa-bell me-2"></i>Active Alerts ({{ active_alerts }})</h5>
+                </div>
+                <div class="card-body">
+                    {% for alert in alerts|slice:":5" %}
+                    <div class="alert alert-{{ alert.alert_level }} d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ alert.stock.goods_code }}</strong> - {{ alert.message }}
+                            <br><small class="text-muted">{{ alert.created_at|timesince }} ago</small>
+                        </div>
+                        <a href="/stock/" class="btn btn-sm btn-outline-primary">View</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Stock Levels & Movements -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-cubes me-2"></i>Stock Levels</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Code</th>
+                                    <th>Description</th>
+                                    <th>On Hand</th>
+                                    <th>Available</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stock in stocks %}
+                                <tr>
+                                    <td>
+                                        {% if stock.goods_image %}
+                                        <img src="{{ stock.goods_image.url }}" style="width:50px;height:50px;border-radius:8px;object-fit:cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                        <div style="width:50px;height:50px;background:#0014A8;border-radius:8px;display:none;align-items:center;justify-content:center;color:#fff;font-weight:700">{{ stock.goods_code|slice:":2"|upper }}</div>
+                                        {% else %}
+                                        <div style="width:50px;height:50px;background:#0014A8;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">{{ stock.goods_code|slice:":2"|upper }}</div>
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>{{ stock.goods_code }}</strong></td>
+                                    <td>
+                                        {{ stock.goods_desc|truncatewords:5 }}
+                                        {% if stock.goods_supplier == "Multistock" %}
+                                        <span class="multistock-badge"><i class="fas fa-globe" style="font-size:8px"></i> Multistock</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><span class="editable" data-id="{{ stock.id }}" data-field="onhand" onclick="editQty(this)">{{ stock.onhand_stock|default:0 }}</span></td>
+                                    <td><span class="editable" data-id="{{ stock.id }}" data-field="available" onclick="editQty(this)">{{ stock.can_order_stock|default:0 }}</span></td>
+                                    <td>
+                                        {% if stock.can_order_stock == 0 %}
+                                        <span class="badge bg-danger">Out of Stock</span>
+                                        {% elif stock.can_order_stock <= 10 %}
+                                        <span class="badge bg-warning">Low Stock</span>
+                                        {% else %}
+                                        <span class="badge bg-success">In Stock</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="editStock({{ stock.id }})" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-outline-danger" onclick="deleteStock({{ stock.id }})" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="fas fa-box-open fa-3x mb-3 d-block"></i>
+                                        No stock data available.
+                                        <button class="btn btn-primary btn-sm mt-2" onclick="openAddStockModal()">Add First Stock</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-exchange-alt me-2"></i>Recent Movements</h5>
+                </div>
+                <div class="card-body">
+                    {% for movement in recent_movements %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ movement.stock.goods_code|default:movement.product.goods_code|default:"N/A" }}</strong>
+                            <span class="badge bg-primary">{{ movement.movement_type|default:movement.transaction_type|upper }}</span>
+                        </div>
+                        <small class="text-muted">Qty: {{ movement.quantity }} • {{ movement.created_at|timesince }} ago</small>
+                        <br><small class="text-muted">{{ movement.reason|default:movement.notes|default:"No notes" }}</small>
+                    </div>
+                    {% empty %}
+                    <p class="text-center text-muted">No recent movements</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Stock Modal -->
+<div class="modal fade" id="stockModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:linear-gradient(135deg,#0014A8,#000E75);color:#fff">
+                <h5 class="modal-title" id="stockModalTitle"><i class="fas fa-plus me-2"></i>Add Stock</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="stockForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="stockId" name="stock_id">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Product Code *</label>
+                            <input type="text" class="form-control" id="goodsCode" name="goods_code" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Description *</label>
+                            <input type="text" class="form-control" id="goodsDesc" name="goods_desc" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">On Hand Quantity *</label>
+                            <input type="number" class="form-control" id="onhandStock" name="onhand_stock" min="0" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Available Quantity *</label>
+                            <input type="number" class="form-control" id="canOrderStock" name="can_order_stock" min="0" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Ordered Quantity</label>
+                            <input type="number" class="form-control" id="orderedStock" name="ordered_stock" min="0" value="0">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product Image</label>
+                        <input type="file" class="form-control" id="goodsImage" name="goods_image" accept="image/*">
+                        <small class="text-muted">Upload product image (JPG, PNG, max 5MB)</small>
+                        <div id="imagePreview" class="mt-2" style="display:none">
+                            <img id="previewImg" src="" style="max-width:200px;border-radius:8px">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveStock()"><i class="fas fa-save me-1"></i>Save Stock</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Upload Modal -->
+<div class="modal fade" id="bulkUploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff">
+                <h5 class="modal-title"><i class="fas fa-upload me-2"></i>Bulk Upload</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="bulkUploadForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Upload CSV/Excel File</label>
+                        <input type="file" class="form-control" id="bulkFile" name="bulk_file" accept=".csv,.xlsx,.xls" required>
+                        <small class="text-muted">Format: goods_code, goods_desc, onhand_stock, can_order_stock</small>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <a href="/static/templates/stock_bulk_upload_template.csv" download class="text-decoration-none"><i class="fas fa-download me-1"></i>Download CSV template</a> to see the required format
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="uploadBulk()"><i class="fas fa-upload me-1"></i>Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.editable{cursor:pointer;border-bottom:2px dotted transparent;transition:all .2s;padding:2px 4px;border-radius:4px}
+.editable:hover{background:rgba(0,20,168,0.05);border-bottom-color:#0014A8}
+</style>
+
+<script>
+// Panel Management Functions
+function togglePanel(panelId) {
+    const allPanels = document.querySelectorAll('.embedded-panel');
+    allPanels.forEach(panel => {
+        if (panel.id !== panelId) {
+            panel.classList.remove('active');
+        }
+    });
+    
+    const panel = document.getElementById(panelId);
+    if (panel.classList.contains('active')) {
+        panel.classList.remove('active');
+    } else {
+        panel.classList.add('active');
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function closePanel(panelId) {
+    document.getElementById(panelId).classList.remove('active');
+}
+
+function cleanupBackdrops(){
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+}
+
+function openAddStockModal(){
+    document.getElementById('stockPanelTitle').textContent = 'Add New Stock';
+    document.getElementById('stockForm').reset();
+    document.getElementById('stockId').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+    togglePanel('addStockPanel');
+}
+
+function editStock(id){
+    document.getElementById('stockPanelTitle').textContent = 'Edit Stock';
+    document.getElementById('stockId').value = id;
+    fetch(`/inventory/api/stock/${id}/`)
+        .then(r=>r.json())
+        .then(data=>{
+            document.getElementById('goodsCode').value=data.goods_code;
+            document.getElementById('goodsDesc').value=data.goods_desc;
+            document.getElementById('onhandStock').value=data.onhand_stock;
+            document.getElementById('canOrderStock').value=data.can_order_stock;
+            document.getElementById('orderedStock').value=data.ordered_stock||0;
+            document.getElementById('damageStock').value=data.damage_stock||0;
+            document.getElementById('supplier').value=data.supplier||'';
+            if(data.goods_image){
+                document.getElementById('previewImg').src=data.goods_image;
+                document.getElementById('imagePreview').style.display='block';
+            }
+            togglePanel('addStockPanel');
+        })
+        .catch(()=>showToast('Error loading stock data','error'));
+}
+
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function saveStock(){
+    const form=document.getElementById('stockForm');
+    if(!form.checkValidity()){form.reportValidity();return;}
+    const formData=new FormData(form);
+    const id=document.getElementById('stockId').value;
+    const url=id?`/inventory/api/stock/${id}/update/`:'/inventory/api/stock/create/';
+    fetch(url,{method:'POST',body:formData,headers:{'X-CSRFToken':'{{ csrf_token }}'}})
+        .then(r=>r.json())
+        .then(data=>{
+            if(data.success){
+                showToast(id?'Stock updated successfully':'Stock added successfully','success');
+                closePanel('addStockPanel');
+                setTimeout(()=>location.reload(),1000);
+            }else{showToast(data.message||'Error saving stock','error');}
+        })
+        .catch(()=>showToast('Error saving stock','error'));
+}
+
+function deleteStock(id){
+    if(!confirm('Delete this stock item? This cannot be undone.'))return;
+    fetch(`/inventory/api/stock/${id}/delete/`,{method:'POST',headers:{'X-CSRFToken':document.querySelector('[name=csrfmiddlewaretoken]').value}})
+        .then(r=>r.json())
+        .then(data=>{
+            if(data.success){
+                showToast('Stock deleted successfully','success');
+                setTimeout(()=>location.reload(),1000);
+            }else{showToast(data.message||'Error deleting stock','error');}
+        })
+        .catch(()=>showToast('Error deleting stock','error'));
+}
+
+function editQty(el){
+    const current=el.textContent.trim();
+    const input=document.createElement('input');
+    input.type='number';
+    input.value=current;
+    input.min='0';
+    input.style.cssText='width:80px;padding:4px;border:2px solid #0014A8;border-radius:5px';
+    input.onblur=function(){
+        const newVal=this.value;
+        const id=el.dataset.id;
+        const field=el.dataset.field;
+        fetch(`/inventory/api/stock/${id}/update-qty/`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json','X-CSRFToken':document.querySelector('[name=csrfmiddlewaretoken]').value},
+            body:JSON.stringify({field:field,value:newVal})
+        })
+        .then(r=>r.json())
+        .then(data=>{
+            if(data.success){el.textContent=newVal;showToast('Quantity updated','success');}
+            else{el.textContent=current;showToast('Error updating quantity','error');}
+        })
+        .catch(()=>{el.textContent=current;showToast('Error updating quantity','error');});
+    };
+    input.onkeypress=function(e){if(e.key==='Enter')this.blur();};
+    el.textContent='';
+    el.appendChild(input);
+    input.focus();
+    input.select();
+}
+
+function openBulkUpload(){
+    document.getElementById('bulkUploadForm').reset();
+    document.getElementById('uploadResult').innerHTML = '';
+    document.getElementById('uploadPreview').innerHTML = '';
+    togglePanel('bulkUploadPanel');
+}
+
+function uploadBulk(){
+    const fileInput = document.getElementById('bulkFile');
+    if(!fileInput.files.length){
+        showToast('Please select a file','error');
+        return;
+    }
+    const formData=new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    
+    document.getElementById('uploadResult').innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Uploading...</span></div>';
+    
+    fetch('/inventory/api/stock/bulk-upload/',{method:'POST',body:formData})
+        .then(r=>r.json())
+        .then(data=>{
+            if(data.success){
+                showToast(`Uploaded ${data.count} items successfully`,'success');
+                closePanel('bulkUploadPanel');
+                setTimeout(()=>location.reload(),1000);
+            }else{
+                document.getElementById('uploadResult').innerHTML = `<div class="alert alert-danger">${data.message||'Error uploading file'}</div>`;
+                showToast(data.message||'Error uploading file','error');
+            }
+        })
+        .catch(err=>{
+            document.getElementById('uploadResult').innerHTML = '<div class="alert alert-danger">Error uploading file. Please try again.</div>';
+            showToast('Error uploading file','error');
+        });
+}
+
+function downloadTemplate(){
+    const csv='goods_code,goods_desc,onhand_stock,can_order_stock,supplier\nPRD001,Sample Product,100,90,Supplier A\nPRD002,Another Product,50,45,Supplier B';
+    const blob=new Blob([csv],{type:'text/csv'});
+    const url=window.URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='stock_template.csv';
+    a.click();
+}
+
+function showToast(msg,type='info'){
+    const colors={success:'#10b981',error:'#ef4444',info:'#0014A8'};
+    const t=document.createElement('div');
+    t.style.cssText=`position:fixed;top:20px;right:20px;background:${colors[type]};color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;animation:slideIn 0.3s`;
+    t.innerHTML=`<i class="fas fa-${type==='success'?'check-circle':'info-circle'} me-2"></i>${msg}`;
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),3000);
+}
+
+document.getElementById('goodsImage')?.addEventListener('change',function(e){
+    const file=e.target.files[0];
+    if(file){
+        const reader=new FileReader();
+        reader.onload=function(e){
+            document.getElementById('previewImg').src=e.target.result;
+            document.getElementById('imagePreview').style.display='block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('.modal').forEach(modal=>{
+        modal.addEventListener('hidden.bs.modal',function(){
+            cleanupBackdrops();
+        });
+    });
+});
+</script>
+{% endblock %}

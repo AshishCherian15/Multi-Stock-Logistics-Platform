@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}Notification Center{% endblock %}
+{% block content %}
+<style>
+.notif-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:20px;margin-bottom:15px;transition:all .3s;position:relative}
+.notif-card:hover{box-shadow:0 4px 15px rgba(0,20,168,0.15)}
+.notif-card.unread{border-left:4px solid #0014A8;background:rgba(0,20,168,0.02)}
+.notif-icon{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px}
+.icon-info{background:linear-gradient(135deg,#17a2b8,#138496);color:#fff}
+.icon-warning{background:linear-gradient(135deg,#ffc107,#e0a800);color:#fff}
+.icon-error{background:linear-gradient(135deg,#dc3545,#c82333);color:#fff}
+.icon-success{background:linear-gradient(135deg,#28a745,#218838);color:#fff}
+.icon-alert{background:linear-gradient(135deg,#fd7e14,#e8590c);color:#fff}
+.category-badge{padding:4px 10px;border-radius:15px;font-size:11px;font-weight:600}
+.cat-system{background:#6c757d;color:#fff}
+.cat-order{background:#0014A8;color:#fff}
+.cat-stock{background:#ffc107;color:#333}
+.cat-user{background:#17a2b8;color:#fff}
+.cat-message{background:#28a745;color:#fff}
+.cat-payment{background:#fd7e14;color:#fff}
+.btn-action{padding:6px 12px;border-radius:8px;font-size:12px;border:none;transition:all .3s}
+.btn-mark{background:#0014A8;color:#fff}
+.btn-delete{background:#dc3545;color:#fff}
+.filter-btn{background:#fff;border:2px solid rgba(0,20,168,0.2);color:#0014A8;padding:10px 20px;border-radius:10px;transition:all .3s}
+.filter-btn.active{background:#0014A8;color:#fff}
+</style>
+
+<div class="container-fluid" style="padding:30px">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color:#0014A8;font-weight:700"><i class="fas fa-bell me-2"></i>Notification Center</h2>
+        <div class="d-flex gap-2">
+            <a href="{% url 'notifications:preferences' %}" class="btn" style="background:#fff;border:2px solid #0014A8;color:#0014A8;padding:10px 20px;border-radius:10px;font-weight:600"><i class="fas fa-cog me-2"></i>Settings</a>
+            <button class="btn" style="background:linear-gradient(135deg,#0014A8,#000E75);color:#fff;padding:10px 20px;border-radius:10px;font-weight:600" onclick="markAllRead()"><i class="fas fa-check-double me-2"></i>Mark All Read</button>
+        </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:30px">
+        <form method="get" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <select name="category" class="form-control" style="border:2px solid rgba(0,20,168,0.2);border-radius:10px;padding:12px">
+                        <option value="">All Categories</option>
+                        <option value="system" {% if category_filter == 'system' %}selected{% endif %}>System</option>
+                        <option value="order" {% if category_filter == 'order' %}selected{% endif %}>Order</option>
+                        <option value="stock" {% if category_filter == 'stock' %}selected{% endif %}>Stock</option>
+                        <option value="user" {% if category_filter == 'user' %}selected{% endif %}>User</option>
+                        <option value="message" {% if category_filter == 'message' %}selected{% endif %}>Message</option>
+                        <option value="payment" {% if category_filter == 'payment' %}selected{% endif %}>Payment</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select name="type" class="form-control" style="border:2px solid rgba(0,20,168,0.2);border-radius:10px;padding:12px">
+                        <option value="">All Types</option>
+                        <option value="info" {% if type_filter == 'info' %}selected{% endif %}>Info</option>
+                        <option value="warning" {% if type_filter == 'warning' %}selected{% endif %}>Warning</option>
+                        <option value="error" {% if type_filter == 'error' %}selected{% endif %}>Error</option>
+                        <option value="success" {% if type_filter == 'success' %}selected{% endif %}>Success</option>
+                        <option value="alert" {% if type_filter == 'alert' %}selected{% endif %}>Alert</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn w-100" style="background:#0014A8;color:#fff;padding:12px;border-radius:10px;font-weight:600"><i class="fas fa-filter me-2"></i>Filter</button>
+                </div>
+            </div>
+        </form>
+
+        {% for notif in notifications %}
+        <div class="notif-card {% if not notif.is_read %}unread{% endif %}" id="notif-{{ notif.id }}">
+            <div class="d-flex align-items-start">
+                <div class="notif-icon icon-{{ notif.type }} me-3">
+                    <i class="fas fa-{{ notif.icon|default:'bell' }}"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h5 style="color:#0014A8;font-weight:700;margin:0">{{ notif.title }}</h5>
+                            <span class="category-badge cat-{{ notif.category }}">{{ notif.get_category_display }}</span>
+                        </div>
+                        <small style="color:#999">{{ notif.created_at|timesince }} ago</small>
+                    </div>
+                    <p style="color:#666;margin:10px 0">{{ notif.message }}</p>
+                    <div class="d-flex gap-2">
+                        {% if not notif.is_read %}
+                        <button class="btn-action btn-mark" onclick="markRead({{ notif.id }})"><i class="fas fa-check me-1"></i>Mark Read</button>
+                        {% endif %}
+                        {% if notif.link %}
+                        <a href="{{ notif.link }}" class="btn-action" style="background:#17a2b8;color:#fff"><i class="fas fa-external-link-alt me-1"></i>View</a>
+                        {% endif %}
+                        <button class="btn-action btn-delete" onclick="deleteNotif({{ notif.id }})"><i class="fas fa-trash me-1"></i>Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:60px 20px">
+            <i class="fas fa-bell-slash" style="font-size:64px;color:#ddd;margin-bottom:20px"></i>
+            <p style="color:#999">No notifications</p>
+        </div>
+        {% endfor %}
+
+        {% if notifications.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if notifications.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ notifications.previous_page_number }}&category={{ category_filter }}&type={{ type_filter }}">Previous</a></li>
+                {% endif %}
+                {% for num in notifications.paginator.page_range %}
+                <li class="page-item {% if notifications.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}&category={{ category_filter }}&type={{ type_filter }}">{{ num }}</a></li>
+                {% endfor %}
+                {% if notifications.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ notifications.next_page_number }}&category={{ category_filter }}&type={{ type_filter }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function markRead(id){
+    fetch(`/notifications/mark-read/${id}/`).then(r=>r.json()).then(d=>{
+        if(d.success){
+            document.getElementById('notif-'+id).classList.remove('unread');
+            location.reload();
+        }
+    });
+}
+
+function markAllRead(){
+    fetch('/notifications/mark-all-read/').then(r=>r.json()).then(d=>{
+        if(d.success)location.reload();
+    });
+}
+
+function deleteNotif(id){
+    if(confirm('Delete this notification?')){
+        fetch(`/notifications/delete/${id}/`).then(r=>r.json()).then(d=>{
+            if(d.success){
+                document.getElementById('notif-'+id).remove();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

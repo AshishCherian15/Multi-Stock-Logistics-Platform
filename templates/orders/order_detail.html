@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Detail - {{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Order Detail - {{ order.order_number }}</h4>
+                    <div>
+                        <span class="badge badge-{% if order.status == 'delivered' %}success{% elif order.status == 'pending' %}warning{% elif order.status == 'cancelled' %}danger{% else %}info{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Order Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Order Number:</strong></td>
+                                    <td>{{ order.order_number }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Type:</strong></td>
+                                    <td>{{ order.get_order_type_display }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td>{{ order.get_status_display }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Created:</strong></td>
+                                    <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Created By:</strong></td>
+                                    <td>{{ order.created_by.username }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Amount:</strong></td>
+                                    <td>${{ order.total_amount }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>{% if order.order_type == 'sale' %}Customer{% else %}Supplier{% endif %} Information</h5>
+                            {% if order.customer %}
+                                <p><strong>Customer:</strong> {{ order.customer.customer_name }}</p>
+                                <p><strong>Contact:</strong> {{ order.customer.customer_contact }}</p>
+                            {% elif order.supplier %}
+                                <p><strong>Supplier:</strong> {{ order.supplier.supplier_name }}</p>
+                                <p><strong>Contact:</strong> {{ order.supplier.supplier_contact }}</p>
+                            {% else %}
+                                <p>No customer/supplier assigned</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>Order Items</h5>
+                            {% if items %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Quantity</th>
+                                                <th>Unit Price</th>
+                                                <th>Total Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in items %}
+                                            <tr>
+                                                <td>{{ item.product.goods_name }}</td>
+                                                <td>{{ item.quantity }}</td>
+                                                <td>${{ item.unit_price }}</td>
+                                                <td>${{ item.total_price }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p>No items in this order.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Update Status</h5>
+                            <form method="post" action="{% url 'orders:update_status' order.id %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <select name="status" class="form-control">
+                                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                                        <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                        <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                                        <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                                        <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Status</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-right">
+                                <a href="{% if order.order_type == 'sale' %}{% url 'orders:sales_orders' %}{% else %}{% url 'orders:purchase_orders' %}{% endif %}" class="btn btn-secondary">Back to Orders</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

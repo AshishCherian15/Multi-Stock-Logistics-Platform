@@ -1,0 +1,114 @@
+<!-- Sidebar Navigation -->
+<div class="sidebar {% if user.role.role == 'customer' %}bg-white{% else %}bg-dark text-white{% endif %}" id="sidebar" {% if user.role.role == 'customer' %}style="color:#000;"{% endif %}>
+    <div class="sidebar-content">
+        <!-- Dashboard -->
+        <a href="/dashboard/" class="nav-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+        <a href="/profile/" class="nav-item"><i class="fas fa-user-circle"></i><span>My Profile</span></a>
+        <a href="/profile/wishlist-cart/" class="nav-item"><i class="fas fa-heart"></i><span>Wishlist & Cart</span></a>
+
+        <!-- Customer Shopping -->
+        {% if user.role.role == 'customer' %}
+        <div class="nav-section-header"
+            style="padding:12px 20px;font-size:0.75rem;font-weight:600;color:#6c757d;text-transform:uppercase;letter-spacing:1px;margin-top:10px">
+            Shopping</div>
+        <a href="/products/marketplace/" class="nav-item"><i class="fas fa-store"></i><span>Marketplace</span></a>
+        <a href="/orders/sales/" class="nav-item"><i class="fas fa-shopping-cart"></i><span>My Orders</span></a>
+        {% else %}
+        <!-- Core Operations (Team Only) -->
+        <div class="nav-section-header"
+            style="padding:12px 20px;font-size:0.75rem;font-weight:600;color:#6c757d;text-transform:uppercase;letter-spacing:1px;margin-top:10px">
+            Core Operations</div>
+        <a href="/products/" class="nav-item"><i class="fas fa-cube"></i><span>Products & Inventory</span></a>
+        <a href="/products/marketplace/" class="nav-item"><i class="fas fa-store"></i><span>Marketplace</span></a>
+        {% endif %}
+        {% if user.role.role != 'customer' %}
+        <a href="/categories/" class="nav-item"><i class="fas fa-folder-open"></i><span>Categories</span></a>
+        <a href="/warehouses/" class="nav-item"><i class="fas fa-warehouse"></i><span>Warehouses</span></a>
+        <a href="/barcode/" class="nav-item"><i class="fas fa-barcode"></i><span>Barcode System</span></a>
+        <a href="/orders/sales/" class="nav-item"><i class="fas fa-shopping-cart"></i><span>Orders</span></a>
+        <a href="/pos/" class="nav-item"><i class="fas fa-cash-register"></i><span>POS</span></a>
+        <a href="/shipping/" class="nav-item"><i class="fas fa-shipping-fast"></i><span>Shipping & Delivery</span></a>
+        <a href="/stock/movements/" class="nav-item"><i class="fas fa-exchange-alt"></i><span>Stock Movements</span></a>
+        {% endif %}
+
+        <!-- Revenue Modules (Customers can browse, Team can manage) -->
+        <div class="nav-section-header"
+            style="padding:12px 20px;font-size:0.75rem;font-weight:600;color:#6c757d;text-transform:uppercase;letter-spacing:1px;margin-top:10px">
+            {% if user.role.role == 'customer' %}Services{% else %}Revenue Modules{% endif %}</div>
+        <a href="/rentals/" class="nav-item"><i class="fas fa-key"></i><span>Rentals</span></a>
+        <a href="/storage/" class="nav-item"><i class="fas fa-boxes"></i><span>Storage Units</span></a>
+        <a href="/lockers/" class="nav-item"><i class="fas fa-lock"></i><span>Lockers</span></a>
+        <a href="/billing/" class="nav-item"><i class="fas fa-file-invoice-dollar"></i><span>Billing & Receipts</span></a>
+        {% if user.role.role != 'customer' %}
+        <a href="/coupons/" class="nav-item"><i class="fas fa-ticket-alt"></i><span>Coupons</span></a>
+        {% endif %}
+
+        <!-- Community (Team Only) -->
+        {% if user.role.role != 'customer' %}
+        <div class="nav-section-header"
+            style="padding:12px 20px;font-size:0.75rem;font-weight:600;color:#6c757d;text-transform:uppercase;letter-spacing:1px;margin-top:10px">
+            Community</div>
+        <a href="/forums/" class="nav-item"><i class="fas fa-comments"></i><span>Forums</span></a>
+        {% endif %}
+
+        {% if user.role.role != 'customer' %}
+        <!-- User Management (Team Only) -->
+        <div class="nav-section-header"
+            style="padding:12px 20px;font-size:0.75rem;font-weight:600;color:#6c757d;text-transform:uppercase;letter-spacing:1px;margin-top:10px">
+            User Management</div>
+        <div class="nav-item d-flex justify-content-between align-items-center" style="cursor: pointer; padding-right: 30px;" data-bs-toggle="collapse" data-bs-target="#managementMenu">
+            <span><i class="fas fa-cogs me-2"></i>Management</span>
+            <i class="fas fa-chevron-down" style="font-size:0.75rem;"></i>
+        </div>
+        <div class="collapse" id="managementMenu" style="padding-left:20px;">
+            <a href="/team/" class="nav-item" style="font-size:0.9rem;"><i class="fas fa-users-cog me-2"></i>Team Management</a>
+            <a href="/customers/" class="nav-item" style="font-size:0.9rem;"><i class="fas fa-users me-2"></i>Customer Management</a>
+            <a href="/suppliers/manage/" class="nav-item" style="font-size:0.9rem;"><i class="fas fa-truck me-2"></i>Supplier Management</a>
+        </div>
+        
+        {% if user.role.role == 'superadmin' %}
+        <a href="/permissions/" class="nav-item"><i class="fas fa-user-shield"></i><span>Permissions</span></a>
+        {% endif %}
+        <a href="/messages/" class="nav-item"><i class="fas fa-envelope"></i><span>Messages</span></a>
+
+        <!-- Reports & Analytics (Team Only) -->
+        <div class="nav-section-header"
+            style="padding:12px 20px;font-size:0.75rem;font-weight:600;color:#6c757d;text-transform:uppercase;letter-spacing:1px;margin-top:10px">
+            Analytics & Reports</div>
+        {% if user.role.role in 'superadmin,admin,subadmin' %}
+        <a href="/analytics/advanced/" class="nav-item"><i class="fas fa-chart-line"></i><span>Analytics</span></a>
+        {% endif %}
+        {% if user.role.role in 'superadmin,admin,subadmin' %}
+        <a href="/reports/" class="nav-item"><i class="fas fa-file-alt"></i><span>Reports</span></a>
+        {% endif %}
+        {% if user.role.role == 'superadmin' %}
+        <a href="/audit/" class="nav-item"><i class="fas fa-history"></i><span>Audit Logs</span></a>
+        {% endif %}
+        {% else %}
+        <!-- Customer Support -->
+        <div class="nav-section-header"
+            style="padding:12px 20px;font-size:0.75rem;font-weight:600;color:#6c757d;text-transform:uppercase;letter-spacing:1px;margin-top:10px">
+            Support</div>
+        <a href="/messages/" class="nav-item"><i class="fas fa-envelope"></i><span>Messages</span></a>
+        {% endif %}
+
+        <!-- System -->
+        <div class="nav-section-header"
+            style="padding:12px 20px;font-size:0.75rem;font-weight:600;color:#6c757d;text-transform:uppercase;letter-spacing:1px;margin-top:10px">
+            System</div>
+        <a href="/system-settings/" class="nav-item"><i class="fas fa-bullhorn"></i><span>Announcements</span></a>
+        {% if user.role.role in 'superadmin,admin' %}
+        <a href="/settings/" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+        {% endif %}
+        {% if user.is_superuser or user.role.role == 'superadmin' %}
+        <a href="/admin-panel/" class="nav-item"><i class="fas fa-sliders-h"></i><span>Admin Panel</span></a>
+        {% endif %}
+        {% if user.role.role in 'superadmin,admin,subadmin' %}
+        <a href="/system-status/" class="nav-item"><i class="fas fa-server"></i><span>System Status</span></a>
+        {% endif %}
+        <a href="/about/" class="nav-item"><i class="fas fa-info-circle"></i><span>About</span></a>
+        <a href="/auth/logout/" class="nav-item"
+            style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.1);padding-top:20px"><i
+                class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
+</div>

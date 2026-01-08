@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Rental Booking Details - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a href="{% url 'customers:mine' %}?tab=rentals" class="btn btn-outline-secondary mb-3">
+                <i class="fas fa-arrow-left me-2"></i>Back to My Rentals
+            </a>
+            <h2 class="mb-0">
+                <i class="fas fa-file-invoice me-2"></i>
+                Rental Booking Details
+            </h2>
+            <p class="text-muted">Booking #{{ booking_id }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-box me-2"></i>Equipment Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if booking.item.image %}
+                        <div class="col-md-4 mb-3">
+                            <img src="{{ booking.item.image.url }}" alt="{{ equipment_name }}"
+                                class="img-fluid rounded">
+                        </div>
+                        {% endif %}
+                        <div class="col-md-{% if booking.item.image %}8{% else %}12{% endif %}">
+                            <h4>{{ equipment_name }}</h4>
+                            <p class="text-muted mb-3">{{ equipment_type }}</p>
+                            <p>{{ booking.item.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Booking Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-play-circle me-2"></i>Start Date:</strong>
+                            <p class="mb-0">{{ booking.start_date|date:"F d, Y g:i A" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-stop-circle me-2"></i>End Date:</strong>
+                            <p class="mb-0">{{ booking.end_date|date:"F d, Y g:i A" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-truck me-2"></i>Delivery Option:</strong>
+                            <p class="mb-0">{{ booking.get_delivery_option_display }}</p>
+                        </div>
+                        {% if booking.delivery_address %}
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-map-marker-alt me-2"></i>Delivery Address:</strong>
+                            <p class="mb-0">{{ booking.delivery_address }}</p>
+                        </div>
+                        {% endif %}
+                        {% if booking.actual_return_date %}
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-undo me-2"></i>Actual Return Date:</strong>
+                            <p class="mb-0">{{ booking.actual_return_date|date:"F d, Y g:i A" }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Status</h5>
+                </div>
+                <div class="card-body text-center">
+                    <span
+                        class="badge bg-{% if booking.status == 'active' %}success{% elif booking.status == 'pending' %}warning{% elif booking.status == 'confirmed' %}info{% elif booking.status == 'completed' %}secondary{% elif booking.status == 'cancelled' %}danger{% else %}dark{% endif %} p-3 fs-5">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Payment Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Rental Amount:</span>
+                        <strong>₹{{ booking.total_amount|floatformat:2 }}</strong>
+                    </div>
+                    {% if booking.penalty_amount > 0 %}
+                    <div class="d-flex justify-content-between mb-2 text-danger">
+                        <span>Penalty:</span>
+                        <strong>₹{{ booking.penalty_amount|floatformat:2 }}</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total Amount:</strong>
+                        <strong class="text-primary">₹{{ booking.total_amount|add:booking.penalty_amount|floatformat:2
+                            }}</strong>
+                    </div>
+                    {% else %}
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total Amount:</strong>
+                        <strong class="text-primary">₹{{ booking.total_amount|floatformat:2 }}</strong>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Booking Info</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <strong>Booked On:</strong><br>
+                        {{ booking.created_at|date:"F d, Y g:i A" }}
+                    </p>
+                    {% if booking.agreement_generated %}
+                    <p class="mb-0">
+                        <strong>Agreement Generated:</strong> Yes
+                    </p>
+                    <p class="mb-0">
+                        <a href="#" class="btn btn-sm btn-primary">
+                            <i class="fas fa-download me-2"></i>Download Agreement
+                        </a>
+                    </p>
+                    {% else %}
+                    <p class="mb-0">
+                        <strong>Agreement Status:</strong> Not yet generated
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Booking Summary</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <strong>Booking Status:</strong>
+                        <span class="badge bg-{{ booking.status|lower }}">{{ booking.status }}</span>
+                    </p>
+                    <p class="mb-2">
+                        <strong>Equipment Name:</strong> {{ equipment_name }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Booking Duration:</strong> {{ booking.no_of_days }} days
+                    </p>
+                    <hr>
+                    <p class="mb-2">
+                        <strong>Daily Rate:</strong> ₹{{ booking.daily_rate|floatformat:2 }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Total Days:</strong> {{ booking.no_of_days }}
+                    </p>
+                    {% if booking.penalty_amount > 0 %}
+                    <p class="mb-2 text-danger">
+                        <strong>Penalty:</strong> ₹{{ booking.penalty_amount|floatformat:2 }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block style %}
+<style>
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    .badge {
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,757 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-info-circle me-2" style="color:#0014A8;"></i>About MultiStock</h2>
+            {% if can_edit %}
+            <div>
+                <button class="btn btn-success" onclick="toggleModal('createSectionModal')"><i
+                        class="fas fa-plus me-2"></i>Create</button>
+                <button class="btn btn-warning" onclick="toggleModal('editSectionModal')"><i
+                        class="fas fa-edit me-2"></i>Edit</button>
+                <button class="btn btn-danger" onclick="deleteSection()"><i
+                        class="fas fa-trash me-2"></i>Delete</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0" style="border-radius:15px;">
+        <div class="card-body p-0">
+            <ul class="nav nav-tabs" role="tablist" style="border-bottom:2px solid #0014A8;">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#about-us" style="color:#0014A8;"><i
+                            class="fas fa-building me-2"></i>About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#help" style="color:#0014A8;"><i
+                            class="fas fa-question-circle me-2"></i>Help</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#contact" style="color:#0014A8;"><i
+                            class="fas fa-envelope me-2"></i>Contact</a>
+                </li>
+                {% if user_role != 'customer' and user_role != 'guest' %}
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#system-status" style="color:#0014A8;"><i
+                            class="fas fa-server me-2"></i>System Status</a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <div class="tab-content p-4">
+                <!-- About Us Tab -->
+                <div class="tab-pane fade show active" id="about-us">
+                    <h4 class="mb-4"><i class="fas fa-cubes me-2" style="color:#0014A8;"></i>MultiStock Logistics
+                        Platform</h4>
+                    <p class="lead">Complete Warehouse Management System for Modern Businesses</p>
+
+                    <div class="row g-4 mt-3">
+                        <div class="col-md-6">
+                            <div class="p-4" style="background:#f8f9fa;border-radius:10px;">
+                                <h5><i class="fas fa-bullseye me-2 text-primary"></i>{{ mission.title }}</h5>
+                                <p>{{ mission.content }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-4" style="background:#f8f9fa;border-radius:10px;">
+                                <h5><i class="fas fa-eye me-2 text-success"></i>{{ vision.title }}</h5>
+                                <p>{{ vision.content }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Sections -->
+                    {% for section in sections_list %}
+                    <div class="mt-4 p-4" style="background:#f8f9fa;border-radius:10px;">
+                        <h5><i class="fas fa-star me-2" style="color:#0014A8;"></i>{{ section.title }}</h5>
+                        <p>{{ section.content }}</p>
+                        {% if section.image %}
+                        <img src="{{ section.image.url }}" class="img-fluid rounded" style="max-height:300px;">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="mt-4">
+                        <h5 class="mb-3">Key Features</h5>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="p-3 text-center" style="background:#e3f2fd;border-radius:10px;">
+                                    <i class="fas fa-boxes fa-2x mb-2" style="color:#0014A8;"></i>
+                                    <h6>Real-time Inventory Management</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 text-center" style="background:#e8f5e9;border-radius:10px;">
+                                    <i class="fas fa-chart-line fa-2x mb-2 text-success"></i>
+                                    <h6>Advanced Analytics & Reporting</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 text-center" style="background:#fff3e0;border-radius:10px;">
+                                    <i class="fas fa-warehouse fa-2x mb-2 text-warning"></i>
+                                    <h6>Multi-warehouse Support</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 text-center" style="background:#fce4ec;border-radius:10px;">
+                                    <i class="fas fa-user-shield fa-2x mb-2 text-danger"></i>
+                                    <h6>Role-based Access Control</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 text-center" style="background:#f3e5f5;border-radius:10px;">
+                                    <i class="fas fa-store fa-2x mb-2" style="color:#9c27b0;"></i>
+                                    <h6>Marketplace Integration</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 text-center" style="background:#e0f2f1;border-radius:10px;">
+                                    <i class="fas fa-barcode fa-2x mb-2" style="color:#009688;"></i>
+                                    <h6>Barcode & Scanning System</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 text-center" style="background:#fff9c4;border-radius:10px;">
+                                    <i class="fas fa-plug fa-2x mb-2" style="color:#f57f17;"></i>
+                                    <h6>Secure API Connectivity</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 text-center" style="background:#e1f5fe;border-radius:10px;">
+                                    <i class="fas fa-tachometer-alt fa-2x mb-2" style="color:#01579b;"></i>
+                                    <h6>Responsive Dashboard Design</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Technology Stack -->
+                    <div class="mt-5">
+                        <h5 class="mb-3"><i class="fas fa-code me-2" style="color:#0014A8;"></i>Built with Modern Technology</h5>
+                        <div class="row g-3">
+                            <div class="col-md-2 col-6">
+                                <div class="p-3 text-center" style="background:#f8f9fa;border-radius:10px;">
+                                    <div class="mb-2"><i class="fab fa-python fa-2x" style="color:#306998;"></i></div>
+                                    <div>Django 4.2</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="p-3 text-center" style="background:#f8f9fa;border-radius:10px;">
+                                    <div class="mb-2"><i class="fas fa-code fa-2x" style="color:#6c757d;"></i></div>
+                                    <div>Django REST Framework</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="p-3 text-center" style="background:#f8f9fa;border-radius:10px;">
+                                    <div class="mb-2"><i class="fas fa-database fa-2x" style="color:#795548;"></i></div>
+                                    <div>SQLite (dev)</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="p-3 text-center" style="background:#f8f9fa;border-radius:10px;">
+                                    <div class="mb-2"><i class="fab fa-bootstrap fa-2x" style="color:#563d7c;"></i></div>
+                                    <div>Bootstrap</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="p-3 text-center" style="background:#f8f9fa;border-radius:10px;">
+                                    <div class="mb-2"><i class="fas fa-icons fa-2x" style="color:#17a2b8;"></i></div>
+                                    <div>Font Awesome</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <div class="p-3 text-center" style="background:#f8f9fa;border-radius:10px;">
+                                    <div class="mb-2"><i class="fas fa-server fa-2x" style="color:#495057;"></i></div>
+                                    <div>Gunicorn / WSGI</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if gallery %}
+                    <div class="mt-5">
+                        <h5 class="mb-3 text-center"><i class="fas fa-images me-2" style="color:#0014A8;"></i>Gallery
+                        </h5>
+                        <div id="galleryCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                {% for img in gallery %}
+                                <button type="button" data-bs-target="#galleryCarousel"
+                                    data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" {% endif %}></button>
+                                {% endfor %}
+                            </div>
+                            <div class="carousel-inner" style="border-radius:15px;">
+                                {% for img in gallery %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{{ img.image.url }}" class="d-block w-100"
+                                        style="height:500px;object-fit:contain;border-radius:15px;background:#f8f9fa;">
+                                    <div class="carousel-caption d-none d-md-block"
+                                        style="background:rgba(0,0,0,0.6);border-radius:10px;padding:10px;">
+                                        <h5>{{ img.title }}</h5>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#galleryCarousel"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-5 p-4 text-center"
+                        style="background:linear-gradient(135deg,#0014A8,#000E75);border-radius:15px;color:white;">
+                        <h5 class="mb-3"><i class="fas fa-users me-2"></i>Credits</h5>
+                        {% if team %}
+                        <div class="row justify-content-center g-3">
+                            {% for member in team %}
+                            <div class="col-md-3">
+                                {% if member.photo %}
+                                <img src="{{ member.photo.url }}" class="rounded-circle mb-2" width="80" height="80"
+                                    style="border:3px solid white;">
+                                {% else %}
+                                <div class="rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width:80px;height:80px;border:3px solid white;"><i
+                                        class="fas fa-user fa-2x"></i></div>
+                                {% endif %}
+                                <p class="mb-0"><strong>{{ member.name }}</strong></p>
+                                <small class="opacity-75">{{ member.position }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="lead mb-0">Created by <strong>Ashish, Ashray, Avinash, Harshitha</strong></p>
+                        <small class="opacity-75">Computer Science Engineering Team</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Help Tab -->
+                <div class="tab-pane fade" id="help">
+                    <h4 class="mb-4"><i class="fas fa-life-ring me-2" style="color:#0014A8;"></i>Help Center</h4>
+
+                    <div class="accordion" id="helpAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#help1">
+                                    How do I add products to inventory?
+                                </button>
+                            </h2>
+                            <div id="help1" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    Navigate to Products > Add Product. Fill in product details including code, name,
+                                    price, and stock quantity. Click Save to add the product.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#help2">
+                                    How do I process orders?
+                                </button>
+                            </h2>
+                            <div id="help2" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    Go to Orders section, select pending orders, review details, and update status to
+                                    'Processing' or 'Completed' as needed.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#help3">
+                                    How do I manage multiple warehouses?
+                                </button>
+                            </h2>
+                            <div id="help3" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    Access Warehouse section to add, edit, or view warehouse details. Assign products to
+                                    specific warehouses and track stock levels per location.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#help4">
+                                    How do I generate reports?
+                                </button>
+                            </h2>
+                            <div id="help4" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    Visit Analytics or Reports section. Select report type, date range, and filters.
+                                    Click Generate to view or export reports.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-4" style="background:#f8f9fa;border-radius:10px;">
+                        <h5><i class="fas fa-book me-2 text-info"></i>Need More Help?</h5>
+                        <p>Contact our support team or check the user documentation for detailed guides.</p>
+                        <a href="#contact" class="btn btn-primary"
+                            onclick="document.querySelector('[href=\'#contact\']').click()">Contact Support</a>
+                    </div>
+                </div>
+
+                <!-- Contact Tab -->
+                <div class="tab-pane fade" id="contact">
+                    <h4 class="mb-4"><i class="fas fa-address-book me-2" style="color:#0014A8;"></i>Contact Us</h4>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="text-center p-4" style="background:#f8f9fa;border-radius:10px;">
+                                <i class="fas fa-envelope fa-3x mb-3" style="color:#0014A8;"></i>
+                                <h5>Email</h5>
+                                <p class="mb-0">support@multistock.com</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-4" style="background:#f8f9fa;border-radius:10px;">
+                                <i class="fas fa-phone fa-3x mb-3 text-success"></i>
+                                <h5>Phone</h5>
+                                <p class="mb-0">+91 80 1234 5678</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-4" style="background:#f8f9fa;border-radius:10px;">
+                                <i class="fas fa-map-marker-alt fa-3x mb-3 text-danger"></i>
+                                <h5>Location</h5>
+                                <p class="mb-0">Bangalore, India</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0" style="background:#f8f9fa;">
+                        <div class="card-body">
+                            <h5 class="mb-3">Send Message</h5>
+                            <form id="contactForm" onsubmit="sendMessage(event)">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" placeholder="Your Name" required
+                                            style="border-radius:10px;">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="email" class="form-control" placeholder="Your Email" required
+                                            style="border-radius:10px;">
+                                    </div>
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" placeholder="Subject" required
+                                            style="border-radius:10px;">
+                                    </div>
+                                    <div class="col-12">
+                                        <textarea class="form-control" rows="4" placeholder="Message" required
+                                            style="border-radius:10px;"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn"
+                                            style="background:#0014A8;color:white;border-radius:10px;">
+                                            <i class="fas fa-paper-plane me-2"></i>Send Message
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status Tab -->
+                {% if user_role != 'customer' and user_role != 'guest' %}
+                <div class="tab-pane fade" id="system-status">
+                    <h4 class="mb-4"><i class="fas fa-server me-2" style="color:#0014A8;"></i>System Status</h4>
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-box fa-3x mb-3 text-success"></i>
+                            <h3 id="totalProducts">{{ total_products }}</h3>
+                            <p class="text-muted mb-0">Products</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-cubes fa-3x mb-3 text-warning"></i>
+                            <h3 id="totalStock">{{ total_stock }}</h3>
+                            <p class="text-muted mb-0">Stock Items</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shopping-cart fa-3x mb-3 text-info"></i>
+                            <h3 id="totalOrders">{{ total_orders }}</h3>
+                            <p class="text-muted mb-0">Orders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-friends fa-3x mb-3 text-danger"></i>
+                            <h3 id="totalCustomers">{{ total_customers }}</h3>
+                            <p class="text-muted mb-0">Customers</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-truck fa-3x mb-3 text-secondary"></i>
+                            <h3 id="totalSuppliers">{{ total_suppliers }}</h3>
+                            <p class="text-muted mb-0">Suppliers</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-warehouse fa-3x mb-3" style="color:#0014A8;"></i>
+                            <h3 id="totalWarehouses">{{ total_warehouses }}</h3>
+                            <p class="text-muted mb-0">Warehouses</p>
+                        </div>
+                    </div>
+                </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-check-circle fa-3x mb-3 text-success"></i>
+                                    <h3>Online</h3>
+                                    <p class="text-muted mb-0">System Status</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="mb-3">Recent Activity</h5>
+                        <div class="card border-0" style="background:#f8f9fa;">
+                            <div class="card-body">
+                                <div class="list-group list-group-flush" id="recentActivity">
+                                    {% for order in recent_orders %}
+                                    <div class="list-group-item bg-transparent">
+                                        <div class="d-flex justify-content-between">
+                                            <span><i class="fas fa-shopping-cart me-2 text-primary"></i>Order #{{ order.order_number }}</span>
+                                            <small class="text-muted">{{ order.created_at|timesince }} ago</small>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <div class="list-group-item bg-transparent text-center text-muted">
+                                        No recent activity
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of main content -->
+
+<!-- Create Section Modal -->
+<div class="modal" id="createSectionModal" style="display:none;">
+    <div class="modal-dialog" style="margin-top:75px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Section</h5>
+                <button type="button" class="btn-close" onclick="toggleModal('createSectionModal')"></button>
+            </div>
+            <form method="post" action="{% url 'about:create_section' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" name="title" class="form-control" required minlength="3" maxlength="200">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Content</label>
+                        <textarea name="content" class="form-control" rows="4" required minlength="10"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Image (optional)</label>
+                        <input type="file" name="image" class="form-control" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Order</label>
+                        <input type="number" name="order" class="form-control" value="0" min="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="toggleModal('createSectionModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section Modal -->
+<div class="modal" id="editSectionModal" style="display:none;">
+    <div class="modal-dialog modal-lg" style="margin-top:75px;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#0014A8;color:white;">
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit About Page Content</h5>
+                <button type="button" class="btn-close btn-close-white"
+                    onclick="toggleModal('editSectionModal')"></button>
+            </div>
+            <form method="post" id="editSectionForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-list me-2"></i>What to Edit?</label>
+                        <select class="form-select form-select-lg" id="editType" onchange="switchEditType()" required>
+                            <option value="">-- Choose --</option>
+                            <option value="static">Company Info (Mission/Vision/Features)</option>
+                            <option value="section">Custom Sections</option>
+                            <option value="credits">Credits (Contributors)</option>
+                            <option value="gallery">Gallery (Carousel)</option>
+                        </select>
+                    </div>
+
+                    <div id="staticEditor" style="display:none;">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Select</label>
+                            <select class="form-select" id="staticSelect" onchange="loadStatic()" required>
+                                <option value="">-- Choose --</option>
+                                <option value="mission">Mission</option>
+                                <option value="vision">Vision</option>
+                            </select>
+                        </div>
+                        <div id="staticFields" style="display:none;">
+                            <hr>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Content</label>
+                                <textarea name="content" id="staticContent" class="form-control" rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="creditsEditor" style="display:none;">
+                        <p class="text-muted">Manage team members from the <a href="{% url 'about:manage_about' %}"
+                                target="_blank">Manage About</a> page → Team tab.</p>
+                    </div>
+
+                    <div id="galleryEditor" style="display:none;">
+                        <p class="text-muted">Manage gallery images from the <a href="{% url 'about:manage_about' %}"
+                                target="_blank">Manage About</a> page → Gallery tab.</p>
+                    </div>
+
+                    <div id="sectionEditor" style="display:none;">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Select Section</label>
+                            <select class="form-select" id="sectionSelect" onchange="loadSection()" required>
+                                <option value="">-- Choose --</option>
+                                {% for section in sections_list %}
+                                <option value="{{ section.id }}">{{ section.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div id="editFields" style="display:none;">
+                            <hr>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Title</label>
+                                <input type="text" name="title" id="editTitle" class="form-control" required
+                                    minlength="3" maxlength="200" placeholder="Section title">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Content</label>
+                                <textarea name="content" id="editContent" class="form-control" rows="6" required
+                                    minlength="10" placeholder="Section content"></textarea>
+                                <small class="text-muted">Minimum 10 characters</small>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Image (optional)</label>
+                                        <input type="file" name="image" class="form-control" accept="image/*">
+                                        <small class="text-muted">Leave empty to keep current image</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Display Order</label>
+                                        <input type="number" name="order" id="editOrder" class="form-control" min="0"
+                                            placeholder="0">
+                                        <small class="text-muted">Lower numbers appear first</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Status</label>
+                                <select name="is_active" class="form-select">
+                                    <option value="1">Active (Visible)</option>
+                                    <option value="0">Inactive (Hidden)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal('editSectionModal')"><i
+                            class="fas fa-times me-2"></i>Cancel</button>
+                    <button type="submit" class="btn btn-warning" id="updateBtn" style="display:none;"><i
+                            class="fas fa-save me-2"></i>Save Changes</button>
+                    <button type="button" class="btn btn-warning" id="staticUpdateBtn" style="display:none;"
+                        onclick="submitStatic()"><i class="fas fa-save me-2"></i>Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const sectionsData = {{ sections| safe }};
+    const missionContent = "{{ mission.content|escapejs }}";
+    const visionContent = "{{ vision.content|escapejs }}";
+
+    function switchEditType() {
+        const type = document.getElementById('editType').value;
+        document.getElementById('staticEditor').style.display = type === 'static' ? 'block' : 'none';
+        document.getElementById('sectionEditor').style.display = type === 'section' ? 'block' : 'none';
+        document.getElementById('creditsEditor').style.display = type === 'credits' ? 'block' : 'none';
+        document.getElementById('galleryEditor').style.display = type === 'gallery' ? 'block' : 'none';
+    }
+
+    function loadStatic() {
+        const key = document.getElementById('staticSelect').value;
+        const fields = document.getElementById('staticFields');
+        const updateBtn = document.getElementById('updateBtn');
+        const staticBtn = document.getElementById('staticUpdateBtn');
+        if (!key) {
+            fields.style.display = 'none';
+            staticBtn.style.display = 'none';
+            return;
+        }
+        document.getElementById('staticContent').value = key === 'mission' ? missionContent : visionContent;
+        fields.style.display = 'block';
+        updateBtn.style.display = 'none';
+        staticBtn.style.display = 'block';
+    }
+
+    function submitStatic() {
+        const key = document.getElementById('staticSelect').value;
+        const content = document.getElementById('staticContent').value;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/about/static/${key}/update/`;
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        form.innerHTML = `<input type="hidden" name="csrfmiddlewaretoken" value="${csrf}"><input type="hidden" name="content" value="${content.replace(/"/g, '&quot;')}">`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function toggleModal(id) {
+        const modal = document.getElementById(id);
+        if (modal.style.display === 'none') {
+            modal.style.display = 'block';
+            if (id === 'editSectionModal') {
+                document.getElementById('sectionSelect').value = '';
+                document.getElementById('editFields').style.display = 'none';
+                document.getElementById('updateBtn').style.display = 'none';
+            }
+        } else {
+            modal.style.display = 'none';
+        }
+    }
+
+    function loadSection() {
+        const select = document.getElementById('sectionSelect');
+        const id = select.value;
+        if (!id) {
+            document.getElementById('editFields').style.display = 'none';
+            document.getElementById('updateBtn').style.display = 'none';
+            return;
+        }
+
+        fetch(`/about/section/${id}/data/`)
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('editTitle').value = data.title;
+                document.getElementById('editContent').value = data.content;
+                document.getElementById('editOrder').value = data.order;
+                document.getElementById('editSectionForm').action = `/about/section/${id}/update/`;
+                document.getElementById('editFields').style.display = 'block';
+                document.getElementById('updateBtn').style.display = 'block';
+            });
+    }
+
+    function deleteSection() {
+        if (confirm('Delete a section? This will show a list of sections to delete.')) {
+            window.location.href = '/about/manage/';
+        }
+    }
+
+    function sendMessage(event) {
+        event.preventDefault();
+        alert('Message sent successfully! We will get back to you soon.');
+        document.getElementById('contactForm').reset();
+    }
+
+    function refreshStatus() {
+        const btn = event.target.closest('button');
+        const icon = btn.querySelector('i');
+        icon.classList.add('fa-spin');
+
+        fetch('/about/')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                document.getElementById('totalUsers').textContent = doc.getElementById('totalUsers').textContent;
+                document.getElementById('totalProducts').textContent = doc.getElementById('totalProducts').textContent;
+                document.getElementById('totalStock').textContent = doc.getElementById('totalStock').textContent;
+                document.getElementById('totalOrders').textContent = doc.getElementById('totalOrders').textContent;
+                document.getElementById('totalCustomers').textContent = doc.getElementById('totalCustomers').textContent;
+                document.getElementById('totalSuppliers').textContent = doc.getElementById('totalSuppliers').textContent;
+                document.getElementById('totalWarehouses').textContent = doc.getElementById('totalWarehouses').textContent;
+
+                setTimeout(() => {
+                    icon.classList.remove('fa-spin');
+                    showAlert('Status refreshed successfully!', 'success');
+                }, 500);
+            })
+            .catch(error => {
+                icon.classList.remove('fa-spin');
+                showAlert('Error refreshing status', 'danger');
+            });
+    }
+
+    function showAlert(message, type) {
+        if (typeof window.showAlert === 'function') {
+            window.showAlert(message, type);
+        } else {
+            alert(message);
+        }
+    }
+
+    // Auto-scroll carousel every 2 seconds
+    if (document.getElementById('galleryCarousel')) {
+        const carousel = new bootstrap.Carousel(document.getElementById('galleryCarousel'), {
+            interval: 2000,
+            ride: 'carousel'
+        });
+    }
+</script>
+{% endblock %}

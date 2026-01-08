@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% block title %}Locker Analytics - MultiStock{% endblock %}
+{% block content %}
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-chart-bar me-2"></i>Locker System Analytics</h2>
+            <p class="text-muted mb-0">Performance metrics and insights</p>
+        </div>
+        <div class="btn-group">
+            <a href="/lockers/" class="btn btn-outline-primary">
+                <i class="fas fa-lock me-1"></i>View Lockers
+            </a>
+            <a href="/lockers/my-bookings/" class="btn btn-outline-secondary">
+                <i class="fas fa-calendar-check me-1"></i>My Bookings
+            </a>
+        </div>
+    </div>
+
+    <!-- Key Metrics Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card metric-card border-left-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1">Total Lockers</h6>
+                            <h2 class="mb-0">{{ total_lockers }}</h2>
+                        </div>
+                        <div class="metric-icon bg-primary">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card metric-card border-left-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1">Available</h6>
+                            <h2 class="mb-0 text-success">{{ available_lockers }}</h2>
+                            <small class="text-muted">{{ available_lockers|percentage:total_lockers }}% capacity</small>
+                        </div>
+                        <div class="metric-icon bg-success">
+                            <i class="fas fa-unlock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card metric-card border-left-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1">Occupied</h6>
+                            <h2 class="mb-0 text-danger">{{ occupied_lockers }}</h2>
+                            <small class="text-muted">{{ occupied_lockers|percentage:total_lockers }}% utilized</small>
+                        </div>
+                        <div class="metric-icon bg-danger">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card metric-card border-left-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1">Total Revenue</h6>
+                            <h2 class="mb-0 text-info">₹{{ total_revenue|floatformat:0 }}</h2>
+                            <small class="text-muted">All time</small>
+                        </div>
+                        <div class="metric-icon bg-info">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Booking Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr>
+                            <td><i class="fas fa-circle text-warning me-2"></i>Total Bookings</td>
+                            <td class="text-end"><strong>{{ total_bookings }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-circle text-success me-2"></i>Active Bookings</td>
+                            <td class="text-end"><strong>{{ active_bookings }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-circle text-secondary me-2"></i>Completed</td>
+                            <td class="text-end"><strong>{{ total_bookings|subtract:active_bookings }}</strong></td>
+                        </tr>
+                        <tr class="border-top">
+                            <td><strong>Avg Duration</strong></td>
+                            <td class="text-end"><strong>{{ avg_duration|floatformat:1 }} days</strong></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Locker Utilization</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="utilizationChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Trends -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Revenue Trends</h5>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary active">Week</button>
+                        <button class="btn btn-outline-secondary">Month</button>
+                        <button class="btn btn-outline-secondary">Year</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Locker Types -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-star me-2"></i>Popular Locker Types</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="lockerTypesChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Booking Duration Types</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="durationChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+<script>
+    // Utilization Pie Chart
+    const utilizationCtx = document.getElementById('utilizationChart').getContext('2d');
+    new Chart(utilizationCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Available', 'Occupied', 'Maintenance'],
+            datasets: [{
+                data: [{{ available_lockers }}, {{ occupied_lockers }}, {{ total_lockers| subtract: available_lockers | subtract: occupied_lockers }}],
+        backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
+        borderWidth: 0
+        }]
+    },
+        options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+});
+
+    // Revenue Line Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Revenue (₹)',
+                data: [12000, 19000, 15000, 25000, 22000, 30000, 28000],
+                borderColor: '#0014A8',
+                backgroundColor: 'rgba(0, 20, 168, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function (value) {
+                            return '₹' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Locker Types Bar Chart
+    const typesCtx = document.getElementById('lockerTypesChart').getContext('2d');
+    new Chart(typesCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Small', 'Medium', 'Large', 'XL', 'Climate'],
+            datasets: [{
+                label: 'Bookings',
+                data: [45, 62, 38, 25, 18],
+                backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Duration Types Pie Chart
+    const durationCtx = document.getElementById('durationChart').getContext('2d');
+    new Chart(durationCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Hourly', 'Daily', 'Weekly', 'Monthly'],
+            datasets: [{
+                data: [15, 45, 25, 15],
+                backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+
+<style>
+    .metric-card {
+        border-top: 3px solid #dee2e6;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .metric-card.border-left-primary {
+        border-top-color: #0014A8;
+    }
+
+    .metric-card.border-left-success {
+        border-top-color: #28a745;
+    }
+
+    .metric-card.border-left-danger {
+        border-top-color: #dc3545;
+    }
+
+    .metric-card.border-left-info {
+        border-top-color: #17a2b8;
+    }
+
+    .metric-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .card {
+        border-radius: 8px;
+    }
+</style>
+
+{% endblock %}

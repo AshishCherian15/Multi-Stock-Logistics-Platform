@@ -1,0 +1,173 @@
+<!-- Modern Unified Search Component -->
+<div class="mx-auto position-relative" style="width: 500px;">
+    <div class="input-group" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <span class="input-group-text" style="background: rgba(255,255,255,0.95); border: none; padding: 12px 15px;">
+            <i class="fas fa-search" style="color: #0014A8;"></i>
+        </span>
+        <input type="text" class="form-control" placeholder="Search storage, products, rentals, orders..." id="centerSearch"
+            oninput="performCenterSearch()" onkeydown="handleSearchKeydown(event)"
+            style="background: rgba(255,255,255,0.95); border: none; padding: 12px 10px; font-size: 0.95rem;">
+        <button class="btn" type="button" onclick="clearSearch()" id="clearSearchBtn" style="background: rgba(255,255,255,0.95); border: none; color: #6c757d; padding: 12px 15px; display: none;">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div id="centerSearchResults" class="position-absolute bg-white rounded-3 mt-2 w-100"
+        style="display: none; z-index: 1070; max-height: 500px; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border: none;">
+    </div>
+</div>
+
+<script>
+let searchTimeout;
+const categoryIcons = {
+    storage: { icon: 'warehouse', color: '#0014A8', label: 'Storage Units' },
+    rentals: { icon: 'tools', color: '#f59e0b', label: 'Rentals' },
+    products: { icon: 'box', color: '#10b981', label: 'Products' },
+    orders: { icon: 'shopping-cart', color: '#8b5cf6', label: 'Orders' },
+    customers: { icon: 'user', color: '#3b82f6', label: 'Customers' },
+    suppliers: { icon: 'truck', color: '#ef4444', label: 'Suppliers' }
+};
+
+function performCenterSearch() {
+    clearTimeout(searchTimeout);
+    const query = document.getElementById('centerSearch').value.trim();
+    const resultsDiv = document.getElementById('centerSearchResults');
+    const clearBtn = document.getElementById('clearSearchBtn');
+    
+    clearBtn.style.display = query ? 'block' : 'none';
+    
+    if (query.length < 2) {
+        resultsDiv.style.display = 'none';
+        return;
+    }
+    
+    resultsDiv.innerHTML = '<div class="p-3 text-center"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+    resultsDiv.style.display = 'block';
+    
+    searchTimeout = setTimeout(() => {
+        fetch(`/search/?q=${encodeURIComponent(query)}&ajax=1`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => {
+            if (!r.ok) throw new Error('Search failed');
+            return r.json();
+        })
+        .then(data => {
+            if (data.error) {
+                resultsDiv.innerHTML = `<div class="p-3 text-center text-warning"><i class="fas fa-exclamation-triangle me-2"></i>${data.error}</div>`;
+                return;
+            }
+            
+            if (!data.results || data.results.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="p-4 text-center text-muted">
+                        <i class="fas fa-search" style="font-size: 2rem; opacity: 0.3;"></i>
+                        <p class="mt-2 mb-0">No results found for "${query}"</p>
+                    </div>`;
+                return;
+            }
+            
+            // Group results by category
+            const grouped = {};
+            data.results.forEach(item => {
+                const cat = item.category || 'other';
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push(item);
+            });
+            
+            let html = '<div class="p-2">';
+            
+            // Show category counts
+            if (data.by_category && Object.keys(data.by_category).length > 1) {
+                html += '<div class="px-2 py-2 border-bottom"><small class="text-muted">Found in: ';
+                html += Object.entries(data.by_category)
+                    .filter(([k, v]) => v > 0)
+                    .map(([k, v]) => {
+                        const info = categoryIcons[k] || { icon: 'circle', color: '#6c757d' };
+                        return `<span class="badge me-1" style="background: ${info.color}20; color: ${info.color};"><i class="fas fa-${info.icon} me-1"></i>${v}</span>`;
+                    }).join(' ');
+                html += '</small></div>';
+            }
+            
+            // Render grouped results
+            Object.entries(grouped).forEach(([category, items]) => {
+                const catInfo = categoryIcons[category] || { icon: 'circle', color: '#6c757d', label: category };
+                
+                html += `<div class="mt-2"><div class="px-2 py-1"><small class="fw-bold text-uppercase" style="color: ${catInfo.color}; font-size: 0.75rem;"><i class="fas fa-${catInfo.icon} me-1"></i>${catInfo.label}</small></div>`;
+                
+                items.slice(0, 5).forEach(item => {
+                    const icon = item.icon || catInfo.icon;
+                    const statusBadge = item.status ? `<span class="badge badge-sm ms-2" style="background: ${item.status === 'available' ? '#10b981' : '#f59e0b'}20; color: ${item.status === 'available' ? '#10b981' : '#f59e0b'};">${item.status}</span>` : '';
+                    
+                    html += `
+                        <a href="${item.url}" class="d-block px-2 py-2 text-decoration-none text-dark rounded" 
+                           style="transition: all 0.2s;" 
+                           onmouseover="this.style.background='#f8f9fa'" 
+                           onmouseout="this.style.background='transparent'">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3" style="width: 35px; height: 35px; background: ${catInfo.color}15; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-${icon}" style="color: ${catInfo.color}; font-size: 1rem;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">${highlightMatch(item.title, query)}${statusBadge}</div>
+                                    <small class="text-muted">${item.subtitle}</small>
+                                </div>
+                            </div>
+                        </a>`;
+                });
+                
+                if (items.length > 5) {
+                    html += `<div class="px-2 py-1"><small class="text-muted">+${items.length - 5} more</small></div>`;
+                }
+                
+                html += '</div>';
+            });
+            
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+        })
+        .catch(err => {
+            console.error('Search error:', err);
+            resultsDiv.innerHTML = `
+                <div class="p-3 text-center text-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>Search temporarily unavailable
+                </div>`;
+        });
+    }, 300);
+}
+
+function highlightMatch(text, query) {
+    const regex = new RegExp(`(${query})`, 'gi');
+    return text.replace(regex, '<mark style="background: #fef3c7; padding: 2px 4px; border-radius: 3px;">$1</mark>');
+}
+
+function clearSearch() {
+    document.getElementById('centerSearch').value = '';
+    document.getElementById('centerSearchResults').style.display = 'none';
+    document.getElementById('clearSearchBtn').style.display = 'none';
+    document.getElementById('centerSearch').focus();
+}
+
+function handleSearchKeydown(event) {
+    if (event.key === 'Escape') {
+        clearSearch();
+    } else if (event.key === 'Enter') {
+        const resultsDiv = document.getElementById('centerSearchResults');
+        const firstLink = resultsDiv.querySelector('a');
+        if (firstLink) firstLink.click();
+    }
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#centerSearch') && !e.target.closest('#centerSearchResults') && !e.target.closest('#clearSearchBtn')) {
+        document.getElementById('centerSearchResults').style.display = 'none';
+    }
+});
+
+// Keyboard shortcut: Ctrl+K to focus search
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('centerSearch').focus();
+    }
+});
+</script>

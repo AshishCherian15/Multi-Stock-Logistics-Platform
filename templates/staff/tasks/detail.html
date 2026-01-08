@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Task #{{ task.order_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-clipboard-check me-2"></i>Task #{{ task.order_number }}</h2>
+            <p class="text-muted mb-0">Order Details</p>
+        </div>
+        <div>
+            <a href="{% url 'staff_panel:tasks' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Tasks
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Task Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Order Number:</th>
+                            <td><strong>{{ task.order_number }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Date:</th>
+                            <td>{{ task.created_at|date:"M d, Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                <span
+                                    class="badge bg-{% if task.status == 'processing' %}info{% elif task.status == 'pending' %}warning{% else %}success{% endif %}">
+                                    {{ task.status|title }}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>{{ task.customer_user.get_full_name|default:task.customer_user.username }}</strong></p>
+                    <p class="mb-0"><i class="fas fa-envelope me-2"></i>{{ task.customer_user.email }}</p>
+                </div>
+            </div>
+
+            {% if task.status == 'pending' or task.status == 'confirmed' %}
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-play me-2"></i>Start Processing</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-success w-100" onclick="startProcessing()">
+                        <i class="fas fa-cog me-2"></i>Mark as Processing
+                    </button>
+                    <small class="text-muted d-block mt-2">Click to start working on this task</small>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                This task is already being processed
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-box me-2"></i>Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in task.items.all %}
+                                <tr>
+                                    <td>{{ item.product.goods_name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹{{ item.price|floatformat:2 }}</td>
+                                    <td>₹{{ item.total|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="text-end">Subtotal:</th>
+                                    <th>₹{{ task.subtotal|floatformat:2 }}</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" class="text-end">Tax:</th>
+                                    <th>₹{{ task.tax_amount|floatformat:2 }}</th>
+                                </tr>
+                                <tr class="table-primary">
+                                    <th colspan="3" class="text-end">Grand Total:</th>
+                                    <th>₹{{ task.grand_total|floatformat:2 }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>{{ task.shipping_name|default:task.customer_user.get_full_name }}</strong>
+                    </p>
+                    <p class="mb-1">{{ task.shipping_address|default:"No address provided" }}</p>
+                    <p class="mb-0"><i class="fas fa-phone me-2"></i>{{ task.shipping_phone|default:"N/A" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function startProcessing() {
+        if (confirm('Start processing this task?')) {
+            fetch(`/staff-panel/tasks/{{ task.id }}/update-status/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 'processing' })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to update task status');
+                });
+        }
+    }
+</script>
+{% endblock %}

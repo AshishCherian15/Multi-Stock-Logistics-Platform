@@ -1,0 +1,215 @@
+{% extends 'base_guest.html' %}
+{% block title %}Rentals - MultiStock{% endblock %}
+{% block content %}
+
+<style>
+    :root {
+        --zaffre: #0014A8;
+        --zaffre-dark: #000E75;
+    }
+
+    .rental-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 2px 12px rgba(0, 20, 168, 0.1);
+        transition: all 0.3s;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .rental-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 20, 168, 0.2);
+    }
+
+    .rental-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-available {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, var(--zaffre), var(--zaffre-dark));
+        color: white;
+        padding: 8px 15px;
+        border-radius: 10px;
+        font-weight: 600;
+        display: inline-block;
+        margin: 2px 0;
+    }
+</style>
+
+<div class="container-fluid p-4 mt-5">
+    <div class="alert alert-warning text-center mb-4">
+        <i class="fas fa-lock me-2"></i>
+        <strong>Login Required:</strong> Please <a href="/auth/login-selection/" class="alert-link">login</a> to book rentals, add to cart, or add to wishlist.
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-key me-2"></i>Rental Equipment</h2>
+        <div>
+            <a href="/auth/login-selection/" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="card mb-4" style="border: none; border-radius: 15px; box-shadow: 0 2px 12px rgba(0, 20, 168, 0.1);">
+        <div class="card-body">
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search equipment...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="sortBy">
+                        <option value="name">Sort by Name</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                        <i class="fas fa-times me-1"></i>Clear Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rental Items Grid -->
+    <div class="row g-4" id="rentalGrid">
+        {% for item in items %}
+        <div class="col-md-4 rental-item" data-name="{{ item.name|lower }}" data-price="{{ item.daily_rate }}">
+            <div class="card rental-card">
+                <div class="position-relative">
+                    {% if item.display_image %}
+                    <img src="{{ item.display_image }}" class="rental-image" alt="{{ item.name }}" onerror="this.src='/static/images/no-image.svg'; this.onerror=null;">
+                    {% else %}
+                    <div class="rental-image bg-light d-flex align-items-center justify-content-center">
+                        <i class="fas fa-image fa-3x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    <span class="status-badge status-available">
+                        <i class="fas fa-check-circle me-1"></i>Available
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title mb-2">{{ item.name }}</h5>
+                    <p class="text-muted small mb-3">{{ item.description|truncatewords:15 }}</p>
+
+                    <!-- Pricing -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Hourly:</small>
+                            <span class="price-tag">₹{{ item.hourly_rate }}/hr</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Daily:</small>
+                            <span class="price-tag">₹{{ item.daily_rate }}/day</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Weekly:</small>
+                            <span class="price-tag">₹{{ item.weekly_rate }}/week</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Monthly:</small>
+                            <span class="price-tag">₹{{ item.monthly_rate }}/month</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="/auth/login-selection/" class="btn btn-primary w-100">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login to Book
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No rental items available</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if page_obj %}
+<div class="d-flex justify-content-center my-4">
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    </div>
+{% endif %}
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function (e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('.rental-item');
+
+        items.forEach(item => {
+            const name = item.dataset.name;
+            if (name.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+
+    // Sort functionality
+    document.getElementById('sortBy').addEventListener('change', function (e) {
+        const sortBy = e.target.value;
+        const grid = document.getElementById('rentalGrid');
+        const items = Array.from(document.querySelectorAll('.rental-item'));
+
+        items.sort((a, b) => {
+            if (sortBy === 'name') {
+                return a.dataset.name.localeCompare(b.dataset.name);
+            } else if (sortBy === 'price-low') {
+                return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+            } else if (sortBy === 'price-high') {
+                return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+            }
+        });
+
+        items.forEach(item => grid.appendChild(item));
+    });
+
+    function clearFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('sortBy').value = 'name';
+        document.querySelectorAll('.rental-item').forEach(item => item.style.display = 'block');
+    }
+</script>
+
+{% endblock %}

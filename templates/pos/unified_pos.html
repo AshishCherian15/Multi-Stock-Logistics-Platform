@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+
+{% block title %}POS System - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Point of Sale System</h1>
+        <div>
+            <button class="btn btn-primary me-2" onclick="toggleBarcodeScanner()" id="scannerBtn">
+                <i class="fas fa-barcode me-2"></i>Start Scanner
+            </button>
+            <button class="btn btn-success me-2" onclick="newSale()">
+                <i class="fas fa-plus me-2"></i>New Sale
+            </button>
+            <button class="btn btn-info" onclick="viewSalesHistory()">
+                <i class="fas fa-history me-2"></i>Sales History
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="posTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="interface-tab" data-bs-toggle="tab" data-bs-target="#interface" type="button">
+                <i class="fas fa-cash-register me-2"></i>POS Interface
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales" type="button">
+                <i class="fas fa-shopping-cart me-2"></i>Sales Management
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="posTabContent">
+        <!-- POS Interface Tab -->
+        <div class="tab-pane fade show active" id="interface" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Product Selection</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Search products or scan barcode..." id="productSearch">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-primary w-100" onclick="toggleBarcodeScanner()">
+                                        <i class="fas fa-barcode"></i> Scan
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="categoryFilter">
+                                        <option value="">All Categories</option>
+                                        <option value="electronics">Electronics</option>
+                                        <option value="fashion">Fashion</option>
+                                        <option value="home">Home & Garden</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row" id="productGrid">
+                                <!-- Products will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                            <h5 class="mb-0">Current Sale</h5>
+                            <button class="btn btn-sm btn-outline-danger" onclick="clearCart()">Clear</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="cartItems" class="mb-3">
+                                <p class="text-muted text-center">No items added</p>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tax (18%):</span>
+                                <span id="tax">₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <strong>Total:</strong>
+                                <strong id="total">₹0</strong>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-info" onclick="previewBill()" id="previewBtn" disabled>
+                                    <i class="fas fa-eye me-2"></i>Preview Bill
+                                </button>
+                                <button class="btn btn-success" onclick="processPayment()" id="checkoutBtn" disabled>
+                                    <i class="fas fa-credit-card me-2"></i>Process Payment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sales Management Tab -->
+        <div class="tab-pane fade" id="sales" role="tabpanel">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-rupee-sign fa-2x text-success mb-2"></i>
+                            <h4>₹45,670</h4>
+                            <p class="text-muted">Today's Sales</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-shopping-cart fa-2x text-primary mb-2"></i>
+                            <h4>23</h4>
+                            <p class="text-muted">Transactions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                            <h4>₹1,986</h4>
+                            <p class="text-muted">Avg. Sale</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                            <h4>2.5 min</h4>
+                            <p class="text-muted">Avg. Time</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Sales</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Sale ID</th>
+                                    <th>Time</th>
+                                    <th>Items</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#POS-001</td>
+                                    <td>14:30</td>
+                                    <td>3 items</td>
+                                    <td>₹2,450</td>
+                                    <td><span class="badge bg-success">Card</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">View</button>
+                                        <button class="btn btn-sm btn-outline-secondary">Print</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#POS-002</td>
+                                    <td>14:15</td>
+                                    <td>1 item</td>
+                                    <td>₹890</td>
+                                    <td><span class="badge bg-info">Cash</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">View</button>
+                                        <button class="btn btn-sm btn-outline-secondary">Print</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let cart = [];
+let products = [
+    { id: 1, name: 'iPhone 15 Pro', price: 125000, category: 'electronics', stock: 5 },
+    { id: 2, name: 'Samsung Galaxy S24', price: 85000, category: 'electronics', stock: 8 },
+    { id: 3, name: 'Nike Air Max', price: 12000, category: 'fashion', stock: 12 }
+];
+
+document.addEventListener('DOMContentLoaded', function() {
+    displayProducts();
+});
+
+function displayProducts() {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = products.map(product => `
+        <div class="col-md-4 mb-3">
+            <div class="card h-100" style="cursor: pointer;" onclick="addToCart(${product.id})">
+                <div class="card-body text-center">
+                    <h6 class="card-title">${product.name}</h6>
+                    <p class="text-success">₹${product.price.toLocaleString('en-IN')}</p>
+                    <small class="text-muted">Stock: ${product.stock}</small>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    const existingItem = cart.find(item => item.id === productId);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
+    
+    updateCart();
+}
+
+function updateCart() {
+    const cartItems = document.getElementById('cartItems');
+    const subtotalEl = document.getElementById('subtotal');
+    const taxEl = document.getElementById('tax');
+    const totalEl = document.getElementById('total');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="text-muted text-center">No items added</p>';
+        subtotalEl.textContent = '₹0';
+        taxEl.textContent = '₹0';
+        totalEl.textContent = '₹0';
+        checkoutBtn.disabled = true;
+        return;
+    }
+    
+    cartItems.innerHTML = cart.map(item => `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <small>${item.name}</small>
+                <br><small class="text-muted">₹${item.price.toLocaleString('en-IN')} x ${item.quantity}</small>
+            </div>
+            <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${item.id})">×</button>
+        </div>
+    `).join('');
+    
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const tax = subtotal * 0.18;
+    const total = subtotal + tax;
+    
+    subtotalEl.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+    taxEl.textContent = `₹${Math.round(tax).toLocaleString('en-IN')}`;
+    totalEl.textContent = `₹${Math.round(total).toLocaleString('en-IN')}`;
+    checkoutBtn.disabled = false;
+}
+
+function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    updateCart();
+}
+
+function clearCart() {
+    cart = [];
+    updateCart();
+}
+
+function processPayment() {
+    if (cart.length === 0) return;
+    
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 1.18;
+    
+    if (confirm(`Process payment of ₹${Math.round(total).toLocaleString('en-IN')}?`)) {
+        alert('Payment processed successfully!');
+        clearCart();
+    }
+}
+
+function newSale() {
+    clearCart();
+    document.getElementById('interface-tab').click();
+}
+
+function viewSalesHistory() {
+    document.getElementById('sales-tab').click();
+}
+</script>
+{% endblock %}

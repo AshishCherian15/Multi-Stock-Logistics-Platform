@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}User Management{% endblock %}
+{% block content %}
+<style>
+.stat-card{background:linear-gradient(135deg,rgba(0,20,168,0.05),rgba(0,20,168,0.02));border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:20px;backdrop-filter:blur(10px)}
+.stat-card h3{color:#0014A8;font-size:32px;font-weight:700;margin:10px 0}
+.stat-card p{color:#666;font-size:14px;margin:0}
+.user-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:20px;transition:all .3s;cursor:pointer}
+.user-card:hover{transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,20,168,0.15)}
+.user-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#0014A8,#000E75);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700}
+.role-badge{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.role-superadmin{background:linear-gradient(135deg,#dc3545,#c82333);color:#fff}
+.role-admin{background:linear-gradient(135deg,#0014A8,#000E75);color:#fff}
+.role-manager{background:linear-gradient(135deg,#17a2b8,#138496);color:#fff}
+.role-staff{background:linear-gradient(135deg,#28a745,#218838);color:#fff}
+.role-customer{background:linear-gradient(135deg,#6c757d,#5a6268);color:#fff}
+.status-active{color:#28a745;font-weight:600}
+.status-inactive{color:#dc3545;font-weight:600}
+.search-box{background:#fff;border:2px solid rgba(0,20,168,0.2);border-radius:10px;padding:12px 20px;transition:all .3s}
+.search-box:focus{border-color:#0014A8;box-shadow:0 0 0 3px rgba(0,20,168,0.1)}
+.filter-btn{background:#fff;border:2px solid rgba(0,20,168,0.2);color:#0014A8;border-radius:10px;padding:10px 20px;transition:all .3s}
+.filter-btn:hover,.filter-btn.active{background:#0014A8;color:#fff;border-color:#0014A8}
+.action-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;transition:all .3s;border:none}
+.btn-view{background:linear-gradient(135deg,#0014A8,#000E75);color:#fff}
+.btn-edit{background:linear-gradient(135deg,#17a2b8,#138496);color:#fff}
+.btn-delete{background:linear-gradient(135deg,#dc3545,#c82333);color:#fff}
+.action-btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(0,20,168,0.3)}
+</style>
+
+<div class="container-fluid" style="padding:30px">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color:#0014A8;font-weight:700"><i class="fas fa-users-cog me-2"></i>User Management</h2>
+        <a href="{% url 'create_user' %}" class="btn" style="background:linear-gradient(135deg,#0014A8,#000E75);color:#fff;padding:12px 24px;border-radius:10px;font-weight:600"><i class="fas fa-plus me-2"></i>New User</a>
+    </div>
+
+    <div class="row mb-4" id="statsRow">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <i class="fas fa-users" style="color:#0014A8;font-size:24px"></i>
+                <h3 id="totalUsers">0</h3>
+                <p>Total Users</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <i class="fas fa-user-check" style="color:#28a745;font-size:24px"></i>
+                <h3 id="activeUsers">0</h3>
+                <p>Active Users</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <i class="fas fa-user-times" style="color:#dc3545;font-size:24px"></i>
+                <h3 id="inactiveUsers">0</h3>
+                <p>Inactive Users</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <i class="fas fa-user-shield" style="color:#0014A8;font-size:24px"></i>
+                <h3 id="adminCount">0</h3>
+                <p>Administrators</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="border:1px solid rgba(0,20,168,0.1);border-radius:12px;box-shadow:0 4px 15px rgba(0,20,168,0.08)">
+        <div class="card-body" style="padding:30px">
+            <form method="get" class="mb-4">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control search-box" placeholder="Search users..." value="{{ search }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="role" class="form-control search-box">
+                            <option value="">All Roles</option>
+                            <option value="superadmin" {% if role_filter == 'superadmin' %}selected{% endif %}>SuperAdmin</option>
+                            <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admin</option>
+                            <option value="manager" {% if role_filter == 'manager' %}selected{% endif %}>Manager</option>
+                            <option value="staff" {% if role_filter == 'staff' %}selected{% endif %}>Staff</option>
+                            <option value="customer" {% if role_filter == 'customer' %}selected{% endif %}>Customer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="status" class="form-control search-box">
+                            <option value="">All Status</option>
+                            <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                            <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn filter-btn w-100"><i class="fas fa-filter me-2"></i>Filter</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="row">
+                {% for user in users %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="user-card" onclick="window.location.href='{% url 'user_detail' user.id %}'">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if user.profile.avatar_url %}
+                            <div class="avatar-wrapper me-3" onclick="event.stopPropagation();openAvatarModal('{{ user.profile.avatar_url }}', '{{ user.username|slice:":2"|upper }}')" style="cursor:pointer;" role="button" tabindex="0">
+                                <img src="{{ user.profile.avatar_url }}" 
+                                     alt="{{ user.username }}'s avatar" 
+                                     class="rounded-circle" 
+                                     style="width:60px;height:60px;object-fit:cover;border:3px solid #0014A8;"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                                <div class="user-avatar" style="display:none;">
+                                    {{ user.username|slice:":2"|upper }}
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="user-avatar me-3">{{ user.username|slice:":2"|upper }}</div>
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <h5 style="margin:0;color:#0014A8;font-weight:700">{{ user.username }}</h5>
+                                <p style="margin:0;color:#666;font-size:13px">{{ user.email }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="role-badge role-{{ user.profile.role }}">{{ user.profile.get_role_display }}</span>
+                            <span class="{% if user.profile.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                <i class="fas fa-circle" style="font-size:8px"></i> {% if user.profile.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+                        {% if user.profile.department %}
+                        <p style="margin:0 0 10px 0;color:#666;font-size:13px"><i class="fas fa-building me-2"></i>{{ user.profile.department }}</p>
+                        {% endif %}
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'user_detail' user.id %}" class="action-btn btn-view flex-grow-1" onclick="event.stopPropagation()"><i class="fas fa-eye me-1"></i>View</a>
+                            <a href="{% url 'edit_user' user.id %}" class="action-btn btn-edit flex-grow-1" onclick="event.stopPropagation()"><i class="fas fa-edit me-1"></i>Edit</a>
+                            <a href="{% url 'delete_user' user.id %}" class="action-btn btn-delete" onclick="event.stopPropagation();return confirm('Delete this user?')"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-users" style="font-size:64px;color:#ddd"></i>
+                    <p style="color:#999;margin-top:20px">No users found</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if users.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if users.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ users.previous_page_number }}&search={{ search }}&role={{ role_filter }}&status={{ status_filter }}">Previous</a></li>
+                    {% endif %}
+                    {% for num in users.paginator.page_range %}
+                    <li class="page-item {% if users.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}&search={{ search }}&role={{ role_filter }}&status={{ status_filter }}">{{ num }}</a></li>
+                    {% endfor %}
+                    {% if users.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ users.next_page_number }}&search={{ search }}&role={{ role_filter }}&status={{ status_filter }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+fetch('/users/api/stats/').then(r=>r.json()).then(d=>{
+    document.getElementById('totalUsers').textContent=d.total;
+    document.getElementById('activeUsers').textContent=d.active;
+    document.getElementById('inactiveUsers').textContent=d.inactive;
+    const admin=d.by_role.find(r=>r.role==='admin'||r.role==='superadmin');
+    document.getElementById('adminCount').textContent=admin?admin.count:0;
+});
+</script>
+{% endblock %}

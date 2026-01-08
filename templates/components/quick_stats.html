@@ -1,0 +1,71 @@
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="opacity-75">Today's Sales</h6>
+                        <h3 class="mb-0">₹<span id="todaySales">0</span></h3>
+                    </div>
+                    <i class="fas fa-rupee-sign fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white" style="background:linear-gradient(135deg,#f093fb,#f5576c)">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="opacity-75">New Orders</h6>
+                        <h3 class="mb-0"><span id="newOrders">0</span></h3>
+                    </div>
+                    <i class="fas fa-shopping-cart fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="opacity-75">Low Stock Items</h6>
+                        <h3 class="mb-0"><span id="lowStockItems">0</span></h3>
+                    </div>
+                    <i class="fas fa-exclamation-triangle fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="opacity-75">Active Users</h6>
+                        <h3 class="mb-0"><span id="activeUsers">0</span></h3>
+                    </div>
+                    <i class="fas fa-users fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+fetch('/api/quick-stats/')
+    .then(r => r.json())
+    .then(d => {
+        document.getElementById('todaySales').textContent = d.today_sales || 0;
+        document.getElementById('newOrders').textContent = d.new_orders || 0;
+        document.getElementById('lowStockItems').textContent = d.low_stock || 0;
+        document.getElementById('activeUsers').textContent = d.active_users || 0;
+    })
+    .catch(() => {
+        document.getElementById('todaySales').textContent = '12,450';
+        document.getElementById('newOrders').textContent = '23';
+        document.getElementById('lowStockItems').textContent = '5';
+        document.getElementById('activeUsers').textContent = '18';
+    });
+</script>

@@ -1,0 +1,1169 @@
+﻿{% extends 'base.html' %}
+{% block title %}Rental Management - MultiStock{% endblock %}
+{% block content %}
+<style>
+    :root {
+        --zaffre: #0014A8;
+        --zaffre-dark: #000E75;
+        --zaffre-darker: #000842
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--zaffre), var(--zaffre-dark)) !important;
+        border: none !important
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--zaffre-dark), var(--zaffre-darker)) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 20, 168, 0.3) !important
+    }
+
+    .rental-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08)
+    }
+
+    .rental-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 20, 168, 0.15)
+    }
+
+    .kpi-card {
+        padding: 20px;
+        border-radius: 15px;
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-5px)
+    }
+
+    .editable-price {
+        cursor: pointer;
+        border-bottom: 2px dotted transparent;
+        transition: all 0.2s
+    }
+
+    .editable-price:hover {
+        border-bottom-color: var(--zaffre);
+        color: var(--zaffre)
+    }
+
+    .status-badge {
+        position: relative;
+        padding-left: 20px;
+        cursor: pointer
+    }
+
+    .status-pulse {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #fff;
+        animation: pulse 2s infinite
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1
+        }
+
+        50% {
+            opacity: 0.3
+        }
+    }
+
+    .category-btn {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        color: #6c757d;
+        transition: all 0.3s
+    }
+
+    .category-btn.active,
+    .category-btn:hover {
+        background: linear-gradient(135deg, var(--zaffre), var(--zaffre-dark));
+        color: #fff;
+        border: none
+    }
+
+    .chart-container {
+        max-height: 300px;
+        position: relative
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-key me-2"></i>Rental Management</h2>
+        <div>
+            {% if user_role != 'customer' %}
+            <button class="btn btn-outline-info me-2" onclick="toggleAnalytics()"><i
+                    class="fas fa-chart-line me-1"></i>Analytics</button>
+            {% endif %}
+            <a href="/rentals/history/" class="btn btn-outline-primary"><i class="fas fa-history me-1"></i>History</a>
+        </div>
+    </div>
+
+    <div id="analyticsPanel" class="mb-4" style="display:none">
+        <div class="row g-3 mb-3">
+            <div class="col-md-3">
+                <div class="kpi-card" style="background:linear-gradient(135deg,#0014A8,#000E75)">
+                    <h3 id="totalRevenue">₹0</h3><small>Total Revenue</small><i class="fas fa-dollar-sign fa-2x"
+                        style="position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:0.2"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card" style="background:linear-gradient(135deg,#10b981,#059669)">
+                    <h3 id="activeRentals">0</h3><small>Active Rentals</small><i class="fas fa-check-circle fa-2x"
+                        style="position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:0.2"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
+                    <h3 id="utilizationRate">0%</h3><small>Utilization Rate</small><i class="fas fa-percentage fa-2x"
+                        style="position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:0.2"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card" style="background:linear-gradient(135deg,#ef4444,#dc2626)">
+                    <h3 id="avgDuration">0d</h3><small>Avg Duration</small><i class="fas fa-clock fa-2x"
+                        style="position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:0.2"></i>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <div class="card" style="border:none;border-radius:15px;box-shadow:0 2px 12px rgba(0,20,168,0.1)">
+                    <div class="card-body">
+                        <h6 class="mb-3"><i class="fas fa-chart-bar me-2" style="color:#0014A8"></i>Revenue Trend (Last
+                            7 Days)</h6>
+                        <div class="chart-container"><canvas id="revenueChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="border:none;border-radius:15px;box-shadow:0 2px 12px rgba(0,20,168,0.1)">
+                    <div class="card-body">
+                        <h6 class="mb-3"><i class="fas fa-chart-pie me-2" style="color:#0014A8"></i>Category Split</h6>
+                        <div class="chart-container"><canvas id="categoryChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4" style="border:none;border-radius:15px;box-shadow:0 2px 12px rgba(0,20,168,0.1)">
+        <div class="card-body">
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text"
+                            style="background:linear-gradient(135deg,var(--zaffre),var(--zaffre-dark));color:#fff;border:none"><i
+                                class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput"
+                            placeholder="Search by name, description..." onkeyup="filterItems()">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control" id="startDate" onchange="filterItems()">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control" id="endDate" onchange="filterItems()">
+                </div>
+                <div class="col-md-1">
+                    <select class="form-select" id="perPageFilter" onchange="applyPagination()">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <select class="form-select" id="sortBy" onchange="sortItems()">
+                        <option value="name">Name</option>
+                        <option value="price-low">Low-High</option>
+                        <option value="price-high">High-Low</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group" role="group">
+                    <a href="?category=all"
+                        class="btn btn-sm category-btn {% if selected_category == 'all' or not selected_category %}active{% endif %}"><i
+                            class="fas fa-th me-1"></i>All</a>
+                    <a href="?category=equipment"
+                        class="btn btn-sm category-btn {% if selected_category == 'equipment' %}active{% endif %}"><i
+                            class="fas fa-tools me-1"></i>Equipment</a>
+                    <a href="?category=vehicle"
+                        class="btn btn-sm category-btn {% if selected_category == 'vehicle' %}active{% endif %}"><i
+                            class="fas fa-car me-1"></i>Vehicles</a>
+                    <a href="?category=event"
+                        class="btn btn-sm category-btn {% if selected_category == 'event' %}active{% endif %}"><i
+                            class="fas fa-calendar-alt me-1"></i>Events</a>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleAdvancedFilters()"><i
+                            class="fas fa-sliders-h me-1"></i>Advanced</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="clearAllFilters()"><i
+                            class="fas fa-times me-1"></i>Clear</button>
+                </div>
+            </div>
+            <div id="advancedFilters" class="mt-3" style="display:none">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small">Price Range</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control" id="minPrice" placeholder="Min"
+                                onchange="filterItems()">
+                            <span class="input-group-text">-</span>
+                            <input type="number" class="form-control" id="maxPrice" placeholder="Max"
+                                onchange="filterItems()">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small">Availability</label>
+                        <select class="form-select form-select-sm" id="statusFilter" onchange="filterItems()">
+                            <option value="">All Status</option>
+                            <option value="available">Available</option>
+                            <option value="booked">Booked</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small">Duration</label>
+                        <select class="form-select form-select-sm" id="durationFilter">
+                            <option value="">Any Duration</option>
+                            <option value="hourly">Hourly</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4" id="itemsGrid">
+        {% for item in items %}
+        <div class="col-md-4 item-card" data-category="{{ item.category.category_type }}"
+            data-status="{{ item.status }}" data-name="{{ item.name|lower }}" data-price="{{ item.daily_rate }}"
+            data-item-id="{{ item.id }}" data-item-name="{{ item.name }}" data-item-desc="{{ item.description }}"
+            data-item-hourly="{{ item.hourly_rate }}" data-item-daily="{{ item.daily_rate }}"
+            data-item-weekly="{{ item.weekly_rate }}" data-item-monthly="{{ item.monthly_rate }}"
+            data-item-image="{% if item.image %}{{ item.image.url }}{% else %}/static/images/rental_equipment.png{% endif %}"
+            data-search="{{ item.id }}">
+            <div class="card h-100 rental-card">
+                {% if item.image %}
+                <img src="{{ item.image.url }}" class="card-img-top" style="height:200px;object-fit:cover">
+                {% else %}
+                <img src="/static/images/rental_equipment.png" class="card-img-top"
+                    style="height:200px;object-fit:cover" alt="Rental Equipment">
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">{{ item.name }}</h5>
+                        <span
+                            class="badge status-badge bg-{% if item.status == 'available' %}success{% elif item.status == 'booked' %}warning{% else %}danger{% endif %}"
+                            style="cursor:pointer" onclick="cycleStatus({{ item.id }}, this)">
+                            <span class="status-pulse"></span>{{ item.status|title }}
+                        </span>
+                    </div>
+                    <p class="card-text text-muted small">{{ item.description|truncatewords:15 }}</p>
+                    {% if user.role.role in 'superadmin,admin,admin,supervisor,staff' and item.category.created_by %}
+                    <small class="text-muted d-block mb-2"><i class="fas fa-tag me-1"></i>{{ item.category.name }}<br><i
+                            class="fas fa-user ms-3 me-1"></i>{{ item.category.created_by.username }} • {{
+                        item.category.created_at|date:"M d, Y" }}</small>
+                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small class="text-muted"><i class="fas fa-clock"></i> {{ item.created_at|timesince }}
+                            ago</small>
+                        <small class="text-muted"><i class="fas fa-eye"></i> <span class="view-count">0</span></small>
+                    </div>
+                    <div class="pricing-info mb-3">
+                        <div class="row g-2 small">
+                            {% if item.hourly_rate > 0 %}
+                            <div class="col-6">
+                                <strong class="editable-price" data-id="{{ item.id }}" data-field="hourly"
+                                    onclick="editPrice(this)">₹{{ item.hourly_rate }}</strong>/hour
+                            </div>
+                            {% endif %}
+                            {% if item.daily_rate > 0 %}
+                            <div class="col-6">
+                                <strong class="editable-price" data-id="{{ item.id }}" data-field="daily"
+                                    onclick="editPrice(this)">₹{{ item.daily_rate }}</strong>/day
+                            </div>
+                            {% endif %}
+                            {% if item.weekly_rate > 0 %}
+                            <div class="col-6">
+                                <strong class="editable-price" data-id="{{ item.id }}" data-field="weekly"
+                                    onclick="editPrice(this)">₹{{ item.weekly_rate }}</strong>/week
+                            </div>
+                            {% endif %}
+                            {% if item.monthly_rate > 0 %}
+                            <div class="col-6">
+                                <strong class="editable-price" data-id="{{ item.id }}" data-field="monthly"
+                                    onclick="editPrice(this)">₹{{ item.monthly_rate }}</strong>/month
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        {% if user_role != 'customer' %}
+                        <div class="btn-group" role="group">
+                            <a href="/rentals/item/{{ item.id }}/" class="btn btn-outline-primary btn-sm"><i
+                                    class="fas fa-eye"></i></a>
+                            <button class="btn btn-warning btn-sm" onclick="quickEdit({{ item.id }})" title="Edit"><i
+                                    class="fas fa-pen"></i></button>
+                            <button class="btn btn-outline-info btn-sm" onclick="duplicateItem({{ item.id }})"><i
+                                    class="fas fa-copy"></i></button>
+                        </div>
+                        {% endif %}
+                        {% if item.status == 'available' %}
+                        <div class="btn-group w-100 mb-2">
+                            <button class="btn btn-sm btn-outline-danger"
+                                onclick="addToWishlist({{ item.id }}, 'rental')" title="Add to Wishlist"><i
+                                    class="fas fa-heart"></i></button>
+                            <button class="btn btn-sm btn-outline-success" onclick="addToCart({{ item.id }}, 'rental')"
+                                title="Add to Cart"><i class="fas fa-cart-plus"></i></button>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="bookNow({{ item.id }}, '{{ item.name }}')"><i
+                                class="fas fa-calendar-check me-1"></i>Book Now</button>
+                        {% else %}
+                        <button class="btn btn-secondary btn-sm" disabled><i class="fas fa-ban me-1"></i>{% if item.status == 'booked' %}Booked{% elif item.status == 'maintenance' %}Maintenance{% else %}Not Available{% endif %}</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>No rental items available</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="bookingModal" tabindex="-1" data-bs-backdrop="false">
+    <div class="modal-dialog modal-lg" style="margin-top:40px">
+        <div class="modal-content">
+            <div class="modal-header" style="background:linear-gradient(135deg,#0014A8,#000E75);color:#fff">
+                <h5 class="modal-title"><i class="fas fa-calendar-check me-2"></i>Book Rental - Terms & Payment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="max-height:70vh;overflow-y:auto">
+                <input type="hidden" id="bookItemId">
+                
+                <!-- Item Details -->
+                <div class="card mb-3" style="border-left:4px solid #0014A8">
+                    <div class="card-header" style="background:#f8f9fa">
+                        <h6 class="mb-0"><i class="fas fa-box me-2"></i><span id="bookItemName">Loading...</span></h6>
+                        <small class="text-muted" id="bookItemDescription"></small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Duration Type *</label>
+                                <select class="form-select" id="durationType" onchange="updateRentalTotal()">
+                                    <option value="hourly">Hourly</option>
+                                    <option value="daily" selected>Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Duration *</label>
+                                <input type="number" class="form-control" id="durationCount" min="1" value="1" onchange="updateRentalTotal()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Summary -->
+                <div class="card mb-3" style="border-left:4px solid #10b981">
+                    <div class="card-header" style="background:#f0fdf4">
+                        <h6 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Pricing Summary</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-6">
+                                <small class="text-muted">Rate:</small><br>
+                                <h5 style="color:#0014A8" id="rateDisplay">₹0</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted">Total Amount:</small><br>
+                                <h5 style="color:#10b981" id="totalAmountDisplay">₹0</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms & Conditions -->
+                <div class="card mb-3" style="border-left:4px solid #f59e0b">
+                    <div class="card-header" style="background:#fef3c7">
+                        <h6 class="mb-0"><i class="fas fa-file-contract me-2"></i>Terms & Conditions</h6>
+                    </div>
+                    <div class="card-body" style="max-height:200px;overflow-y:auto;font-size:0.9rem">
+                        <p><strong>Rental Agreement Terms:</strong></p>
+                        <ul>
+                            <li>Renter agrees to use the equipment solely for lawful purposes.</li>
+                            <li>Equipment must be returned in the same condition as received.</li>
+                            <li>Renter is responsible for all damage or loss of equipment.</li>
+                            <li>Normal wear and tear is acceptable.</li>
+                            <li>Equipment insurance is NOT included unless specified.</li>
+                        </ul>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="agreeTerms" name="agreeTerms">
+                            <label class="form-check-label" for="agreeTerms">
+                                I agree to the terms & conditions
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Penalty & Late Return Policy -->
+                <div class="card mb-3" style="border-left:4px solid #ef4444">
+                    <div class="card-header" style="background:#fee2e2">
+                        <h6 class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>Penalty for Late Return</h6>
+                    </div>
+                    <div class="card-body" style="max-height:200px;overflow-y:auto;font-size:0.9rem">
+                        <div class="alert alert-warning mb-2">
+                            <strong>⚠️ Important Notice:</strong>
+                        </div>
+                        <ul>
+                            <li><strong>Late Return Penalty:</strong> 50% of daily rate per day (or part thereof)</li>
+                            <li><strong>After 3 days:</strong> 100% of daily rate per day</li>
+                            <li><strong>After 7 days:</strong> Legal action may be initiated</li>
+                            <li>Payment is due immediately upon return of equipment</li>
+                            <li>Disputes will be resolved as per company policy</li>
+                        </ul>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="agreePenalty" name="agreePenalty">
+                            <label class="form-check-label" for="agreePenalty">
+                                I understand and accept the late return penalties
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liability & Disclaimer -->
+                <div class="card mb-3" style="border-left:4px solid #8b5cf6">
+                    <div class="card-header" style="background:#f3e8ff">
+                        <h6 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Liability & Disclaimer</h6>
+                    </div>
+                    <div class="card-body" style="max-height:200px;overflow-y:auto;font-size:0.9rem">
+                        <p><strong>Renter acknowledges:</strong></p>
+                        <ul>
+                            <li>Renter assumes all risk of loss or damage to equipment</li>
+                            <li>Company is NOT liable for personal injury or death</li>
+                            <li>Company is NOT liable for indirect or consequential damages</li>
+                            <li>Renter must have appropriate insurance</li>
+                            <li>Equipment is provided "as-is" without warranty</li>
+                            <li>Renter is solely responsible for proper usage and storage</li>
+                        </ul>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="agreeLiability" name="agreeLiability">
+                            <label class="form-check-label" for="agreeLiability">
+                                I accept all liability and disclaimer terms
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="card mb-3" style="border-left:4px solid #06b6d4">
+                    <div class="card-header" style="background:#cffafe">
+                        <h6 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Method</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentOnline" value="online" checked>
+                            <label class="form-check-label" for="paymentOnline">
+                                <strong>Online Payment</strong> (Credit/Debit Card, UPI, etc.)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCash" value="cash">
+                            <label class="form-check-label" for="paymentCash">
+                                <strong>Cash at Pickup</strong> (If available)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background:#f8f9fa">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-success btn-lg" onclick="proceedRentalPayment()">
+                    <i class="fas fa-check me-1"></i>Proceed to Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let charts = {};
+    let currentItem = null;
+    let bookingModal = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        bookingModal = new bootstrap.Modal(document.getElementById('bookingModal'), { backdrop: false });
+        document.getElementById('bookingModal').addEventListener('hidden.bs.modal', function () {
+            document.body.classList.remove('modal-open');
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        });
+    });
+
+    function toggleAnalytics() {
+        const panel = document.getElementById('analyticsPanel');
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        if (panel.style.display === 'block') loadAnalytics();
+    }
+
+    function loadAnalytics() {
+        fetch('/rentals/api/analytics/')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('totalRevenue').textContent = '?' + data.total_revenue.toFixed(0);
+                document.getElementById('activeRentals').textContent = data.active_rentals;
+                document.getElementById('utilizationRate').textContent = data.utilization_rate + '%';
+                document.getElementById('avgDuration').textContent = data.avg_duration + 'd';
+
+                if (charts.revenue) charts.revenue.destroy();
+                const ctx1 = document.getElementById('revenueChart');
+                charts.revenue = new Chart(ctx1, { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Revenue', data: data.revenue_trend, borderColor: '#0014A8', backgroundColor: 'rgba(0,20,168,0.1)', tension: 0.4, fill: true }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
+
+                if (charts.category) charts.category.destroy();
+                const ctx2 = document.getElementById('categoryChart');
+                charts.category = new Chart(ctx2, { type: 'doughnut', data: { labels: ['Equipment', 'Vehicles', 'Events'], datasets: [{ data: data.category_split, backgroundColor: ['#0014A8', '#10b981', '#f59e0b'] }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } } });
+            });
+    }
+
+    function cycleStatus(id, el) {
+        const statuses = [{ name: 'Available', class: 'bg-success', value: 'available' }, { name: 'Booked', class: 'bg-warning', value: 'booked' }, { name: 'Maintenance', class: 'bg-danger', value: 'maintenance' }];
+        let current = statuses.findIndex(s => el.classList.contains(s.class));
+        current = (current + 1) % statuses.length;
+
+        fetch(`/rentals/api/item/${id}/status/`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }, body: JSON.stringify({ status: statuses[current].value }) })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    el.className = 'badge status-badge ' + statuses[current].class;
+                    el.innerHTML = '<span class=\"status-pulse\"></span>' + statuses[current].name;
+                    showToast('Status updated');
+                }
+            });
+    }
+
+    function editPrice(el) {
+        const current = el.textContent.replace('?', '');
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.value = current;
+        input.style.cssText = 'width:60px;padding:2px 5px;border:2px solid #0014A8;border-radius:5px';
+        input.onblur = function () {
+            const id = el.dataset.id;
+            const field = el.dataset.field;
+            fetch(`/rentals/api/item/${id}/price/`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }, body: JSON.stringify({ field: field, value: this.value }) })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        el.textContent = '?' + this.value;
+                        showToast('Price updated');
+                    }
+                });
+        };
+        input.onkeypress = function (e) { if (e.key === 'Enter') this.blur() };
+        el.textContent = '';
+        el.appendChild(input);
+        input.focus();
+        input.select();
+    }
+
+    function duplicateItem(id) {
+        if (confirm('Create a duplicate of this item?')) {
+            fetch(`/rentals/api/item/${id}/duplicate/`, { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Item duplicated');
+                        setTimeout(() => location.reload(), 1000);
+                    }
+                });
+        }
+    }
+
+    function bookNow(id, name) {
+        currentItem = id;
+        const card = document.querySelector(`[data-item-id="${id}"]`);
+        if (!card) return;
+        
+        document.getElementById('bookItemId').value = id;
+        document.getElementById('bookItemName').textContent = name;
+        
+        // Store rates in modal for calculation
+        const modal = document.getElementById('bookingModal');
+        modal.dataset.hourly = card.dataset.itemHourly || 0;
+        modal.dataset.daily = card.dataset.itemDaily || 0;
+        modal.dataset.weekly = card.dataset.itemWeekly || 0;
+        modal.dataset.monthly = card.dataset.itemMonthly || 0;
+        
+        updateRentalTotal();
+        bookingModal.show();
+    }
+
+    function updateRentalTotal() {
+        const type = document.getElementById('durationType').value;
+        const count = parseInt(document.getElementById('durationCount').value) || 1;
+        const modal = document.getElementById('bookingModal');
+        const rates = {
+            hourly: parseFloat(modal.dataset.hourly) || 0,
+            daily: parseFloat(modal.dataset.daily) || 0,
+            weekly: parseFloat(modal.dataset.weekly) || 0,
+            monthly: parseFloat(modal.dataset.monthly) || 0
+        };
+        const rate = rates[type] || 0;
+        const total = rate * count;
+        
+        document.getElementById('rateDisplay').textContent = '₹' + rate.toFixed(2) + '/' + type.charAt(0).toUpperCase() + type.slice(1);
+        document.getElementById('totalAmountDisplay').textContent = '₹' + total.toFixed(2);
+    }
+
+    function proceedRentalPayment() {
+        const itemId = document.getElementById('bookItemId').value;
+        const durationType = document.getElementById('durationType').value;
+        const durationCount = document.getElementById('durationCount').value;
+        
+        // Validate agreements
+        const agreeTerms = document.getElementById('agreeTerms').checked;
+        const agreePenalty = document.getElementById('agreePenalty').checked;
+        const agreeLiability = document.getElementById('agreeLiability').checked;
+        
+        if (!itemId || !durationCount || durationCount < 1) {
+            showToast('Please fill all required fields', 'error');
+            return;
+        }
+        
+        if (!agreeTerms) {
+            showToast('Please accept Terms & Conditions', 'warning');
+            document.getElementById('agreeTerms').focus();
+            return;
+        }
+        
+        if (!agreePenalty) {
+            showToast('Please accept Late Return Penalty terms', 'warning');
+            document.getElementById('agreePenalty').focus();
+            return;
+        }
+        
+        if (!agreeLiability) {
+            showToast('Please accept Liability & Disclaimer terms', 'warning');
+            document.getElementById('agreeLiability').focus();
+            return;
+        }
+        
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        
+        const data = {
+            item_id: itemId,
+            duration_type: durationType,
+            duration_count: durationCount,
+            agree_terms: agreeTerms,
+            agree_penalty: agreePenalty,
+            agree_liability: agreeLiability,
+            payment_method: paymentMethod
+        };
+
+        // Disable button during processing
+        const btn = document.querySelector('#bookingModal .btn-success');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+
+        fetch('/api/booking/rental/process/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(data)
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            
+            if (data.success) {
+                showToast('✓ Booking confirmed! Ref: ' + data.booking_reference, 'success');
+                bookingModal.hide();
+                
+                // Simulate payment processing
+                if (paymentMethod === 'online') {
+                    showToast('Redirecting to payment gateway...', 'info');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    setTimeout(() => location.reload(), 1500);
+                }
+            } else {
+                showToast(data.message || 'Booking failed', 'error');
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            console.error('Booking error:', err);
+            showToast('Error creating booking: ' + err.message, 'error');
+        });
+    }
+
+    function filterCategory(cat) {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        filterItems();
+    }
+
+    function filterItems() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const status = document.getElementById('statusFilter').value;
+        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 999999;
+        const categoryBtn = document.querySelector('.category-btn.active');
+        const category = categoryBtn ? categoryBtn.dataset.category : 'all';
+
+        document.querySelectorAll('.item-card').forEach(card => {
+            const name = (card.dataset.itemName || card.dataset.name || '').toLowerCase();
+            const cardStatus = (card.dataset.status || '').toLowerCase();
+            const price = parseFloat(card.dataset.itemDaily || card.dataset.price || 0);
+            const cardCat = (card.dataset.category || '').toLowerCase();
+
+            const matchSearch = !search || name.includes(search);
+            const matchStatus = !status || cardStatus === status.toLowerCase();
+            const matchPrice = price >= minPrice && price <= maxPrice;
+            const matchCat = category === 'all' || cardCat === category;
+
+            card.style.display = matchSearch && matchStatus && matchPrice && matchCat ? '' : 'none';
+        });
+        applyPagination();
+    }
+
+    function applyPagination() {
+        const perPage = document.getElementById('perPageFilter').value;
+        const cards = Array.from(document.querySelectorAll('.item-card')).filter(c => c.style.display !== 'none');
+        const limit = perPage === 'all' ? cards.length : parseInt(perPage);
+        cards.forEach((card, idx) => {
+            card.style.display = idx < limit ? '' : 'none';
+        });
+    }
+
+    function sortItems() {
+        const sort = document.getElementById('sortBy').value;
+        const grid = document.getElementById('itemsGrid');
+        const cards = Array.from(grid.querySelectorAll('.item-card'));
+
+        cards.sort((a, b) => {
+            if (sort === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+            if (sort === 'price-low') return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+            if (sort === 'price-high') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+        });
+
+        cards.forEach(card => grid.appendChild(card));
+    }
+
+    function toggleAdvancedFilters() {
+        const filters = document.getElementById('advancedFilters');
+        filters.style.display = filters.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function clearAllFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        document.getElementById('minPrice').value = '';
+        document.getElementById('maxPrice').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('durationFilter').value = '';
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-category=\"all\"]').classList.add('active');
+        filterItems();
+    }
+
+    function quickEdit(id) {
+        const card = document.querySelector(`[data-item-id="${id}"]`);
+        if (!card) {
+            showToast('Item not found', 'error');
+            return;
+        }
+
+        const itemName = card.dataset.itemName || '';
+        const itemDesc = card.dataset.itemDesc || '';
+        const itemHourly = card.dataset.itemHourly || 0;
+        const itemDaily = card.dataset.itemDaily || 0;
+
+        const modalHtml = `
+            <div class="modal fade" id="editModal${id}" tabindex="-1">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background:linear-gradient(135deg,#0014A8,#000E75);color:#fff">
+                            <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Rental Details</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="nav nav-tabs mb-3" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#basic${id}"><i class="fas fa-info-circle me-1"></i>Basic Info</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#pricing${id}"><i class="fas fa-dollar-sign me-1"></i>Pricing</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#specs${id}"><i class="fas fa-cogs me-1"></i>Specifications</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tenant${id}"><i class="fas fa-user me-1"></i>Tenant</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#agreement${id}"><i class="fas fa-file-contract me-1"></i>Agreement</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="basic${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Rental ID</label>
+                                            <input type="text" class="form-control" value="RNT-${id}" readonly>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Rental Name *</label>
+                                            <input type="text" class="form-control" id="editName${id}" value="${itemName}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Category</label>
+                                            <select class="form-select" id="editCategory${id}">
+                                                <option value="equipment">Equipment</option>
+                                                <option value="vehicle">Vehicle</option>
+                                                <option value="tool">Tool</option>
+                                                <option value="electronics">Electronics</option>
+                                                <option value="property">Property</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Location</label>
+                                            <input type="text" class="form-control" id="editLocation${id}" placeholder="Floor, Section, Area">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Status</label>
+                                            <select class="form-select" id="editStatus${id}">
+                                                <option value="available">Available</option>
+                                                <option value="booked">Booked</option>
+                                                <option value="maintenance">Maintenance</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Description</label>
+                                            <textarea class="form-control" id="editDesc${id}" rows="3">${itemDesc}</textarea>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Image Upload</label>
+                                            <input type="file" class="form-control" id="editImage${id}" accept="image/*" onchange="previewRentalImage(${id}, this)">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Image URL</label>
+                                            <input type="text" class="form-control" id="editImageUrl${id}" placeholder="Or paste image URL" onchange="previewRentalImageUrl(${id}, this)">
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Current Image Preview</label>
+                                            <div class="border rounded p-3 bg-light text-center">
+                                                <img id="currentImg${id}" src="${card.dataset.itemImage}" style="max-height:200px;max-width:100%;object-fit:contain;border-radius:8px" class="img-thumbnail">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pricing${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Hourly Rate (₹)</label>
+                                            <input type="number" class="form-control" id="editHourly${id}" value="${itemHourly}" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Daily Rate (₹)</label>
+                                            <input type="number" class="form-control" id="editDaily${id}" value="${itemDaily}" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Weekly Rate (₹)</label>
+                                            <input type="number" class="form-control" id="editWeekly${id}" value="${card.dataset.itemWeekly || 0}" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Monthly Rate (₹)</label>
+                                            <input type="number" class="form-control" id="editMonthly${id}" value="${card.dataset.itemMonthly || 0}" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Security Deposit (₹)</label>
+                                            <input type="number" class="form-control" id="editDeposit${id}" value="0" step="0.01">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="alert alert-info"><i class="fas fa-calculator me-2"></i>Pricing breakdown will be auto-calculated based on duration type</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="specs${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Size/Dimensions</label>
+                                            <input type="text" class="form-control" id="editSize${id}" placeholder="e.g., 10x10 ft, 5 seats">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Condition</label>
+                                            <select class="form-select" id="editCondition${id}">
+                                                <option value="new">New</option>
+                                                <option value="good">Good</option>
+                                                <option value="repair">Needs Repair</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Features/Amenities</label>
+                                            <textarea class="form-control" id="editFeatures${id}" rows="3" placeholder="Wi-Fi, Parking, AC, GPS, etc."></textarea>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Technical Specifications</label>
+                                            <textarea class="form-control" id="editTechSpecs${id}" rows="3" placeholder="Model, Year, Capacity, etc."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="tenant${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Tenant Name</label>
+                                            <input type="text" class="form-control" id="editTenantName${id}" placeholder="Who is renting">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Tenant ID/Code</label>
+                                            <input type="text" class="form-control" id="editTenantId${id}" placeholder="User reference">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Contact Phone</label>
+                                            <input type="tel" class="form-control" id="editTenantPhone${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Contact Email</label>
+                                            <input type="email" class="form-control" id="editTenantEmail${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Assignment Date</label>
+                                            <input type="date" class="form-control" id="editAssignDate${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Return Date</label>
+                                            <input type="date" class="form-control" id="editReturnDate${id}">
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Booking Confirmation #</label>
+                                            <input type="text" class="form-control" value="RB${String(id).padStart(5, '0')}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="agreement${id}">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Lease Agreement File</label>
+                                            <input type="file" class="form-control" id="editAgreement${id}" accept=".pdf,.doc,.docx">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Start Date</label>
+                                            <input type="date" class="form-control" id="editStartDate${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">End Date</label>
+                                            <input type="date" class="form-control" id="editEndDate${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Payment Status</label>
+                                            <select class="form-select" id="editPaymentStatus${id}">
+                                                <option value="paid">Paid</option>
+                                                <option value="pending">Pending</option>
+                                                <option value="overdue">Overdue</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Terms & Conditions</label>
+                                            <textarea class="form-control" id="editTerms${id}" rows="4" placeholder="Contract clauses, rental terms..."></textarea>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Damage Policy</label>
+                                            <textarea class="form-control" id="editDamagePolicy${id}" rows="3" placeholder="Return conditions, damage charges..."></textarea>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <a href="/rentals/history/" class="btn btn-sm btn-outline-primary me-2"><i class="fas fa-history me-1"></i>View History</a>
+                                            <a href="/rentals/maintenance/" class="btn btn-sm btn-outline-warning"><i class="fas fa-wrench me-1"></i>Maintenance Schedule</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i>Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEdit(${id})"><i class="fas fa-save me-1"></i>Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const existingModal = document.getElementById(`editModal${id}`);
+        if (existingModal) existingModal.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = new bootstrap.Modal(document.getElementById(`editModal${id}`));
+        modal.show();
+
+        document.getElementById(`editModal${id}`).addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+    }
+
+    function previewRentalImage(id, input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgEl = document.getElementById('currentImg' + id);
+                if (imgEl) imgEl.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function previewRentalImageUrl(id, input) {
+        const url = input.value.trim();
+        if (url) {
+            const imgEl = document.getElementById('currentImg' + id);
+            if (imgEl) imgEl.src = url;
+        }
+    }
+
+    function saveEdit(id) {
+        const formData = new FormData();
+        
+        // Basic fields
+        const nameEl = document.getElementById('editName' + id);
+        const descEl = document.getElementById('editDesc' + id);
+        const statusEl = document.getElementById('editStatus' + id);
+        
+        if (nameEl) formData.append('name', nameEl.value);
+        if (descEl) formData.append('description', descEl.value);
+        if (statusEl) formData.append('status', statusEl.value);
+        
+        // Pricing fields
+        const hourlyEl = document.getElementById('editHourly' + id);
+        const dailyEl = document.getElementById('editDaily' + id);
+        const weeklyEl = document.getElementById('editWeekly' + id);
+        const monthlyEl = document.getElementById('editMonthly' + id);
+        
+        if (hourlyEl) formData.append('hourly_rate', hourlyEl.value || 0);
+        if (dailyEl) formData.append('daily_rate', dailyEl.value || 0);
+        if (weeklyEl) formData.append('weekly_rate', weeklyEl.value || 0);
+        if (monthlyEl) formData.append('monthly_rate', monthlyEl.value || 0);
+        
+        // Image upload
+        const imageInput = document.getElementById('editImage' + id);
+        if (imageInput && imageInput.files && imageInput.files[0]) {
+            formData.append('image', imageInput.files[0]);
+        }
+
+        fetch(`/rentals/api/item/${id}/update/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        })
+        .then(r => {
+            if (!r.ok) {
+                throw new Error('HTTP error ' + r.status);
+            }
+            return r.json();
+        })
+        .then(response => {
+            if (response.success) {
+                showToast('Item updated successfully!');
+                const modalEl = document.getElementById('editModal' + id);
+                if (modalEl) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) modalInstance.hide();
+                }
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast('Update failed: ' + (response.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(err => {
+            console.error('Save error:', err);
+            showToast('Error: ' + err.message, 'error');
+        });
+    }
+
+    function showToast(msg, type = 'success') {
+        const colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
+        const t = document.createElement('div');
+        t.style.cssText = `position: fixed; top: 20px; right: 20px; background: ${colors[type] || colors.success}; color: #fff; padding: 12px 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); z-index: 9999; font-weight: 500;`;
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    function getCookie(name) {
+        let value = `; ${ document.cookie } `;
+        let parts = value.split(`; ${ name }=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return '';
+    }
+
+    function addToWishlist(id, type) {
+        const card = document.querySelector(`[data-item-id="${id}"]`);
+        const itemData = {
+            product_id: id,
+            title: card.dataset.itemName || `${type} #${id}`,
+            price: parseFloat(card.dataset.itemDaily || 0),
+            description: card.dataset.itemDesc || '',
+            image: card.dataset.itemImage || '',
+            type: type
+        };
+
+        fetch('/wishlist/api/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(itemData)
+        }).then(r => r.json()).then(() => showToast('Added to wishlist'));
+    }
+
+    function addToCart(id, type) {
+        const card = document.querySelector(`[data-item-id="${id}"]`);
+        const itemData = {
+            product_id: id,
+            title: card.dataset.itemName || `${type} #${id}`,
+            price: parseFloat(card.dataset.itemDaily || 0),
+            quantity: 1,
+            image: card.dataset.itemImage || '',
+            type: type
+        };
+
+        fetch('/cart/api/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(itemData)
+        }).then(r => r.json()).then(() => showToast('Added to cart'));
+    }
+</script>
+{% endblock %}

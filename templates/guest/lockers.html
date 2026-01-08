@@ -1,0 +1,277 @@
+{% extends 'base_guest.html' %}
+{% block title %}Smart Lockers - MultiStock{% endblock %}
+{% block content %}
+
+<style>
+    :root {
+        --zaffre: #0014A8;
+        --zaffre-dark: #000E75;
+    }
+
+    .locker-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 2px 12px rgba(0, 20, 168, 0.1);
+        transition: all 0.3s;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .locker-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 20, 168, 0.2);
+    }
+
+    .locker-header {
+        background: linear-gradient(135deg, var(--zaffre), var(--zaffre-dark));
+        color: white;
+        padding: 25px;
+        text-align: center;
+        position: relative;
+    }
+
+    .locker-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-available {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .locker-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+    }
+
+    .feature-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        background: linear-gradient(135deg, var(--zaffre), var(--zaffre-dark));
+        color: white;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        margin: 3px;
+    }
+
+    .price-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .price-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .price-item:last-child {
+        border-bottom: none;
+    }
+
+    .price-value {
+        font-weight: 700;
+        color: var(--zaffre);
+    }
+
+    .stats-card {
+        background: linear-gradient(135deg, var(--zaffre), var(--zaffre-dark));
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+    }
+
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+</style>
+
+<div class="container-fluid p-4 mt-5">
+    <div class="alert alert-warning text-center mb-4">
+        <i class="fas fa-lock me-2"></i>
+        <strong>Login Required:</strong> Please <a href="/auth/login-selection/" class="alert-link">login</a> to book lockers, add to cart, or add to wishlist.
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-box me-2"></i>Smart Lockers</h2>
+        <div>
+            <a href="/auth/login-selection/" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Dashboard -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ total_lockers }}</div>
+                <div>Total Lockers</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <div class="stats-number">{{ available }}</div>
+                <div>Available</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <div class="stats-number">{{ occupied }}</div>
+                <div>Occupied</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <div class="stats-number">{{ maintenance }}</div>
+                <div>Maintenance</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lockers Grid -->
+    <div class="row g-4" id="lockersGrid">
+        {% for locker in lockers %}
+        <div class="col-md-4 locker-item" data-number="{{ locker.locker_number|lower }}" data-price="{{ locker.locker_type.daily_rate }}">
+            <div class="card locker-card">
+                <div class="locker-header">
+                    <span class="status-badge status-available">
+                        <i class="fas fa-check-circle me-1"></i>Available
+                    </span>
+
+                    <div class="locker-icon">
+                        <i class="fas fa-box fa-2x"></i>
+                    </div>
+                    <div class="locker-number">{{ locker.locker_number }}</div>
+                    <small>{{ locker.locker_type.get_size_display }}</small>
+                </div>
+
+                {% if locker.image_url %}
+                <div>
+                    <img src="{{ locker.image_url }}" alt="Locker {{ locker.locker_number }}" style="width:100%;height:200px;object-fit:cover;" onerror="this.src='/static/images/no-image.svg';this.onerror=null;">
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <!-- Locker Type -->
+                    <h5 class="mb-3">{{ locker.locker_type.name }}</h5>
+
+                    <!-- Location -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            <span>{{ locker.location }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="mb-3">
+                        {% if locker.locker_type.has_climate_control %}
+                        <span class="feature-badge">
+                            <i class="fas fa-snowflake me-1"></i>Climate Control
+                        </span>
+                        {% endif %}
+                        {% if locker.locker_type.has_security_monitoring %}
+                        <span class="feature-badge">
+                            <i class="fas fa-shield-alt me-1"></i>Security Monitored
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Pricing -->
+                    <div class="price-box">
+                        <div class="price-item">
+                            <span>Hourly:</span>
+                            <span class="price-value">₹{{ locker.locker_type.hourly_rate }}/hr</span>
+                        </div>
+                        <div class="price-item">
+                            <span>Daily:</span>
+                            <span class="price-value">₹{{ locker.locker_type.daily_rate }}/day</span>
+                        </div>
+                        <div class="price-item">
+                            <span>Weekly:</span>
+                            <span class="price-value">₹{{ locker.locker_type.weekly_rate }}/week</span>
+                        </div>
+                        <div class="price-item">
+                            <span>Monthly:</span>
+                            <span class="price-value">₹{{ locker.locker_type.monthly_rate }}/month</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="/auth/login-selection/" class="btn btn-primary w-100">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login to Book
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No lockers available</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if page_obj %}
+<div class="d-flex justify-content-center my-4">
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput')?.addEventListener('input', function (e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('.locker-item');
+
+        items.forEach(item => {
+            const number = item.dataset.number;
+            if (number.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

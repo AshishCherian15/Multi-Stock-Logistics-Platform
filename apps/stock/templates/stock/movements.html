@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Stock Movements - MultiStock{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Stock Movements</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMovementModal"><i class="fas fa-plus me-2"></i>Add Movement</button>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Product Code</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Reason</th>
+                            <th>User</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movement in movements %}
+                        <tr>
+                            <td>{{ movement.created_at|date:"M d, Y H:i" }}</td>
+                            <td><code>{{ movement.goods_code }}</code></td>
+                            <td>
+                                {% if movement.movement_type == 'in' %}
+                                <span class="badge bg-success">{{ movement.get_movement_type_display }}</span>
+                                {% elif movement.movement_type == 'out' %}
+                                <span class="badge bg-danger">{{ movement.get_movement_type_display }}</span>
+                                {% else %}
+                                <span class="badge bg-warning">{{ movement.get_movement_type_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ movement.quantity }}</td>
+                            <td>{{ movement.reason }}</td>
+                            <td>{{ movement.user.username|default:"System" }}</td>
+                            <td>
+                                <a href="/stock/movements/{{ movement.id }}/delete/" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete movement?')"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center">No movements found</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Movement Modal -->
+<div class="modal" id="addMovementModal">
+    <div class="modal-dialog">
+        <form method="post" action="/stock/api/adjust/">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Stock Movement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Product Code</label>
+                        <input type="text" name="goods_code" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Type</label>
+                        <select name="type" class="form-select" required>
+                            <option value="increase">Stock In</option>
+                            <option value="decrease">Stock Out</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Quantity</label>
+                        <input type="number" name="quantity" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Reason</label>
+                        <textarea name="reason" class="form-control" rows="2" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

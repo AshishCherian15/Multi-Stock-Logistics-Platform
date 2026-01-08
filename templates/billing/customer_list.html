@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}My Bills & Receipts{% endblock %}
+{% block content %}
+<style>
+:root{--zaffre:#0014A8}
+.nav-tabs .nav-link{border:none;color:#666;font-weight:600;padding:1rem 2rem;transition:all 0.3s}
+.nav-tabs .nav-link.active{color:var(--zaffre);border-bottom:3px solid var(--zaffre);background:transparent}
+.invoice-card{border:none;border-radius:15px;box-shadow:0 2px 12px rgba(0,20,168,0.1);transition:all 0.3s}
+.invoice-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,20,168,0.15)}
+.btn-primary{background:linear-gradient(135deg,var(--zaffre),#000E75);border:none}
+</style>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-invoice-dollar me-2" style="color:var(--zaffre)"></i>My Bills & Receipts</h2>
+    </div>
+    
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#bills"><i class="fas fa-file-invoice me-2"></i>My Bills</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#receipts"><i class="fas fa-receipt me-2"></i>My Receipts</a>
+        </li>
+    </ul>
+    
+    <div class="tab-content">
+        <!-- Bills Tab -->
+        <div id="bills" class="tab-pane fade show active">
+            <div class="card mb-4" style="border:none;border-radius:15px;box-shadow:0 2px 12px rgba(0,20,168,0.1)">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <input type="text" id="invoiceSearch" class="form-control" placeholder="Search invoice number..." onkeyup="filterInvoices()">
+                        </div>
+                        <div class="col-md-4">
+                            <select id="invoiceStatus" class="form-select" onchange="filterInvoices()">
+                                <option value="">All Status</option>
+                                <option value="sent">Unpaid</option>
+                                <option value="paid">Paid</option>
+                                <option value="overdue">Overdue</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4" id="invoicesContainer">
+                {% for invoice in invoices %}
+                <div class="col-md-6 invoice-item" data-status="{{ invoice.status }}" data-search="{{ invoice.invoice_number|lower }}">
+                    <div class="card invoice-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="mb-1">{{ invoice.invoice_number }}</h5>
+                                    <small class="text-muted">{{ invoice.invoice_type|title }}</small>
+                                </div>
+                                <span class="badge {% if invoice.status == 'paid' %}bg-success{% elif invoice.status == 'overdue' %}bg-danger{% else %}bg-warning{% endif %}">{{ invoice.get_status_display }}</span>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-6"><small class="text-muted">Date:</small><br>{{ invoice.invoice_date|date:"M d, Y" }}</div>
+                                <div class="col-6"><small class="text-muted">Due:</small><br>{{ invoice.due_date|date:"M d, Y" }}</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 style="color:var(--zaffre);margin:0">₹{{ invoice.grand_total }}</h4>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="viewInvoice({{ invoice.id }})" title="View"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-outline-success" onclick="downloadInvoicePDF({{ invoice.id }})" title="Download PDF"><i class="fas fa-download"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12"><div class="alert alert-info">No bills found</div></div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Receipts Tab -->
+        <div id="receipts" class="tab-pane fade">
+            <div class="card mb-4" style="border:none;border-radius:15px;box-shadow:0 2px 12px rgba(0,20,168,0.1)">
+                <div class="card-body">
+                    <input type="text" id="receiptSearch" class="form-control" placeholder="Search receipt number..." onkeyup="filterReceipts()">
+                </div>
+            </div>
+            
+            <div class="row g-4" id="receiptsContainer">
+                {% for receipt in receipts %}
+                <div class="col-md-6 receipt-item" data-search="{{ receipt.receipt_number|lower }}">
+                    <div class="card invoice-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="mb-1">{{ receipt.receipt_number }}</h5>
+                                    <small class="text-muted">Invoice: {{ receipt.invoice.invoice_number }}</small>
+                                </div>
+                                <span class="badge bg-success">Paid</span>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-6"><small class="text-muted">Date:</small><br>{{ receipt.payment_date|date:"M d, Y" }}</div>
+                                <div class="col-6"><small class="text-muted">Mode:</small><br>{{ receipt.get_payment_mode_display }}</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 style="color:var(--zaffre);margin:0">₹{{ receipt.amount_paid }}</h4>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="viewReceipt({{ receipt.id }})" title="View"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-outline-success" onclick="downloadReceiptPDF({{ receipt.id }})" title="Download PDF"><i class="fas fa-download"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12"><div class="alert alert-info">No receipts found</div></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterInvoices() {
+    const search = document.getElementById('invoiceSearch').value.toLowerCase();
+    const status = document.getElementById('invoiceStatus').value;
+    const items = document.querySelectorAll('.invoice-item');
+    
+    items.forEach(item => {
+        const searchText = item.dataset.search;
+        const itemStatus = item.dataset.status;
+        const matchSearch = !search || searchText.includes(search);
+        const matchStatus = !status || itemStatus === status;
+        item.style.display = matchSearch && matchStatus ? '' : 'none';
+    });
+}
+
+function filterReceipts() {
+    const search = document.getElementById('receiptSearch').value.toLowerCase();
+    const items = document.querySelectorAll('.receipt-item');
+    
+    items.forEach(item => {
+        const searchText = item.dataset.search;
+        const matchSearch = !search || searchText.includes(search);
+        item.style.display = matchSearch ? '' : 'none';
+    });
+}
+
+function viewInvoice(id) {
+    window.location.href = `/billing/${id}/`;
+}
+
+function downloadInvoicePDF(id) {
+    window.location.href = `/billing/${id}/pdf/`;
+}
+
+function viewReceipt(id) {
+    window.location.href = `/billing/receipt/${id}/`;
+}
+
+function downloadReceiptPDF(id) {
+    window.location.href = `/billing/receipt/${id}/pdf/`;
+}
+</script>
+{% endblock %}

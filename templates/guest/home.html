@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome to MultiStock Logistics{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="display-4 fw-bold mb-3">Welcome to MultiStock</h1>
+                <p class="lead mb-4">Your Complete Logistics & Storage Solution</p>
+                <p class="mb-4">Browse products, rent equipment, book storage units, and more!</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'auth:register' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Sign Up Free
+                    </a>
+                    <a href="{% url 'guest:products' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-shopping-cart me-2"></i>Browse Products
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <i class="fas fa-warehouse" style="font-size: 15rem; opacity: 0.2;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Our Services</h2>
+        <p class="text-muted">Everything you need for your logistics</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-shopping-cart text-primary mb-3" style="font-size: 3rem;"></i>
+                    <h5>Marketplace</h5>
+                    <p class="text-muted">Buy products from our extensive catalog</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-key text-success mb-3" style="font-size: 3rem;"></i>
+                    <h5>Equipment Rental</h5>
+                    <p class="text-muted">Rent equipment for your business needs</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-warehouse text-warning mb-3" style="font-size: 3rem;"></i>
+                    <h5>Storage Units</h5>
+                    <p class="text-muted">Secure storage for your goods</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-lock text-info mb-3" style="font-size: 3rem;"></i>
+                    <h5>Smart Lockers</h5>
+                    <p class="text-muted">Convenient locker services</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Products -->
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Featured Products</h2>
+            <p class="text-muted">Check out our popular items</p>
+        </div>
+
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="text-center mb-3" style="height: 150px; overflow: hidden;">
+                            {% if product.stock_image %}
+                            <img src="{{ product.stock_image }}" alt="{{ product.goods_desc }}" class="img-fluid"
+                                style="max-height: 150px; object-fit: contain;">
+                            {% else %}
+                            <i class="fas fa-box text-primary" style="font-size: 3rem;"></i>
+                            {% endif %}
+                        </div>
+                        <h6 class="card-title">{{ product.goods_desc }}</h6>
+                        <p class="text-muted small">{{ product.goods_desc|truncatewords:10 }}</p>
+                        <p class="text-primary fw-bold mb-2">₹{{ product.goods_price }}</p>
+                        <a href="{% url 'guest:product_detail' product.id %}"
+                            class="btn btn-sm btn-outline-primary w-100">
+                            <i class="fas fa-eye me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center text-muted">
+                <p>No products available</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'guest:products' %}" class="btn btn-primary">
+                <i class="fas fa-th me-2"></i>View All Products
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="container my-5">
+    <div class="card border-0 shadow-lg bg-primary text-white">
+        <div class="card-body text-center py-5">
+            <h2 class="fw-bold mb-3">Ready to Get Started?</h2>
+            <p class="lead mb-4">Join thousands of satisfied customers today!</p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="{% url 'auth:register' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Create Account
+                </a>
+                <a href="{% url 'guest:services' %}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-info-circle me-2"></i>Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #0014A8 0%, #0066cc 100%);
+    }
+
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}

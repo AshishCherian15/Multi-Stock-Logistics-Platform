@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Book Storage - MultiStock{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Book Storage Unit</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4>{{ unit.unit_number }} - {{ unit.get_type_display }}</h4>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" name="start_date" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">End Date</label>
+                            <input type="date" name="end_date" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notes (Optional)</label>
+                            <textarea name="notes" class="form-control" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Booking Summary</h5>
+                    <p><strong>Unit:</strong> {{ unit.unit_number }}</p>
+                    <p><strong>Size:</strong> {{ unit.size_sqft }} sq ft</p>
+                    <p><strong>Location:</strong> {{ unit.location }}</p>
+                    <hr>
+                    <h4>${{ unit.price_per_month }}/month</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

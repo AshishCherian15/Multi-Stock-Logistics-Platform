@@ -1,0 +1,1182 @@
+﻿{% extends 'base.html' %}
+{% block title %}Storage Units - MultiStock{% endblock %}
+{% block content %}
+<style>
+    :root {
+        --zaffre: #0014A8;
+        --zaffre-dark: #000E75
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--zaffre), var(--zaffre-dark)) !important;
+        border: none !important
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 20, 168, 0.3) !important
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 20, 168, 0.15)
+    }
+
+    .kpi-card {
+        padding: 20px;
+        border-radius: 15px;
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-5px)
+    }
+
+    .editable-field {
+        cursor: pointer;
+        border-bottom: 2px dotted transparent;
+        transition: all 0.2s
+    }
+
+    .editable-field:hover {
+        border-bottom-color: var(--zaffre);
+        color: var(--zaffre)
+    }
+
+    .availability-badge {
+        position: relative;
+        padding-left: 20px
+    }
+
+    .pulse-dot {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #fff;
+        animation: pulse 2s infinite
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1
+        }
+
+        50% {
+            opacity: 0.4
+        }
+    }
+
+    .chart-container {
+        max-height: 300px;
+        position: relative
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="fas fa-warehouse"></i> Storage Units</h1>
+            <p class="text-muted mb-0">Find the perfect storage solution for your needs</p>
+        </div>
+        <div>
+            {% if user_role != 'customer' %}
+            <button class="btn btn-outline-info me-2" onclick="toggleAnalytics()"><i
+                    class="fas fa-chart-bar me-1"></i>Analytics</button>
+            <button class="btn btn-primary" onclick="openBookModal()"><i class="fas fa-plus me-1"></i>Book Unit</button>
+            {% else %}
+            <button class="btn btn-primary" onclick="openBookModal()"><i class="fas fa-plus me-1"></i>Book Unit</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="storageAnalytics" class="mb-4" style="display:none">
+        <div class="row g-3 mb-3">
+            <div class="col-md-3">
+                <div class="kpi-card" style="background:linear-gradient(135deg,#0014A8,#000E75)">
+                    <h3 id="totalUnits">0</h3><small>Total Units</small><i class="fas fa-warehouse fa-2x"
+                        style="position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:0.2"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card" style="background:linear-gradient(135deg,#10b981,#059669)">
+                    <h3 id="occupancyRate">0%</h3><small>Occupancy Rate</small><i class="fas fa-chart-pie fa-2x"
+                        style="position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:0.2"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
+                    <h3 id="monthlyRevenue">₹0</h3><small>Monthly Revenue</small><i class="fas fa-dollar-sign fa-2x"
+                        style="position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:0.2"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">
+                    <h3 id="avgSize">0</h3><small>Avg Size (sq ft)</small><i class="fas fa-ruler-combined fa-2x"
+                        style="position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:0.2"></i>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="mb-3"><i class="fas fa-chart-area me-2" style="color:#0014A8"></i>Occupancy Trend
+                        </h6>
+                        <div class="chart-container"><canvas id="occupancyChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="mb-3"><i class="fas fa-chart-bar me-2" style="color:#0014A8"></i>Units by Floor</h6>
+                        <div class="chart-container"><canvas id="floorChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3 mb-3">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text"
+                            style="background:linear-gradient(135deg,var(--zaffre),var(--zaffre-dark));color:#fff;border:none"><i
+                                class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput"
+                            placeholder="Search by unit number, location, zone..." onkeyup="filterUnits()">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="typeFilter" onchange="filterUnits()">
+                        <option value="">All Types</option>
+                        <option value="locker">Locker</option>
+                        <option value="mini">Mini</option>
+                        <option value="standard">Standard</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="floorFilter" onchange="filterUnits()">
+                        <option value="">All Floors</option>
+                        <option value="1">Floor 1</option>
+                        <option value="2">Floor 2</option>
+                        <option value="3">Floor 3</option>
+                        <option value="4">Floor 4</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <select class="form-select" id="perPageFilter" onchange="applyPagination()">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <select class="form-select" id="sortBy" onchange="sortUnits()">
+                        <option value="price-low">Low-High</option>
+                        <option value="price-high">High-Low</option>
+                        <option value="size">Size</option>
+                        <option value="unit">Unit</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-outline-secondary w-100" onclick="toggleAdvancedFilters()"
+                        title="Advanced Filters"><i class="fas fa-sliders-h"></i></button>
+                </div>
+            </div>
+            <div id="advancedFilters" style="display:none">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small">Price Range (₹/month)</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control" id="minPrice" placeholder="Min"
+                                onchange="filterUnits()">
+                            <span class="input-group-text">-</span>
+                            <input type="number" class="form-control" id="maxPrice" placeholder="Max"
+                                onchange="filterUnits()">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small">Size Range (sq ft)</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control" id="minSize" placeholder="Min"
+                                onchange="filterUnits()">
+                            <span class="input-group-text">-</span>
+                            <input type="number" class="form-control" id="maxSize" placeholder="Max"
+                                onchange="filterUnits()">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small">Climate Control</label>
+                        <select class="form-select form-select-sm" id="climateFilter" onchange="filterUnits()">
+                            <option value="">Any</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small">Availability</label>
+                        <select class="form-select form-select-sm" id="availabilityFilter" onchange="filterUnits()">
+                            <option value="">All</option>
+                            <option value="available">Available</option>
+                            <option value="occupied">Occupied</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-sm btn-outline-danger w-100" onclick="clearAllFilters()"
+                            style="margin-top:24px"><i class="fas fa-times me-1"></i>Clear All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4" id="unitsGrid">
+        {% for unit in units %}
+        <div class="col-md-4 unit-card" data-type="{{ unit.type }}" data-floor="{{ unit.floor }}"
+            data-status="{{ unit.status }}" data-price="{{ unit.price_per_month }}" data-size="{{ unit.size_sqft }}"
+            data-climate="{{ unit.is_climate_controlled|yesno:'yes,no' }}"
+            data-search="{{ unit.unit_number|lower }} {{ unit.location|lower }} {{ unit.zone|lower }}">
+            <div class="card h-100">
+                <img src="/static/images/storage_unit.png" class="card-img-top" style="height:180px;object-fit:cover"
+                    alt="Storage Unit">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="editable-field" data-id="{{ unit.id }}" data-field="unit_number"
+                            onclick="editField(this)">{{ unit.unit_number }}</h5>
+                        {% if user_role != 'customer' %}
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-link text-muted" data-bs-toggle="dropdown"><i
+                                    class="fas fa-ellipsis-v"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" onclick="editUnit({{ unit.id }})"><i
+                                            class="fas fa-edit me-2"></i>Edit</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="duplicateUnit({{ unit.id }})"><i
+                                            class="fas fa-copy me-2"></i>Duplicate</a></li>
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteUnit({{ unit.id }})"><i
+                                            class="fas fa-trash me-2"></i>Delete</a></li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted">{{ unit.get_type_display }}</p>
+                    {% if user.role.role in 'superadmin,admin,admin,supervisor,staff' %}
+                    {% load categories_tags %}
+                    {% get_category_info unit.type as cat_info %}
+                    {% if cat_info.created_by %}
+                    <small class="text-muted d-block"><i class="fas fa-user me-1"></i>{{ cat_info.created_by }} • {{ cat_info.created_at }}</small>
+                    {% endif %}
+                    {% endif %}
+                    <p><i class="fas fa-map-marker-alt"></i> {{ unit.location }} - Floor {{ unit.floor }}</p>
+                    <p><i class="fas fa-ruler-combined"></i> <span class="editable-field" data-id="{{ unit.id }}"
+                            data-field="size_sqft" onclick="editField(this)">{{ unit.size_sqft }}</span> sq ft</p>
+                    {% if unit.is_climate_controlled %}
+                    <span class="badge bg-info"><i class="fas fa-snowflake"></i> Climate Controlled</span>
+                    {% endif %}
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-{% if unit.status == 'available' %}success{% elif unit.status == 'occupied' %}warning{% else %}danger{% endif %} availability-badge" style="cursor:pointer" onclick="cycleStatus({{ unit.id }}, this)"><i class="fas fa-circle pulse-dot"></i> {{ unit.get_status_display }}</span>
+                        <small class="text-muted"><i class="fas fa-clock"></i> {{ unit.created_at|timesince }} ago</small>
+                    </div>
+                    <h4 style="color:var(--zaffre);font-weight:700" class="editable-field" data-id="{{ unit.id }}"
+                        data-field="price_per_month" onclick="editField(this)">₹{{ unit.price_per_month }}/mo</h4>
+                    <div class="d-grid gap-2">
+                        {% if user_role != 'customer' %}
+                        <div class="btn-group" role="group">
+                            <a href="/storage/{{ unit.id }}/" class="btn btn-outline-primary btn-sm"><i class="fas fa-eye"></i></a>
+                            <button class="btn btn-warning btn-sm" onclick="editUnit({{ unit.id }})" title="Edit"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-outline-info btn-sm" onclick="duplicateUnit({{ unit.id }})"><i class="fas fa-copy"></i></button>
+                        </div>
+                        {% endif %}
+                        {% if unit.status == 'available' %}
+                        <button class="btn btn-primary btn-sm" onclick="quickBook({{ unit.id }}, '{{ unit.unit_number }}', {{ unit.price_per_month }})"><i class="fas fa-calendar-check me-1"></i>Book Now</button>
+                        {% else %}
+                        <button class="btn btn-secondary btn-sm" disabled><i class="fas fa-ban me-1"></i>{{ unit.get_status_display }}</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">No storage units available</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="bookingModal" tabindex="-1" data-bs-backdrop="false">
+    <div class="modal-dialog modal-lg" style="margin-top:40px;max-height:90vh;overflow-y:auto">
+        <div class="modal-content">
+            <div class="modal-header" style="background:linear-gradient(135deg,#0014A8,#000E75);color:#fff">
+                <h5 class="modal-title"><i class="fas fa-warehouse me-2"></i>Book Storage Unit - Complete Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="max-height:calc(90vh - 120px);overflow-y:auto">
+                <input type="hidden" id="bookUnitId">
+                <h6 id="bookUnitName" class="mb-4" style="color:#0014A8;font-weight:bold"></h6>
+                
+                <!-- Storage Details Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-info-circle me-2" style="color:#0014A8"></i>Storage Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Customer Name *</label>
+                                <input type="text" class="form-control" id="customerName" value="{{ user.get_full_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Phone *</label>
+                                <input type="tel" class="form-control" id="customerPhone" value="{{ user.profile.phone|default:'' }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Start Date *</label>
+                                <input type="date" class="form-control" id="startDate" required onchange="updateStorageTotal()">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Duration (months) *</label>
+                                <input type="number" class="form-control" id="durationMonths" min="1" value="1"
+                                    onchange="updateStorageTotal()" required>
+                            </div>
+                            <div class="col-md-12 mb-0">
+                                <label class="form-label fw-bold">Items Description *</label>
+                                <textarea class="form-control" id="itemsDescription" rows="3" placeholder="Describe items to be stored..." required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Summary Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-calculator me-2" style="color:#0014A8"></i>Pricing Summary</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">Monthly Rate</small>
+                                <h6 class="text-success" id="rateDisplay">₹0.00</h6>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">Duration</small>
+                                <h6 class="text-info"><span id="durationDisplay">1</span> months</h6>
+                            </div>
+                            <div class="col-md-4 mb-0">
+                                <small class="text-muted">Total Amount</small>
+                                <h5 class="text-primary fw-bold" id="totalAmountDisplay">₹0.00</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms & Conditions Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-file-contract me-2" style="color:#0014A8"></i>Terms & Conditions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div style="max-height:150px;overflow-y:auto;padding:10px;background:#f9f9f9;border-radius:5px;margin-bottom:10px">
+                            <small>
+                                <p><strong>Storage Agreement Terms:</strong></p>
+                                <ul style="margin-bottom:10px">
+                                    <li>You agree to store items in the booked unit only</li>
+                                    <li>Items must comply with safety regulations - no hazardous materials</li>
+                                    <li>We reserve the right to inspect units for compliance</li>
+                                    <li>Payment must be made in full before access</li>
+                                    <li>Unit access is provided during business hours (7 AM - 7 PM)</li>
+                                    <li>Lost keys/locks will be charged at ₹500 per replacement</li>
+                                    <li>Facility is not responsible for items damaged due to natural calamities</li>
+                                    <li>Termination notice: 7 days required for unit cancellation</li>
+                                </ul>
+                            </small>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agreeTerms">
+                            <label class="form-check-label" for="agreeTerms">
+                                I agree to the Terms & Conditions
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Late Payment Penalty Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#fff5e6,#ffe8cc);border-bottom:2px solid #ff6b35">
+                        <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2" style="color:#ff6b35"></i>Payment Penalties</h6>
+                    </div>
+                    <div class="card-body">
+                        <div style="max-height:150px;overflow-y:auto;padding:10px;background:#fff9f0;border-left:4px solid #ff6b35;border-radius:5px;margin-bottom:10px">
+                            <small>
+                                <p><strong style="color:#d84315">⚠️ Late Payment Structure:</strong></p>
+                                <ul style="margin-bottom:10px">
+                                    <li><strong>Up to 3 days late:</strong> 50% penalty on monthly rental</li>
+                                    <li><strong>4-30 days late:</strong> 100% penalty on monthly rental</li>
+                                    <li><strong>Beyond 30 days:</strong> Unit will be locked and items forfeited</li>
+                                    <li><strong>Notice:</strong> We will attempt to contact you before taking action</li>
+                                    <li><strong>Recovery:</strong> Legal proceedings may be initiated for recovery</li>
+                                    <li><strong>Interest:</strong> 24% annum on overdue amounts</li>
+                                </ul>
+                            </small>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agreePenalty">
+                            <label class="form-check-label" for="agreePenalty">
+                                I understand and accept the payment penalty structure
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Climate Control & Liability Disclaimer Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-shield-alt me-2" style="color:#0014A8"></i>Climate Control & Liability Disclaimer</h6>
+                    </div>
+                    <div class="card-body">
+                        <div style="max-height:150px;overflow-y:auto;padding:10px;background:#f9f9f9;border-radius:5px;margin-bottom:10px">
+                            <small>
+                                <p><strong>Climate Control & Environmental Conditions:</strong></p>
+                                <ul style="margin-bottom:10px">
+                                    <li>Standard units: Not climate controlled - subject to ambient temperature</li>
+                                    <li>Climate-controlled units: Temperature maintained at 18-25°C (where available)</li>
+                                    <li>Humidity levels not guaranteed - customer assumes environmental risk</li>
+                                    <li>Facility is NOT liable for damage due to:</li>
+                                    <li style="margin-left:20px">- Temperature/humidity fluctuations</li>
+                                    <li style="margin-left:20px">- Moisture, condensation, or mold</li>
+                                    <li style="margin-left:20px">- Pest infestation (customer should use preventative measures)</li>
+                                    <li style="margin-left:20px">- Items requiring special storage conditions</li>
+                                    <li>Customer is responsible for appropriate packaging and protection</li>
+                                    <li>We recommend insurance for high-value items</li>
+                                </ul>
+                            </small>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agreeLiability">
+                            <label class="form-check-label" for="agreeLiability">
+                                I accept liability disclaimer and understand climate control limitations
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-credit-card me-2" style="color:#0014A8"></i>Payment Method</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-0">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="onlinePayment" value="online" checked>
+                                <label class="form-check-label" for="onlinePayment">
+                                    <i class="fas fa-credit-card me-2"></i>Online Payment (Razorpay/Stripe)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="cashPayment" value="cash">
+                                <label class="form-check-label" for="cashPayment">
+                                    <i class="fas fa-money-bill me-2"></i>Cash at Pickup
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="proceedStoragePayment()">
+                    <i class="fas fa-check me-1"></i>Proceed to Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let charts = {};
+    let bookingModal = null;
+    let currentUnitPrice = 0;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        bookingModal = new bootstrap.Modal(document.getElementById('bookingModal'), { backdrop: false });
+        document.getElementById('bookingModal').addEventListener('hidden.bs.modal', function () {
+            document.body.classList.remove('modal-open');
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        });
+        document.getElementById('startDate').valueAsDate = new Date();
+    });
+
+    function toggleAnalytics() {
+        const panel = document.getElementById('storageAnalytics');
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        if (panel.style.display === 'block') loadAnalytics();
+    }
+
+    function loadAnalytics() {
+        fetch('/storage/api/analytics/')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('totalUnits').textContent = data.total_units;
+                document.getElementById('occupancyRate').textContent = data.occupancy_rate + '%';
+                document.getElementById('monthlyRevenue').textContent = '₹' + data.monthly_revenue.toFixed(0);
+                document.getElementById('avgSize').textContent = data.avg_size;
+
+                if (charts.occupancy) charts.occupancy.destroy();
+                const ctx1 = document.getElementById('occupancyChart');
+                charts.occupancy = new Chart(ctx1, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Occupancy %', data: data.occupancy_trend, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.4, fill: true }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } } });
+
+                if (charts.floor) charts.floor.destroy();
+                const ctx2 = document.getElementById('floorChart');
+                charts.floor = new Chart(ctx2, { type: 'bar', data: { labels: ['Floor 1', 'Floor 2', 'Floor 3', 'Floor 4'], datasets: [{ label: 'Units', data: data.floor_data, backgroundColor: '#0014A8' }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
+            });
+    }
+
+    function editField(el) {
+        const current = el.textContent.trim().replace('₹', '').replace('/mo', '');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = current;
+        input.style.cssText = 'width:100%;padding:4px 8px;border:2px solid #0014A8;border-radius:5px;font-size:inherit;font-weight:inherit';
+        input.onblur = function () {
+            const id = el.dataset.id;
+            const field = el.dataset.field;
+            fetch(`/storage/api/unit/${id}/update/`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }, body: JSON.stringify({ field: field, value: this.value }) })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        el.textContent = field === 'price_per_month' ? '₹' + this.value + '/mo' : this.value;
+                        showToast('Updated successfully');
+                    }
+                });
+        };
+        input.onkeypress = function (e) { if (e.key === 'Enter') this.blur() };
+        el.textContent = '';
+        el.appendChild(input);
+        input.focus();
+        input.select();
+    }
+
+    function duplicateUnit(id) {
+        if (confirm('Create a duplicate of this unit?')) {
+            fetch(`/storage/api/unit/${id}/duplicate/`, { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Unit duplicated');
+                        setTimeout(() => location.reload(), 1000);
+                    }
+                });
+        }
+    }
+
+    function deleteUnit(id) {
+        if (confirm('Delete this unit? This action cannot be undone.')) {
+            fetch(`/storage/api/unit/${id}/delete/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCookie('csrftoken') } })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Unit deleted', 'error');
+                        setTimeout(() => location.reload(), 1000);
+                    }
+                });
+        }
+    }
+
+    function quickBook(id, name, price) {
+        document.getElementById('bookUnitId').value = id;
+        document.getElementById('bookUnitName').textContent = name;
+        currentUnitPrice = price;
+        document.getElementById('startDate').valueAsDate = new Date();
+        updateStorageTotal();
+        bookingModal.show();
+    }
+
+    function updateStorageTotal() {
+        const months = parseInt(document.getElementById('durationMonths').value) || 1;
+        const rate = currentUnitPrice;
+        const total = rate * months;
+        document.getElementById('rateDisplay').textContent = '₹' + rate.toFixed(2);
+        document.getElementById('durationDisplay').textContent = months;
+        document.getElementById('totalAmountDisplay').textContent = '₹' + total.toFixed(2);
+    }
+
+    function proceedStoragePayment() {
+        const agreeTerms = document.getElementById('agreeTerms').checked;
+        const agreePenalty = document.getElementById('agreePenalty').checked;
+        const agreeLiability = document.getElementById('agreeLiability').checked;
+
+        if (!agreeTerms || !agreePenalty || !agreeLiability) {
+            alert('Please accept all terms and conditions before proceeding.');
+            return;
+        }
+
+        const unitId = document.getElementById('bookUnitId').value;
+        const months = parseInt(document.getElementById('durationMonths').value);
+        const startDate = document.getElementById('startDate').value;
+        const customerName = document.getElementById('customerName').value;
+        const customerPhone = document.getElementById('customerPhone').value;
+        const itemsDescription = document.getElementById('itemsDescription').value;
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+        if (!startDate || !months || !customerName || !customerPhone || !itemsDescription) {
+            alert('Please fill all required fields.');
+            return;
+        }
+
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+
+        const data = {
+            unit_id: unitId,
+            duration_months: months,
+            start_date: startDate,
+            customer_name: customerName,
+            customer_phone: customerPhone,
+            items_description: itemsDescription,
+            payment_method: paymentMethod,
+            agree_terms: agreeTerms,
+            agree_penalty: agreePenalty,
+            agree_liability: agreeLiability
+        };
+
+        fetch('/api/booking/storage/process/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(data)
+        })
+        .then(r => r.json())
+        .then(result => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Proceed to Payment';
+            
+            if (result.success) {
+                alert(`Booking Created Successfully!\n\nBooking Number: ${result.booking_reference}\n\n${result.payment_required ? 'Please proceed with payment.' : 'Payment will be collected at pickup.'}`);
+                bookingModal.hide();
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                alert('Booking failed: ' + (result.error || 'Unknown error'));
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Proceed to Payment';
+            alert('Error processing booking: ' + err.message);
+        });
+    }
+
+    function filterUnits() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const type = document.getElementById('typeFilter').value;
+        const floor = document.getElementById('floorFilter').value;
+        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 999999;
+        const minSize = parseFloat(document.getElementById('minSize').value) || 0;
+        const maxSize = parseFloat(document.getElementById('maxSize').value) || 999999;
+        const climate = document.getElementById('climateFilter').value;
+        const availability = document.getElementById('availabilityFilter').value;
+
+        document.querySelectorAll('.unit-card').forEach(card => {
+            const cardSearch = card.dataset.search;
+            const cardType = card.dataset.type;
+            const cardFloor = card.dataset.floor;
+            const cardPrice = parseFloat(card.dataset.price);
+            const cardSize = parseFloat(card.dataset.size);
+            const cardClimate = card.dataset.climate;
+            const cardStatus = card.dataset.status;
+
+            const matchSearch = !search || cardSearch.includes(search);
+            const matchType = !type || cardType === type;
+            const matchFloor = !floor || cardFloor === floor;
+            const matchPrice = cardPrice >= minPrice && cardPrice <= maxPrice;
+            const matchSize = cardSize >= minSize && cardSize <= maxSize;
+            const matchClimate = !climate || cardClimate === climate;
+            const matchAvailability = !availability || cardStatus === availability;
+
+            card.style.display = matchSearch && matchType && matchFloor && matchPrice && matchSize && matchClimate && matchAvailability ? '' : 'none';
+        });
+        applyPagination();
+    }
+
+    function applyPagination() {
+        const perPage = document.getElementById('perPageFilter').value;
+        const cards = Array.from(document.querySelectorAll('.unit-card')).filter(c => c.style.display !== 'none');
+        const limit = perPage === 'all' ? cards.length : parseInt(perPage);
+        cards.forEach((card, idx) => {
+            card.style.display = idx < limit ? '' : 'none';
+        });
+    }
+
+    function sortUnits() {
+        const sort = document.getElementById('sortBy').value;
+        const grid = document.getElementById('unitsGrid');
+        const cards = Array.from(grid.querySelectorAll('.unit-card'));
+
+        cards.sort((a, b) => {
+            if (sort === 'price-low') return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+            if (sort === 'price-high') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+            if (sort === 'size') return parseFloat(b.dataset.size) - parseFloat(a.dataset.size);
+            if (sort === 'unit') return a.dataset.search.localeCompare(b.dataset.search);
+        });
+
+        cards.forEach(card => grid.appendChild(card));
+    }
+
+    function toggleAdvancedFilters() {
+        const filters = document.getElementById('advancedFilters');
+        filters.style.display = filters.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function clearAllFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('typeFilter').value = '';
+        document.getElementById('floorFilter').value = '';
+        document.getElementById('minPrice').value = '';
+        document.getElementById('maxPrice').value = '';
+        document.getElementById('minSize').value = '';
+        document.getElementById('maxSize').value = '';
+        document.getElementById('climateFilter').value = '';
+        document.getElementById('availabilityFilter').value = '';
+        filterUnits();
+    }
+
+    function showMapView() {
+        showToast('Interactive map view coming soon!', 'info');
+    }
+
+    function openBookModal() {
+        showToast('Please select a unit to book', 'info');
+    }
+
+    function editUnit(id) {
+        const cards = document.querySelectorAll('.unit-card');
+        let card = null;
+        cards.forEach(c => {
+            if (c.querySelector(`[data-id="${id}"]`)) {
+                card = c;
+            }
+        });
+        
+        if (!card) {
+            console.log('Card not found for id:', id);
+            return;
+        }
+        
+        const unitNum = card.querySelector('h5')?.textContent || '';
+        const size = card.dataset.size || 0;
+        const price = card.dataset.price || 0;
+        const type = card.dataset.type || 'standard';
+        const floor = card.dataset.floor || '1';
+        const status = card.dataset.status || 'available';
+        
+        const modalHtml = `
+            <div class="modal fade" id="editModal${id}" tabindex="-1">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background:linear-gradient(135deg,#0014A8,#000E75);color:#fff">
+                            <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Storage Unit Details</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="nav nav-tabs mb-3" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#basic${id}"><i class="fas fa-info-circle me-1"></i>Basic Info</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#specs${id}"><i class="fas fa-cogs me-1"></i>Specifications</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#pricing${id}"><i class="fas fa-dollar-sign me-1"></i>Pricing</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tenant${id}"><i class="fas fa-user me-1"></i>Tenant</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#agreement${id}"><i class="fas fa-file-contract me-1"></i>Agreement</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#history${id}"><i class="fas fa-history me-1"></i>History</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="basic${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Storage Unit ID</label>
+                                            <input type="text" class="form-control" value="STR-${id}" readonly>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Unit Number *</label>
+                                            <input type="text" class="form-control" id="editUnitNum${id}" value="${unitNum}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Category / Type</label>
+                                            <select class="form-select" id="editType${id}">
+                                                <option value="locker" ${type==='locker'?'selected':''}>Locker</option>
+                                                <option value="mini" ${type==='mini'?'selected':''}>Mini</option>
+                                                <option value="standard" ${type==='standard'?'selected':''}>Standard</option>
+                                                <option value="large" ${type==='large'?'selected':''}>Large</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Location / Floor</label>
+                                            <input type="text" class="form-control" id="editLocation${id}" placeholder="Building, Floor, Section">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Floor Number</label>
+                                            <select class="form-select" id="editFloor${id}">
+                                                <option value="1" ${floor==='1'?'selected':''}>Floor 1</option>
+                                                <option value="2" ${floor==='2'?'selected':''}>Floor 2</option>
+                                                <option value="3" ${floor==='3'?'selected':''}>Floor 3</option>
+                                                <option value="4" ${floor==='4'?'selected':''}>Floor 4</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Status Badge</label>
+                                            <select class="form-select" id="editStatus${id}">
+                                                <option value="available" ${status==='available'?'selected':''}>Available</option>
+                                                <option value="occupied" ${status==='occupied'?'selected':''}>Occupied</option>
+                                                <option value="maintenance" ${status==='maintenance'?'selected':''}>Maintenance</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Image Upload</label>
+                                            <input type="file" class="form-control" id="editImage${id}" accept="image/*" onchange="previewStorageImage(${id}, this)">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Image URL</label>
+                                            <input type="text" class="form-control" id="editImageUrl${id}" placeholder="Or paste image URL">
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Preview</label>
+                                            <div><img id="currentImg${id}" src="/static/images/storage_unit.png" style="max-height:150px;object-fit:cover;border-radius:8px" class="img-thumbnail"></div>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Description / Notes</label>
+                                            <textarea class="form-control" id="editDesc${id}" rows="3" placeholder="Admin notes, special instructions..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="specs${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Size (sq ft) *</label>
+                                            <input type="number" class="form-control" id="editSize${id}" value="${size}" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Dimensions</label>
+                                            <input type="text" class="form-control" id="editDimensions${id}" placeholder="e.g., 10x10x8 ft">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Climate Control</label>
+                                            <select class="form-select" id="editClimate${id}">
+                                                <option value="yes">Yes - Climate Controlled</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Condition</label>
+                                            <select class="form-select" id="editCondition${id}">
+                                                <option value="new">New</option>
+                                                <option value="good">Good</option>
+                                                <option value="repair">Needs Repair</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Features & Amenities</label>
+                                            <textarea class="form-control" id="editFeatures${id}" rows="3" placeholder="Security locks, CCTV, 24/7 access, insurance options..."></textarea>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Climate Control Details</label>
+                                            <textarea class="form-control" id="editClimateDetails${id}" rows="2" placeholder="Temperature, humidity, ventilation details..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pricing${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Monthly Rate (₹) *</label>
+                                            <input type="number" class="form-control" id="editPrice${id}" value="${price}" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Weekly Rate (₹)</label>
+                                            <input type="number" class="form-control" id="editWeekly${id}" value="0" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Daily Rate (₹)</label>
+                                            <input type="number" class="form-control" id="editDaily${id}" value="0" step="0.01">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Security Deposit (₹)</label>
+                                            <input type="number" class="form-control" id="editDeposit${id}" value="0" step="0.01">
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Pricing Breakdown</label>
+                                            <textarea class="form-control" id="editPricingBreakdown${id}" rows="3" placeholder="Base rent, taxes, service charges..."></textarea>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="alert alert-info"><i class="fas fa-calculator me-2"></i>Total pricing will be calculated based on duration selected during booking</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="tenant${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Tenant Name</label>
+                                            <input type="text" class="form-control" id="editTenantName${id}" placeholder="Who is renting">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Tenant ID / Code</label>
+                                            <input type="text" class="form-control" id="editTenantId${id}" placeholder="User reference">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Contact Phone</label>
+                                            <input type="tel" class="form-control" id="editTenantPhone${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Contact Email</label>
+                                            <input type="email" class="form-control" id="editTenantEmail${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Assignment Date</label>
+                                            <input type="date" class="form-control" id="editAssignDate${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">End Date</label>
+                                            <input type="date" class="form-control" id="editEndDate${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Access Code</label>
+                                            <input type="text" class="form-control" id="editAccessCode${id}" placeholder="Auto-generated" readonly>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Booking Confirmation #</label>
+                                            <input type="text" class="form-control" value="STR${String(id).padStart(5, '0')}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="agreement${id}">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Agreement File Upload</label>
+                                            <input type="file" class="form-control" id="editAgreement${id}" accept=".pdf,.doc,.docx">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Start Date</label>
+                                            <input type="date" class="form-control" id="editStartDate${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">End Date</label>
+                                            <input type="date" class="form-control" id="editAgreementEnd${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Payment Status</label>
+                                            <select class="form-select" id="editPaymentStatus${id}">
+                                                <option value="paid">Paid</option>
+                                                <option value="pending">Pending</option>
+                                                <option value="overdue">Overdue</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Terms & Conditions</label>
+                                            <textarea class="form-control" id="editTerms${id}" rows="4" placeholder="Contract clauses, storage terms..."></textarea>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Damage Policy</label>
+                                            <textarea class="form-control" id="editDamagePolicy${id}" rows="3" placeholder="Return conditions, damage charges..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="history${id}">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <h6><i class="fas fa-history me-2"></i>Quick Links</h6>
+                                            <a href="/storage/bookings/" class="btn btn-sm btn-outline-primary me-2"><i class="fas fa-calendar me-1"></i>Booking History</a>
+                                            <a href="/storage/maintenance/" class="btn btn-sm btn-outline-warning me-2"><i class="fas fa-wrench me-1"></i>Maintenance Schedule</a>
+                                            <a href="/billing/" class="btn btn-sm btn-outline-success"><i class="fas fa-file-invoice me-1"></i>Payment History</a>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Last Inspection</label>
+                                            <input type="date" class="form-control" id="editLastInspection${id}">
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Condition Audit Notes</label>
+                                            <textarea class="form-control" id="editAuditNotes${id}" rows="3" placeholder="Last inspection details, technician notes..."></textarea>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label fw-bold">Audit Trail</label>
+                                            <div class="alert alert-secondary"><small><i class="fas fa-user me-1"></i>Last modified by: <strong>Admin</strong> • <i class="fas fa-clock me-1"></i>Today</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i>Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveUnitEdit(${id})"><i class="fas fa-save me-1"></i>Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const existingModal = document.getElementById(`editModal${id}`);
+        if (existingModal) existingModal.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = new bootstrap.Modal(document.getElementById(`editModal${id}`));
+        modal.show();
+        
+        document.getElementById(`editModal${id}`).addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+    }
+    
+    function previewStorageImage(id, input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('currentImg' + id).src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    function saveUnitEdit(id) {
+        const formData = new FormData();
+        
+        const unitNum = document.getElementById('editUnitNum' + id);
+        const size = document.getElementById('editSize' + id);
+        const price = document.getElementById('editPrice' + id);
+        const type = document.getElementById('editType' + id);
+        const status = document.getElementById('editStatus' + id);
+        const imageFile = document.getElementById('editImage' + id);
+        
+        if (unitNum) formData.append('unit_number', unitNum.value);
+        if (size) formData.append('size_sqft', size.value);
+        if (price) formData.append('price_per_month', price.value);
+        if (type) formData.append('type', type.value);
+        if (status) formData.append('status', status.value);
+        if (imageFile && imageFile.files && imageFile.files[0]) {
+            formData.append('image', imageFile.files[0]);
+        }
+        
+        fetch(`/storage/api/unit/${id}/update/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Unit updated successfully!');
+                bootstrap.Modal.getInstance(document.getElementById('editModal' + id)).hide();
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast('Update failed: ' + (data.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(err => {
+            showToast('Error: ' + err.message, 'error');
+        });
+    }
+
+    function cycleStatus(id, el) {
+        const statuses = [{ name: 'Available', class: 'bg-success', value: 'available' }, { name: 'Occupied', class: 'bg-warning', value: 'occupied' }, { name: 'Maintenance', class: 'bg-danger', value: 'maintenance' }];
+        let current = statuses.findIndex(s => el.classList.contains(s.class));
+        current = (current + 1) % statuses.length;
+
+        fetch(`/storage/api/unit/${id}/status/`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }, body: JSON.stringify({ status: statuses[current].value }) })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    el.className = 'badge availability-badge ' + statuses[current].class;
+                    el.innerHTML = '<i class="fas fa-circle pulse-dot"></i>' + statuses[current].name;
+                    showToast('Status updated');
+                }
+            });
+    }
+
+    function addToWishlist(id, type) {
+        const card = document.querySelector(`[data-search="${id}"]`);
+        const unitNum = card?.querySelector('h5')?.textContent || `Unit #${id}`;
+        const price = parseFloat(card?.dataset.price || 0);
+        const itemData = {
+            product_id: id,
+            title: unitNum,
+            price: price,
+            description: `Storage Unit - ${type}`,
+            image: '/static/images/storage_unit.png',
+            type: type
+        };
+
+        fetch('/wishlist/api/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(itemData)
+        }).then(r => r.json()).then(() => showToast('Added to wishlist'));
+    }
+
+    function addToCart(id, type) {
+        const card = document.querySelector(`[data-search="${id}"]`);
+        const unitNum = card?.querySelector('h5')?.textContent || `Unit #${id}`;
+        const price = parseFloat(card?.dataset.price || 0);
+        const itemData = {
+            product_id: id,
+            title: unitNum,
+            price: price,
+            quantity: 1,
+            image: '/static/images/storage_unit.png',
+            type: type
+        };
+
+        fetch('/cart/api/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(itemData)
+        }).then(r => r.json()).then(() => showToast('Added to cart'));
+    }
+
+    function showToast(msg, type = 'success') {
+        const colors = { success: '#10b981', error: '#ef4444', info: '#0014A8' };
+        const t = document.createElement('div');
+        t.style.cssText = `position:fixed;top:20px;right:20px;background:${colors[type]};color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999`;
+        t.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>${msg}`;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+    }
+
+    function getCookie(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return '';
+    }
+</script>
+{% endblock %}
+

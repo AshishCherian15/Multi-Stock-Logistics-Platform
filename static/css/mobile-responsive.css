@@ -1,0 +1,107 @@
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    /* Sidebar */
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        transition: left 0.3s;
+        z-index: 1000;
+    }
+    
+    .sidebar.active {
+        left: 0;
+    }
+    
+    /* Main content */
+    .main-content {
+        margin-left: 0 !important;
+        padding: 10px;
+    }
+    
+    /* Cards */
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    /* Tables */
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    table {
+        font-size: 12px;
+    }
+    
+    /* Buttons */
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    /* Forms */
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    /* Dashboard metrics */
+    .metric-card {
+        margin-bottom: 15px;
+    }
+    
+    /* Charts */
+    canvas {
+        max-height: 250px !important;
+    }
+    
+    /* Quick actions */
+    .quick-actions-bar {
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .quick-actions-bar .btn {
+        width: 50px;
+        height: 50px;
+    }
+    
+    /* Navigation */
+    .navbar-brand {
+        font-size: 16px;
+    }
+    
+    /* Search bar */
+    .search-bar {
+        width: 100%;
+        margin: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 24px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 18px; }
+    
+    .container-fluid {
+        padding: 5px;
+    }
+    
+    .card-body {
+        padding: 10px;
+    }
+}
+
+/* Touch-friendly elements */
+@media (hover: none) {
+    .btn, .card, a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}

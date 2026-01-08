@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}{{ category.name }} - Forums{% endblock %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <div>
+            <a href="{% url 'forums:home' %}" class="btn btn-sm btn-outline-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+            <h2 class="d-inline ms-3">{{ category.name }}</h2>
+        </div>
+        <a href="{% url 'forums:create_topic' category.id %}" class="btn btn-primary"><i class="fas fa-plus"></i> New Topic</a>
+    </div>
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Topic</th>
+                        <th width="100">Replies</th>
+                        <th width="100">Views</th>
+                        <th width="200">Last Post</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for topic in topics %}
+                    <tr>
+                        <td>
+                            {% if topic.is_pinned %}<i class="fas fa-thumbtack text-warning"></i>{% endif %}
+                            {% if topic.is_locked %}<i class="fas fa-lock text-danger"></i>{% endif %}
+                            <a href="{% url 'forums:topic_detail' topic.id %}"><strong>{{ topic.title }}</strong></a>
+                            <br><small class="text-muted">by {{ topic.author.username }}</small>
+                        </td>
+                        <td>{{ topic.post_count|add:"-1" }}</td>
+                        <td>{{ topic.views }}</td>
+                        <td>
+                            {% with last=topic.last_post %}
+                            {% if last %}
+                            <small>{{ last.created_at|timesince }} ago<br>by {{ last.author.username }}</small>
+                            {% endif %}
+                            {% endwith %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center">No topics yet. Be the first to post!</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

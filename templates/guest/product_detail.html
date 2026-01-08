@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.goods_name }} - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container p-4">
+    <div class="mb-4">
+        <a href="{% url 'guest:products' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Products
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-5">
+                    <i class="fas fa-box text-primary" style="font-size: 12rem;"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <h2 class="fw-bold mb-3">{{ product.goods_name }}</h2>
+            <p class="text-muted mb-2"><code>{{ product.goods_code }}</code></p>
+
+            {% if product.goods_class %}
+            <p class="mb-3">
+                <span class="badge bg-secondary">{{ product.goods_class }}</span>
+            </p>
+            {% endif %}
+
+            <h3 class="text-primary fw-bold mb-4">₹{{ product.goods_price }}</h3>
+
+            <div class="mb-4">
+                <h5>Description</h5>
+                <p class="text-muted">{{ product.goods_desc|default:"No description available" }}</p>
+            </div>
+
+            <div class="mb-4">
+                <h5>Availability</h5>
+                {% if stock_available > 0 %}
+                <p class="text-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>In Stock</strong> ({{ stock_available }} available)
+                </p>
+                {% else %}
+                <p class="text-danger">
+                    <i class="fas fa-times-circle me-2"></i>
+                    <strong>Out of Stock</strong>
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Want to purchase?</strong>
+                <a href="{% url 'auth:register' %}" class="alert-link">Sign up</a> or
+                <a href="{% url 'auth:login' %}" class="alert-link">login</a> to add to cart!
+            </div>
+
+            <div class="d-flex gap-2">
+                <a href="{% url 'auth:register' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Sign Up to Buy
+                </a>
+                <a href="{% url 'auth:login' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="mt-5">
+        <h4 class="fw-bold mb-4">Related Products</h4>
+        <div class="row g-4">
+            {% for related in related_products %}
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-box text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h6 class="card-title">{{ related.goods_name }}</h6>
+                        <p class="text-primary fw-bold mb-2">₹{{ related.goods_price }}</p>
+                        <a href="{% url 'guest:product_detail' related.id %}"
+                            class="btn btn-sm btn-outline-primary w-100">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

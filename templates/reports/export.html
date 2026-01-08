@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Export Reports{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-download me-2"></i>Export Reports</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Sales Reports</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-danger mb-2" onclick="exportReport('sales', 'pdf')"><i class="fas fa-file-pdf me-2"></i>Export PDF</button>
+                    <button class="btn btn-success mb-2" onclick="exportReport('sales', 'excel')"><i class="fas fa-file-excel me-2"></i>Export Excel</button>
+                    <button class="btn btn-info mb-2" onclick="exportReport('sales', 'csv')"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Inventory Reports</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-danger mb-2" onclick="exportReport('inventory', 'pdf')"><i class="fas fa-file-pdf me-2"></i>Export PDF</button>
+                    <button class="btn btn-success mb-2" onclick="exportReport('inventory', 'excel')"><i class="fas fa-file-excel me-2"></i>Export Excel</button>
+                    <button class="btn btn-info mb-2" onclick="exportReport('inventory', 'csv')"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Export Status</h5>
+                </div>
+                <div class="card-body">
+                    <div id="exportStatus" class="alert alert-info" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function exportReport(type, format) {
+    const statusDiv = document.getElementById('exportStatus');
+    statusDiv.style.display = 'block';
+    statusDiv.className = 'alert alert-info';
+    statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating report...';
+    
+    fetch(`/api/export-report/?type=${type}&format=${format}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                statusDiv.className = 'alert alert-success';
+                statusDiv.innerHTML = `<i class="fas fa-check me-2"></i>${data.message} <a href="${data.download_url}" class="btn btn-sm btn-success ms-2">Download</a>`;
+            } else {
+                statusDiv.className = 'alert alert-danger';
+                statusDiv.innerHTML = '<i class="fas fa-times me-2"></i>Export failed';
+            }
+        })
+        .catch(error => {
+            statusDiv.className = 'alert alert-danger';
+            statusDiv.innerHTML = '<i class="fas fa-times me-2"></i>Export error';
+        });
+}
+</script>
+{% endblock %}

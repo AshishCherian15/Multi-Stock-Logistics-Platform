@@ -1,0 +1,436 @@
+{% extends 'dashboards/base_dashboard.html' %}
+
+{% block dashboard_title %}SuperAdmin Dashboard{% endblock %}
+{% block dashboard_icon %}fa-crown{% endblock %}
+
+{% block dashboard_subtitle %}System-Wide Management & Analytics{% endblock %}
+
+{% block metrics_cards %}
+<!-- Gallery Carousel -->
+{% if gallery %}
+<div class="col-12 mb-4">
+    <div id="dashboardGalleryCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for img in gallery %}
+            <button type="button" data-bs-target="#dashboardGalleryCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></button>
+            {% endfor %}
+        </div>
+        <div class="carousel-inner" style="border-radius:15px;">
+            {% for img in gallery %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ img.image.url }}" class="d-block w-100" style="height:350px;object-fit:cover;border-radius:15px;">
+                <div class="carousel-caption d-none d-md-block" style="background:rgba(102,126,234,0.8);border-radius:10px;padding:15px;">
+                    <h5>{{ img.title }}</h5>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#dashboardGalleryCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#dashboardGalleryCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+</div>
+{% endif %}
+
+<!-- Inventory Overview Section -->
+<div class="col-12 mb-3">
+    <h4><i class="fas fa-box-open me-2"></i>📦 Inventory Overview</h4>
+</div>
+
+<div class="col-md-2">
+    <div class="card metric-card text-white" data-bs-toggle="tooltip" title="Total unique products in system"
+        style="background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);box-shadow:0 8px 20px rgba(240,147,251,0.4)">
+        <div class="card-body">
+            <div class="text-center">
+                <div class="metric-icon mb-2"><i class="fas fa-boxes"></i></div>
+                <h6 class="card-title opacity-75">📦 Total SKUs</h6>
+                <h2 class="mb-1 fw-bold">{{ total_skus|default:0 }}</h2>
+                <small class="opacity-75">+5% vs last week</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-2">
+    <div class="card metric-card text-white" data-bs-toggle="tooltip" title="Total inventory value"
+        style="background:linear-gradient(135deg,#ffd89b 0%,#19547b 100%);box-shadow:0 8px 20px rgba(255,216,155,0.4)">
+        <div class="card-body">
+            <div class="text-center">
+                <div class="metric-icon mb-2"><i class="fas fa-dollar-sign"></i></div>
+                <h6 class="card-title opacity-75">💰 Stock Value</h6>
+                <h2 class="mb-1 fw-bold">₹{{ stock_value|floatformat:0|default:0 }}</h2>
+                <small class="opacity-75">Total worth</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-2">
+    <div class="card metric-card text-white" data-bs-toggle="tooltip" title="Available stock units"
+        style="background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);box-shadow:0 8px 20px rgba(79,172,254,0.4)">
+        <div class="card-body">
+            <div class="text-center">
+                <div class="metric-icon mb-2"><i class="fas fa-cubes"></i></div>
+                <h6 class="card-title opacity-75">📊 Stock on Hand</h6>
+                <h2 class="mb-1 fw-bold">{{ total_stock|default:0 }}</h2>
+                <small class="opacity-75">Units available</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-2">
+    <div class="card metric-card text-white" data-bs-toggle="tooltip" title="Items below minimum threshold"
+        style="background:linear-gradient(135deg,#f6d365 0%,#fda085 100%);box-shadow:0 8px 20px rgba(246,211,101,0.4)">
+        <div class="card-body">
+            <div class="text-center">
+                <div class="metric-icon mb-2"><i class="fas fa-exclamation-triangle"></i></div>
+                <h6 class="card-title opacity-75">⚠️ Low Stock</h6>
+                <h2 class="mb-1 fw-bold">{{ low_stock_count|default:0 }}</h2>
+                <small class="opacity-75">Needs reorder</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-2">
+    <div class="card metric-card text-white" data-bs-toggle="tooltip" title="Products with zero stock"
+        style="background:linear-gradient(135deg,#eb3349 0%,#f45c43 100%);box-shadow:0 8px 20px rgba(235,51,73,0.4)">
+        <div class="card-body">
+            <div class="text-center">
+                <div class="metric-icon mb-2"><i class="fas fa-times-circle"></i></div>
+                <h6 class="card-title opacity-75">❌ Out of Stock</h6>
+                <h2 class="mb-1 fw-bold">{{ out_of_stock|default:0 }}</h2>
+                <small class="opacity-75">Urgent action</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-2">
+    <div class="card metric-card text-white" data-bs-toggle="tooltip" title="Product categories"
+        style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);box-shadow:0 8px 20px rgba(102,126,234,0.4)">
+        <div class="card-body">
+            <div class="text-center">
+                <div class="metric-icon mb-2"><i class="fas fa-folder-open"></i></div>
+                <h6 class="card-title opacity-75">🗂 Categories</h6>
+                <h2 class="mb-1 fw-bold">{{ category_distribution|length|default:0 }}</h2>
+                <small class="opacity-75">Active groups</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- Stock Movement Section -->
+<div class="col-12 mt-4 mb-3">
+    <h4><i class="fas fa-exchange-alt me-2"></i>🚚 Stock Movement</h4>
+</div>
+
+<div class="col-md-3">
+    <div class="card" style="border-left: 4px solid #10b981">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">➡️ Inbound (7 days)</h6>
+                    <h3 class="mb-0 text-success">{{ stock_in_week|default:0 }}</h3>
+                </div>
+                <i class="fas fa-arrow-down fa-2x text-success"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card" style="border-left: 4px solid #ef4444">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">➡️ Outbound (7 days)</h6>
+                    <h3 class="mb-0 text-danger">{{ stock_out_week|default:0 }}</h3>
+                </div>
+                <i class="fas fa-arrow-up fa-2x text-danger"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card" style="border-left: 4px solid #f59e0b">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">Pending Orders</h6>
+                    <h3 class="mb-0 text-warning">{{ pending_orders|default:0 }}</h3>
+                    <span class="badge bg-warning text-dark">Awaiting Dispatch</span>
+                </div>
+                <i class="fas fa-clock fa-2x text-warning"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card" style="border-left: 4px solid #3b82f6">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="text-muted mb-1">🏭 Warehouses</h6>
+                    <h3 class="mb-0 text-primary">{{ total_warehouses|default:0 }}</h3>
+                </div>
+                <i class="fas fa-warehouse fa-2x text-primary"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order & Supplier Metrics -->
+<div class="col-12 mt-4 mb-3">
+    <h4><i class="fas fa-shopping-cart me-2"></i>🧾 Order & Supplier Metrics</h4>
+</div>
+
+<div class="col-md-3">
+    <div class="card metric-card text-white"
+        style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);box-shadow:0 8px 20px rgba(102,126,234,0.4)">
+        <div class="card-body text-center">
+            <h6 class="opacity-75">Total Orders</h6>
+            <h2 class="fw-bold">{{ total_orders|default:0 }}</h2>
+            <small class="opacity-75">All time</small>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card metric-card text-white"
+        style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);box-shadow:0 8px 20px rgba(67,233,123,0.4)">
+        <div class="card-body text-center">
+            <h6 class="opacity-75">Monthly Revenue</h6>
+            <h2 class="fw-bold" id="revenueCounter">₹{{ revenue_this_month|floatformat:0|default:0 }}</h2>
+            <small class="opacity-75">This month</small>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card metric-card text-white"
+        style="background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);box-shadow:0 8px 20px rgba(79,172,254,0.4)">
+        <div class="card-body text-center">
+            <h6 class="opacity-75">Total Customers</h6>
+            <h2 class="fw-bold">{{ total_customers|default:0 }}</h2>
+            <small class="opacity-75">+{{ new_customers_month|default:0 }} this month</small>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card metric-card text-white"
+        style="background:linear-gradient(135deg,#fa709a 0%,#fee140 100%);box-shadow:0 8px 20px rgba(250,112,154,0.4)">
+        <div class="card-body text-center">
+            <h6 class="opacity-75">Suppliers</h6>
+            <h2 class="fw-bold">{{ total_suppliers|default:0 }}</h2>
+            <div class="mt-1">
+                <span class="text-warning">★★★★☆</span>
+                <small class="d-block opacity-75">↑96% On-time delivery</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block quick_actions %}{% endblock %}
+
+{% block dashboard_content %}
+<!-- Analytics & Trends -->
+<div class="col-12 mt-4 mb-3">
+    <h4><i class="fas fa-chart-line me-2"></i>📈 Analytics & Insights</h4>
+</div>
+
+<div class="col-md-4">
+    <div class="card" style="border-radius:15px;border:none;box-shadow:0 4px 15px rgba(0,0,0,0.1)">
+        <div class="card-header text-white" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:15px 15px 0 0">
+            <h5><i class="fas fa-history me-2"></i>Recent Activity</h5>
+        </div>
+        <div class="card-body" style="max-height:350px;overflow-y:auto">
+            {% if recent_orders %}
+                {% for order in recent_orders|slice:":5" %}
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <div>
+                        <i class="fas fa-shopping-cart text-primary me-2"></i>
+                        <strong>Order #{{ order.id }}</strong>
+                        <br><small class="text-muted">{{ order.status|title }}</small>
+                    </div>
+                    <small class="text-muted">{{ order.created_at|timesince }} ago</small>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted text-center">No recent activity</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="col-md-4">
+    <div class="card" style="border-radius:15px;border:none;box-shadow:0 4px 15px rgba(0,0,0,0.1)">
+        <div class="card-header text-white" style="background:linear-gradient(135deg,#f093fb,#f5576c);border-radius:15px 15px 0 0">
+            <h5><i class="fas fa-bell me-2"></i>System Alerts</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger" style="border-radius:10px">
+                <i class="fas fa-exclamation-circle me-2"></i><strong>Critical:</strong> {{ out_of_stock|default:0 }} items out of stock
+            </div>
+            <div class="alert alert-warning" style="border-radius:10px">
+                <i class="fas fa-exclamation-triangle me-2"></i><strong>Warning:</strong> {{ low_stock_count|default:0 }} items low stock
+            </div>
+            <div class="alert alert-info" style="border-radius:10px">
+                <i class="fas fa-info-circle me-2"></i><strong>Info:</strong> {{ pending_orders|default:0 }} orders pending
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-4">
+    <div class="card" style="border-radius:15px;border:none;box-shadow:0 4px 15px rgba(0,0,0,0.1)">
+        <div class="card-header text-white" style="background:linear-gradient(135deg,#4facfe,#00f2fe);border-radius:15px 15px 0 0">
+            <h5><i class="fas fa-chart-pie me-2"></i>Quick Stats</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3 pb-3 border-bottom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-box text-primary me-2"></i>Total Products</span>
+                    <strong class="text-primary">{{ total_products|default:0 }}</strong>
+                </div>
+            </div>
+            <div class="mb-3 pb-3 border-bottom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-users text-success me-2"></i>Total Customers</span>
+                    <strong class="text-success">{{ total_customers|default:0 }}</strong>
+                </div>
+            </div>
+            <div class="mb-3 pb-3 border-bottom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-shopping-cart text-warning me-2"></i>Total Orders</span>
+                    <strong class="text-warning">{{ total_orders|default:0 }}</strong>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-warehouse text-info me-2"></i>Warehouses</span>
+                    <strong class="text-info">{{ total_warehouses|default:0 }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Platform Features -->
+<div class="col-12 mt-4">
+    <div class="card" style="border-radius:15px;border:none;box-shadow:0 4px 15px rgba(0,0,0,0.1)">
+        <div class="card-header text-white" style="background:linear-gradient(135deg,#43e97b,#38f9d7);border-radius:15px 15px 0 0">
+            <h5><i class="fas fa-star me-2"></i>Platform Features</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="text-center p-3" style="background:#e3f2fd;border-radius:10px">
+                        <i class="fas fa-boxes fa-2x mb-2" style="color:#0014A8"></i>
+                        <h6>Real-time Inventory</h6>
+                        <small class="text-muted">Track stock levels instantly</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center p-3" style="background:#e8f5e9;border-radius:10px">
+                        <i class="fas fa-chart-line fa-2x mb-2 text-success"></i>
+                        <h6>Advanced Analytics</h6>
+                        <small class="text-muted">Data-driven insights</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center p-3" style="background:#fff3e0;border-radius:10px">
+                        <i class="fas fa-warehouse fa-2x mb-2 text-warning"></i>
+                        <h6>Multi-warehouse</h6>
+                        <small class="text-muted">Manage multiple locations</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center p-3" style="background:#fce4ec;border-radius:10px">
+                        <i class="fas fa-user-shield fa-2x mb-2 text-danger"></i>
+                        <h6>Role-based Access</h6>
+                        <small class="text-muted">Secure permissions</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Information -->
+<div class="col-12 mt-4">
+    <div class="card" style="border-radius:15px;border:none;box-shadow:0 4px 15px rgba(0,0,0,0.1)">
+        <div class="card-header text-white" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:15px 15px 0 0">
+            <h5><i class="fas fa-server me-2"></i>System Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="text-center p-3">
+                        <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                        <h6>System Status</h6>
+                        <span class="badge bg-success">{{ system_health|default:"Operational" }}</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center p-3">
+                        <i class="fas fa-clock fa-3x text-primary mb-2"></i>
+                        <h6>Server Uptime</h6>
+                        <strong>{{ server_uptime|default:"N/A" }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center p-3">
+                        <i class="fas fa-hdd fa-3x text-warning mb-2"></i>
+                        <h6>Storage Used</h6>
+                        <strong>{{ storage_used|default:"N/A" }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center p-3">
+                        <i class="fas fa-calendar fa-3x text-info mb-2"></i>
+                        <h6>Current Time</h6>
+                        <strong>{{ now|date:"H:i" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animated counter for revenue
+    const revenueEl = document.getElementById('revenueCounter');
+    if (revenueEl) {
+        const targetValue = parseInt(revenueEl.textContent.replace(/[^0-9]/g, ''));
+        let currentValue = 0;
+        const increment = targetValue / 50;
+        const timer = setInterval(() => {
+            currentValue += increment;
+            if (currentValue >= targetValue) {
+                currentValue = targetValue;
+                clearInterval(timer);
+            }
+            revenueEl.textContent = '₹' + Math.floor(currentValue).toLocaleString();
+        }, 20);
+    }
+    
+    // Auto-scroll dashboard gallery carousel every 2 seconds
+    if (document.getElementById('dashboardGalleryCarousel')) {
+        new bootstrap.Carousel(document.getElementById('dashboardGalleryCarousel'), {
+            interval: 2000,
+            ride: 'carousel'
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Track Your Shipment - MultiStock{% endblock %}
+{% block content %}
+<style>
+.track-container{max-width:800px;margin:50px auto;padding:20px}
+.track-box{background:#fff;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,0.1);padding:40px}
+.search-box{position:relative;margin-bottom:30px}
+.search-box input{padding:15px 60px 15px 20px;border:2px solid #0014A8;border-radius:10px;font-size:1.1rem}
+.search-box button{position:absolute;right:5px;top:5px;bottom:5px;padding:0 25px;background:#0014A8;border:none;border-radius:8px;color:#fff}
+.timeline{position:relative;padding:20px 0}
+.timeline-item{position:relative;padding-left:40px;padding-bottom:30px}
+.timeline-item:before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:#e9ecef}
+.timeline-item:last-child:before{display:none}
+.timeline-dot{position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:#0014A8;border:3px solid #fff;box-shadow:0 0 0 3px #e9ecef}
+.timeline-dot.active{background:#28a745;box-shadow:0 0 0 3px #d4edda;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+</style>
+<div class="track-container">
+    <div class="track-box">
+        <div class="text-center mb-4">
+            <i class="fas fa-shipping-fast fa-3x mb-3" style="color:#0014A8"></i>
+            <h2>Track Your Shipment</h2>
+            <p class="text-muted">Enter your tracking number to see real-time updates</p>
+        </div>
+        
+        <form method="get" class="search-box">
+            <input type="text" name="tracking" class="form-control" placeholder="Enter tracking number..." value="{{ tracking_number }}" required>
+            <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+        
+        {% if tracking_number %}
+            {% if shipment %}
+            <div class="alert alert-success mb-4">
+                <i class="fas fa-check-circle me-2"></i>Shipment found! Current status: <strong>{{ shipment.get_status_display }}</strong>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-2">Shipment Details</h6>
+                    <p class="mb-1"><strong>Tracking #:</strong> {{ shipment.tracking_number }}</p>
+                    <p class="mb-1"><strong>Carrier:</strong> {{ shipment.carrier.name }}</p>
+                    <p class="mb-0"><strong>Service:</strong> {{ shipment.service_type }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-2">Delivery Info</h6>
+                    <p class="mb-1"><strong>To:</strong> {{ shipment.recipient_name }}</p>
+                    <p class="mb-1"><strong>City:</strong> {{ shipment.recipient_city }}</p>
+                    <p class="mb-0"><strong>Est. Delivery:</strong> {{ shipment.estimated_delivery|date:"M d, Y" }}</p>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <h5 class="mb-4">Tracking History</h5>
+            <div class="timeline">
+                {% for event in events %}
+                <div class="timeline-item">
+                    <div class="timeline-dot {% if forloop.first %}active{% endif %}"></div>
+                    <div>
+                        <h6 class="mb-1">{{ event.status }}</h6>
+                        <p class="mb-1 text-muted small">{{ event.location }}</p>
+                        <p class="mb-1">{{ event.description }}</p>
+                        <small class="text-muted"><i class="fas fa-clock me-1"></i>{{ event.event_time|date:"M d, Y H:i" }}</small>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>Shipment created. Tracking updates will appear here soon.
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>No shipment found with tracking number: <strong>{{ tracking_number }}</strong>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

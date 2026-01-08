@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% block title %}Locker {{ locker.locker_number }} Details - MultiStock{% endblock %}
+{% block content %}
+
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-lock me-2"></i>Locker {{ locker.locker_number }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Locker Image -->
+                    <div class="text-center mb-4">
+                        <img src="/static/images/smart_locker.png" alt="Smart Locker" class="img-fluid rounded"
+                            style="max-height: 300px; object-fit: cover;">
+                    </div>
+
+                    <!-- Locker Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="text-muted mb-3">Locker Information</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="40%">Locker Number:</th>
+                                    <td><strong>{{ locker.locker_number }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Type:</th>
+                                    <td>{{ locker.locker_type.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Size:</th>
+                                    <td>{{ locker.locker_type.get_size_display }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Location:</th>
+                                    <td><i class="fas fa-map-marker-alt text-danger me-1"></i>{{ locker.location }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td>
+                                        <span
+                                            class="badge bg-{% if locker.status == 'available' %}success{% elif locker.status == 'occupied' %}danger{% elif locker.status == 'reserved' %}info{% else %}warning{% endif %}">
+                                            {{ locker.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-muted mb-3">Pricing</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th width="50%">Hourly Rate:</th>
+                                    <td><strong>₹{{ locker.locker_type.hourly_rate }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Daily Rate:</th>
+                                    <td><strong>₹{{ locker.locker_type.daily_rate }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Weekly Rate:</th>
+                                    <td><strong>₹{{ locker.locker_type.weekly_rate }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Monthly Rate:</th>
+                                    <td><strong>₹{{ locker.locker_type.monthly_rate }}</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="mb-4">
+                        <h5 class="text-muted mb-3">Features</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i
+                                            class="fas fa-{% if locker.locker_type.has_climate_control %}check-circle text-success{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                        Climate Control
+                                    </li>
+                                    <li class="mb-2">
+                                        <i
+                                            class="fas fa-{% if locker.locker_type.has_security_monitoring %}check-circle text-success{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                        24/7 Security Monitoring
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Digital Access Code
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Insurance Available
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if locker.notes %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> {{ locker.notes }}
+                    </div>
+                    {% endif %}
+
+                    {% if locker.last_maintenance %}
+                    <div class="text-muted small">
+                        <i class="fas fa-wrench me-1"></i>
+                        Last Maintenance: {{ locker.last_maintenance|date:"M d, Y" }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="/lockers/" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to List
+                        </a>
+                        {% if locker.status == 'available' %}
+                        <button class="btn btn-success btn-lg" onclick="bookLocker()">
+                            <i class="fas fa-calendar-plus me-2"></i>Book This Locker
+                        </button>
+                        {% else %}
+                        <button class="btn btn-secondary btn-lg" disabled>
+                            <i class="fas fa-lock me-2"></i>Not Available
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Recent Bookings -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Bookings</h5>
+                </div>
+                <div class="card-body">
+                    {% if bookings %}
+                    <div class="list-group list-group-flush">
+                        {% for booking in bookings %}
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ booking.booking_number }}</h6>
+                                    <small class="text-muted">{{ booking.customer_name }}</small>
+                                </div>
+                                <span class="badge bg-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                            </div>
+                            <small class="text-muted">
+                                <i class="far fa-calendar me-1"></i>
+                                {{ booking.start_date|date:"M d" }} - {{ booking.end_date|date:"M d, Y" }}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">No bookings yet</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Access Logs -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Access Logs</h5>
+                </div>
+                <div class="card-body">
+                    {% if access_logs %}
+                    <div class="timeline">
+                        {% for log in access_logs|slice:":10" %}
+                        <div class="timeline-item mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="me-2">
+                                    <i
+                                        class="fas fa-{{ log.action|lower }} text-{% if log.action == 'open' %}success{% elif log.action == 'close' %}secondary{% elif log.action == 'access_denied' %}danger{% else %}warning{% endif %}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">{{ log.get_action_display }}</div>
+                                    <small class="text-muted">
+                                        {{ log.timestamp|date:"M d, Y H:i" }}
+                                        {% if log.user %} by {{ log.user.username }}{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">No access logs</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline-item {
+        border-left: 2px solid #e9ecef;
+        padding-left: 15px;
+    }
+
+    .timeline-item:last-child {
+        border-left-color: transparent;
+    }
+</style>
+
+{% csrf_token %}
+{% include 'includes/payment_modal.html' %}
+
+<script>
+function bookLocker() {
+    showPaymentModal({
+        subtotal: {{ locker.locker_type.daily_rate }},
+        serviceType: 'lockers',
+        items: [
+            {
+                name: 'Locker {{ locker.locker_number|escapejs }} ({{ locker.locker_type.get_size_display|escapejs }})',
+                price: {{ locker.locker_type.daily_rate }}
+            }
+        ]
+    });
+}
+
+function handlePaymentSuccess(data) {
+    window.location.href = '/lockers/{{ locker.id }}/book/?payment_confirmed=true&amount=' + data.total;
+}
+</script>
+
+{% endblock %}

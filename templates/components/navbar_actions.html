@@ -1,0 +1,61 @@
+<!-- Navbar Actions: Notifications, User Menu -->
+<div class="navbar-nav d-flex align-items-center">
+    <!-- Notifications -->
+    <button class="btn btn-link text-white me-2 px-3 py-2 position-relative"
+        style="border-radius: 12px; background: rgba(255,255,255,0.1); transition: all 0.3s ease;" title="Notifications"
+        onclick="toggleNotifications()" id="notificationBtn">
+        <i class="fas fa-bell" id="notificationIcon"></i>
+        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill"
+            style="font-size: 0.6rem; display: none;" id="notificationBadge">0</span>
+    </button>
+
+    {% include 'components/notifications_dropdown.html' %}
+
+    <!-- User Menu Dropdown -->
+    <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown"
+            style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 8px 16px; transition: all 0.3s ease;">
+            <div class="me-2"
+                style="background: rgba(255,255,255,0.2); padding: 6px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                {% with avatar_url=user.customer_profile.avatar_url|default:user.profile.avatar_url|default:'' %}
+                    {% if avatar_url %}
+                    <img src="{{ avatar_url }}" id="navbarUserPhoto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                    style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">
+                    <i class="fas fa-user" style="font-size: 0.9rem; display:none;" id="navbarUserIcon"></i>
+                    {% else %}
+                    <i class="fas fa-user" style="font-size: 0.9rem;" id="navbarUserIcon"></i>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <span style="font-weight: 500;">{{ user.username }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end"
+            style="background: white; border: none; box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2); border-radius: 15px; padding: 8px; min-width: 220px;">
+            <li class="px-3 py-2 text-center border-bottom">
+                {% with avatar_url=user.customer_profile.avatar_url|default:user.profile.avatar_url|default:'' %}
+                    {% if avatar_url %}
+                    <img src="{{ avatar_url }}" id="dropdownUserPhoto" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+                        style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #0014A8;">
+                    <i class="fas fa-user-circle" id="dropdownUserIcon" style="font-size: 80px; color: #0014A8; display:none;"></i>
+                    {% else %}
+                    <i class="fas fa-user-circle" id="dropdownUserIcon" style="font-size: 80px; color: #0014A8;"></i>
+                    {% endif %}
+                {% endwith %}
+                <div class="mt-2"><strong>{{ user.username }}</strong></div>
+                <small class="text-muted">{{ user.email }}</small>
+            </li>
+            <li><a class="dropdown-item d-flex align-items-center" href="/profile/"
+                    style="color: #495057; border-radius: 10px; margin: 2px; padding: 10px 15px; transition: all 0.2s ease;"><i
+                        class="fas fa-user-edit me-3 text-primary"></i>My Profile</a></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="/settings/"
+                    style="color: #495057; border-radius: 10px; margin: 2px; padding: 10px 15px; transition: all 0.2s ease;"><i
+                        class="fas fa-cog me-3 text-primary"></i>Settings</a></li>
+            <li>
+                <hr class="dropdown-divider" style="border-color: #e3f2fd; margin: 8px 0;">
+            </li>
+            <li><a class="dropdown-item d-flex align-items-center" href="/auth/logout/"
+                    style="color: #dc3545; border-radius: 10px; margin: 2px; padding: 10px 15px; transition: all 0.2s ease;"><i
+                        class="fas fa-sign-out-alt me-3"></i>Logout</a></li>
+        </ul>
+    </div>
+</div>

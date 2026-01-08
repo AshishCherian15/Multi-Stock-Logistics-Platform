@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}Create Quotation{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-plus me-2"></i>Create New Quotation</h2>
+        <a href="/quotations/" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Back</a>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Quotation Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Customer</label>
+                                    <select class="form-select" name="customer">
+                                        <option value="">Select Customer</option>
+                                        <option value="1">John Doe</option>
+                                        <option value="2">Jane Smith</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Valid Until</label>
+                                    <input type="date" class="form-control" name="valid_until">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Reference</label>
+                                    <input type="text" class="form-control" name="reference" placeholder="Reference number">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Terms</label>
+                                    <textarea class="form-control" name="terms" rows="2" placeholder="Terms and conditions"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-header d-flex justify-content-between">
+                        <h5>Items</h5>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="addItem()"><i class="fas fa-plus me-1"></i>Add Item</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table" id="itemsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Rate</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" class="form-control" name="items[0][product]" placeholder="Product name"></td>
+                                        <td><input type="number" class="form-control" name="items[0][qty]" onchange="calculateAmount(0)"></td>
+                                        <td><input type="number" class="form-control" name="items[0][rate]" step="0.01" onchange="calculateAmount(0)"></td>
+                                        <td><input type="number" class="form-control" name="items[0][amount]" readonly></td>
+                                        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeItem(this)"><i class="fas fa-trash"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">₹0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tax (18%):</span>
+                            <span id="tax">₹0.00</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total:</span>
+                            <span id="total">₹0.00</span>
+                        </div>
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-save me-2"></i>Save Quotation</button>
+                            <button type="button" class="btn btn-info"><i class="fas fa-eye me-2"></i>Preview</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+let itemCount = 1;
+
+function addItem() {
+    const tbody = document.querySelector('#itemsTable tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td><input type="text" class="form-control" name="items[${itemCount}][product]" placeholder="Product name"></td>
+        <td><input type="number" class="form-control" name="items[${itemCount}][qty]" onchange="calculateAmount(${itemCount})"></td>
+        <td><input type="number" class="form-control" name="items[${itemCount}][rate]" step="0.01" onchange="calculateAmount(${itemCount})"></td>
+        <td><input type="number" class="form-control" name="items[${itemCount}][amount]" readonly></td>
+        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeItem(this)"><i class="fas fa-trash"></i></button></td>
+    `;
+    tbody.appendChild(row);
+    itemCount++;
+}
+
+function removeItem(button) {
+    button.closest('tr').remove();
+    updateTotals();
+}
+
+function calculateAmount(index) {
+    const qty = document.querySelector(`input[name="items[${index}][qty]"]`).value || 0;
+    const rate = document.querySelector(`input[name="items[${index}][rate]"]`).value || 0;
+    const amount = qty * rate;
+    document.querySelector(`input[name="items[${index}][amount]"]`).value = amount.toFixed(2);
+    updateTotals();
+}
+
+function updateTotals() {
+    let subtotal = 0;
+    document.querySelectorAll('input[name*="[amount]"]').forEach(input => {
+        subtotal += parseFloat(input.value) || 0;
+    });
+    const tax = subtotal * 0.18;
+    const total = subtotal + tax;
+    
+    document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+    document.getElementById('tax').textContent = `₹${tax.toFixed(2)}`;
+    document.getElementById('total').textContent = `₹${total.toFixed(2)}`;
+}
+</script>
+{% endblock %}

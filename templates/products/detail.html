@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.goods_desc }} - Product Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md-6">
+            {% if stock and stock.goods_image %}
+            <img src="{{ stock.goods_image.url }}" class="img-fluid rounded" alt="{{ product.goods_desc }}" style="max-height: 500px; object-fit: cover;">
+            {% else %}
+            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 500px;">
+                <i class="fas fa-box fa-5x text-muted"></i>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <h1 class="mb-3">{{ product.goods_desc }}</h1>
+            <p class="text-muted mb-4">SKU: {{ product.goods_code }}</p>
+            
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="text-primary mb-0">₹{{ product.goods_price|floatformat:2 }}</h3>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <strong>Category:</strong> {{ product.goods_class|default:"General" }}<br>
+                <strong>Supplier:</strong> {{ product.goods_supplier|default:"N/A" }}<br>
+                <strong>Stock:</strong> 
+                {% if stock %}
+                    <span class="badge {% if stock.goods_qty == 0 %}bg-danger{% elif stock.goods_qty < 10 %}bg-warning{% else %}bg-success{% endif %}">
+                        {{ stock.goods_qty }} units
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary">No stock info</span>
+                {% endif %}
+            </div>
+            
+            <div class="d-flex gap-2">
+                <a href="/products/" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i>Back to Products</a>
+                {% if stock and stock.goods_qty > 0 %}
+                <button class="btn btn-primary"><i class="fas fa-cart-plus me-1"></i>Add to Cart</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

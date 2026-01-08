@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Roboto',sans-serif;font-size:12px;color:#333}
+.receipt{width:210mm;min-height:297mm;padding:20mm;margin:0 auto;background:#fff}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:2px solid #1A73E8}
+.logo{font-size:26px;font-weight:700;color:#1A73E8;letter-spacing:1px}
+.receipt-label{font-size:28px;font-weight:700;color:#1A73E8;text-align:right;text-transform:uppercase}
+.receipt-meta{text-align:right;font-size:12px;margin-top:8px;line-height:1.8}
+.customer-section{background:#F5F5F5;padding:10px 15px;margin:12px 0;border-radius:4px}
+.customer-section h3{font-size:16px;font-weight:600;color:#1A73E8;margin-bottom:8px}
+.customer-section p{line-height:1.6;margin:3px 0;font-size:13px}
+.items-table{width:100%;border-collapse:collapse;margin:12px 0}
+.items-table thead{background:#1A73E8;color:#fff}
+.items-table th{padding:10px;text-align:left;font-weight:600;font-size:12px;text-transform:uppercase}
+.items-table th:nth-child(2),.items-table th:nth-child(3){text-align:right}
+.items-table td{padding:10px;border-bottom:1px solid #DDDDDD;font-size:12px}
+.items-table td:nth-child(2),.items-table td:nth-child(3){text-align:right}
+.items-table tbody tr:nth-child(even){background:#F5F5F5}
+.paid-badge{display:inline-block;background:#28a745;color:#fff;padding:4px 12px;border-radius:20px;font-weight:600;font-size:11px;text-transform:uppercase}
+.payment-confirmation{background:#E6F4EA;padding:15px;margin:12px 0;border-left:4px solid #28a745;border-radius:4px}
+.payment-confirmation h4{font-size:16px;font-weight:600;color:#28a745;margin-bottom:10px}
+.payment-confirmation p{font-size:13px;line-height:1.8;margin:4px 0}
+.payment-confirmation strong{color:#333}
+.total-paid{text-align:right;margin:12px 0;padding:15px;background:#1A73E8;color:#fff;border-radius:4px}
+.total-paid h3{font-size:18px;font-weight:700;margin-bottom:5px}
+.total-paid p{font-size:24px;font-weight:700}
+.qr-section{text-align:center;margin:20px 0;padding:15px;background:#F5F5F5;border-radius:4px}
+.qr-section h4{font-size:14px;font-weight:600;color:#1A73E8;margin-bottom:10px}
+.qr-code{width:120px;height:120px;margin:10px auto;background:#fff;border:2px solid #1A73E8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:48px;color:#1A73E8}
+.qr-section p{font-size:10px;color:#666;margin-top:8px}
+.thank-you{text-align:center;margin:20px 0;font-size:18px;font-weight:700;color:#28a745}
+.footer{margin-top:20px;padding-top:12px;border-top:2px solid #1A73E8;text-align:center;font-size:10px;color:#666;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="receipt">
+    <div class="header">
+        <div class="logo">MULTISTOCK</div>
+        <div>
+            <div class="receipt-label">RECEIPT</div>
+            <div class="receipt-meta">
+                <strong>{{ receipt.receipt_number }}</strong><br>
+                Date: {{ receipt.payment_date|date:"M d, Y" }}<br>
+                <span class="paid-badge">PAID</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="customer-section">
+        <h3>CUSTOMER</h3>
+        <p><strong>{{ receipt.invoice.customer_name }}</strong></p>
+        <p>Email: {{ receipt.invoice.customer_email }}</p>
+        <p>Phone: {{ receipt.invoice.customer_phone }}</p>
+        <p>Address: {{ receipt.invoice.customer_address }}</p>
+    </div>
+    
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width:60%">ITEM</th>
+                <th style="width:20%">QUANTITY</th>
+                <th style="width:20%">PAID AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in receipt.invoice.items.all %}
+            <tr>
+                <td>{{ item.description }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.amount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="total-paid">
+        <h3>TOTAL AMOUNT PAID</h3>
+        <p>₹{{ receipt.amount_paid }}</p>
+    </div>
+    
+    <div class="payment-confirmation">
+        <h4>✓ PAYMENT CONFIRMATION</h4>
+        <p><strong>Payment Method:</strong> {{ receipt.payment_mode|title }}</p>
+        <p><strong>Transaction ID:</strong> {{ receipt.receipt_number }}</p>
+        <p><strong>Date of Payment:</strong> {{ receipt.payment_date|date:"F d, Y" }}</p>
+        <p><strong>Invoice Reference:</strong> {{ receipt.invoice.invoice_number }}</p>
+        <p><strong>Status:</strong> <span class="paid-badge">Payment Received</span></p>
+    </div>
+    
+    <div class="qr-section">
+        <h4>RECEIPT VERIFICATION</h4>
+        <div class="qr-code">
+            <svg width="80" height="80" viewBox="0 0 100 100">
+                <rect x="0" y="0" width="20" height="20" fill="#1A73E8"/>
+                <rect x="25" y="0" width="20" height="20" fill="#1A73E8"/>
+                <rect x="50" y="0" width="20" height="20" fill="#1A73E8"/>
+                <rect x="75" y="0" width="20" height="20" fill="#1A73E8"/>
+                <rect x="0" y="25" width="20" height="20" fill="#1A73E8"/>
+                <rect x="50" y="25" width="20" height="20" fill="#1A73E8"/>
+                <rect x="0" y="50" width="20" height="20" fill="#1A73E8"/>
+                <rect x="25" y="50" width="20" height="20" fill="#1A73E8"/>
+                <rect x="75" y="50" width="20" height="20" fill="#1A73E8"/>
+                <rect x="0" y="75" width="20" height="20" fill="#1A73E8"/>
+                <rect x="50" y="75" width="20" height="20" fill="#1A73E8"/>
+                <rect x="75" y="75" width="20" height="20" fill="#1A73E8"/>
+            </svg>
+        </div>
+        <p>{{ receipt.qr_code }}</p>
+        <p>Scan to verify receipt authenticity</p>
+    </div>
+    
+    <div class="thank-you">Payment Received. Thank you!</div>
+    
+    <div class="footer">
+        This is a computer-generated receipt and does not require a signature.<br>
+        MultiStock Enterprises | +91-1800-123-4567 | billing@multistock.com | www.multistock.com | Mumbai, India
+    </div>
+</div>
+</body>
+</html>

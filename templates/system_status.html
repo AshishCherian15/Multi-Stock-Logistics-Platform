@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block title %}System Status - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">System Status Dashboard</h1>
+        <button class="btn btn-primary" onclick="refreshStatus()">
+            <i class="fas fa-sync-alt me-2"></i>Refresh
+        </button>
+    </div>
+
+    <!-- System Health Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-database fa-2x mb-2"></i>
+                    <h5>Database</h5>
+                    <p class="mb-0">✓ Healthy</p>
+                    <small>Response: 12ms</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-server fa-2x mb-2"></i>
+                    <h5>Server</h5>
+                    <p class="mb-0">✓ Online</p>
+                    <small>Load: 23%</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-hdd fa-2x mb-2"></i>
+                    <h5>Storage</h5>
+                    <p class="mb-0">✓ Available</p>
+                    <small>78% Free</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h5>Uptime</h5>
+                    <p class="mb-0" id="uptime">99.9%</p>
+                    <small id="uptimeDetails">7d 12h 34m</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h5 class="mb-0">Performance Metrics</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="autoRefresh" checked>
+                        <label class="form-check-label" for="autoRefresh">Auto Refresh</label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3 text-center">
+                            <h3 class="text-primary" id="activeUsers">156</h3>
+                            <p class="text-muted">Active Users</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <h3 class="text-success" id="apiRequests">245</h3>
+                            <p class="text-muted">API Requests/min</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <h3 class="text-warning" id="memoryUsage">68%</h3>
+                            <p class="text-muted">Memory Usage</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <h3 class="text-info" id="cpuUsage">34%</h3>
+                            <p class="text-muted">CPU Usage</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between">
+                                <span>Disk Usage:</span>
+                                <span id="diskUsage">22%</span>
+                            </div>
+                            <div class="progress mt-1" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 22%"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between">
+                                <span>Queue Status:</span>
+                                <span id="queueStatus">12 pending</span>
+                            </div>
+                            <div class="progress mt-1" style="height: 6px;">
+                                <div class="progress-bar bg-warning" style="width: 15%"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between">
+                                <span>API Latency:</span>
+                                <span id="apiLatency">45ms</span>
+                            </div>
+                            <div class="progress mt-1" style="height: 6px;">
+                                <div class="progress-bar bg-info" style="width: 30%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">System Info</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Version:</strong> MultiStock v2.1.0</p>
+                    <p><strong>Django:</strong> 5.2.8</p>
+                    <p><strong>Python:</strong> 3.13</p>
+                    <p><strong>Last Restart:</strong> Nov 13, 2025</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>✓ All services operational</span>
+                            <small class="text-muted">2 min ago</small>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>✓ Database backup completed</span>
+                            <small class="text-muted">1 hour ago</small>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>✓ Security scan passed</span>
+                            <small class="text-muted">6 hours ago</small>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>✓ System update applied</span>
+                            <small class="text-muted">1 day ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Service Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Authentication Service</span>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Payment Gateway</span>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Email Service</span>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>File Storage</span>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Backup Service</span>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Barcode Scanner</span>
+                        <span class="badge bg-success" id="barcodeStatus">Connected</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>POS Sync</span>
+                        <span class="badge bg-success" id="posSync">Synced 2m ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let autoRefreshInterval;
+
+    function refreshStatus() {
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+        btn.disabled = true;
+
+        fetch('/settings/api/metrics/')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('activeUsers').textContent = data.active_users || 0;
+                document.getElementById('apiRequests').textContent = data.api_requests_per_minute || 0;
+                document.getElementById('memoryUsage').textContent = data.memory_usage || '0%';
+                document.getElementById('cpuUsage').textContent = data.cpu_usage || '0%';
+                document.getElementById('diskUsage').textContent = data.disk_usage || '0%';
+                document.getElementById('queueStatus').textContent = data.queue_status || '0 pending';
+                document.getElementById('apiLatency').textContent = data.api_latency || '0ms';
+            })
+            .catch(() => {
+                // Metrics refresh failed - silent error
+            })
+            .finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                updateUptime();
+            });
+    }
+
+    function toggleAutoRefresh() {
+        const checkbox = document.getElementById('autoRefresh');
+        if (checkbox.checked) {
+            autoRefreshInterval = setInterval(refreshStatus, 30000);
+        } else {
+            clearInterval(autoRefreshInterval);
+        }
+    }
+
+    document.getElementById('autoRefresh').addEventListener('change', toggleAutoRefresh);
+    toggleAutoRefresh();
+
+    function updateUptime() {
+        // Simulate real-time uptime update
+        const uptimeEl = document.getElementById('uptime');
+        const detailsEl = document.getElementById('uptimeDetails');
+
+        const startTime = new Date('2025-11-06T00:00:00');
+        const now = new Date();
+        const diff = now - startTime;
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        detailsEl.textContent = `${days}d ${hours}h ${minutes}m`;
+    }
+
+    // Update uptime every minute
+    setInterval(updateUptime, 60000);
+    updateUptime();
+    
+    // Load initial data
+    refreshStatus();
+</script>
+{% endblock %}

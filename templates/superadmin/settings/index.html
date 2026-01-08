@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}System Settings - Superadmin{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-cog me-2"></i>System Settings</h2>
+            <p class="text-muted mb-0">View and manage system configuration</p>
+        </div>
+        <div>
+            <a href="/dashboard/" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-server me-2"></i>Server Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Debug Mode:</th>
+                            <td>
+                                <span class="badge bg-{% if debug_mode %}warning{% else %}success{% endif %}">
+                                    {{ debug_mode|yesno:"ON,OFF" }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Database Engine:</th>
+                            <td><code>{{ database_engine }}</code></td>
+                        </tr>
+                        <tr>
+                            <th>Time Zone:</th>
+                            <td>{{ time_zone }}</td>
+                        </tr>
+                        <tr>
+                            <th>Language:</th>
+                            <td>{{ language_code }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-puzzle-piece me-2"></i>Application Info</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Installed Apps:</th>
+                            <td>{{ installed_apps_count }}</td>
+                        </tr>
+                        <tr>
+                            <th>Middleware:</th>
+                            <td>{{ middleware_count }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-warning mt-4">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>Note:</strong> System settings are read-only. Modify settings.py to change configuration.
+    </div>
+</div>
+{% endblock %}
