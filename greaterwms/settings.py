@@ -10,14 +10,9 @@ APPS_DIR = BASE_DIR / 'apps'
 if str(APPS_DIR) not in sys.path:
     sys.path.insert(0, str(APPS_DIR))
 
-SECRET_KEY = 'django-insecure-change-in-production'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
-# Production Settings (Uncomment for deployment)
-# SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-in-production')
-# DEBUG = config('DEBUG', default=True, cast=bool)
-# ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
-# CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='https://*.railway.app', cast=Csv())
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-in-production')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
 # Suppress specific 404 errors
 IGNORABLE_404_URLS = [
@@ -89,7 +84,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',  # Uncomment for production
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -154,7 +149,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # Uncomment for production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
