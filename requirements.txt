@@ -2,7 +2,7 @@ Django==4.2.11
 djangorestframework
 django-filter
 django-cors-headers
-django-decouple
+python-decouple
 dj-database-url
 psycopg2-binary
 gunicorn
