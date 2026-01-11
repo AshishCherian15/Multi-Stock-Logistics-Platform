@@ -12,7 +12,7 @@ if str(APPS_DIR) not in sys.path:
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-in-production')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.vercel.app', '.onrender.com', 'localhost', '127.0.0.1']
 
 # Suppress specific 404 errors
 IGNORABLE_404_URLS = [

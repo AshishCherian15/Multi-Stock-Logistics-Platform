@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "greaterwms/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "greaterwms/wsgi.py"
+    }
+  ]
+}
