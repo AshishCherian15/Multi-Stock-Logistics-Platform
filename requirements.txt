@@ -12,4 +12,4 @@ openpyxl
 requests
 django-allauth
 PyJWT
-cryptography
+cryptography==42.0.7
