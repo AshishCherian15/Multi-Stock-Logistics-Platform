@@ -11,3 +11,4 @@ Pillow
 openpyxl
 requests
 django-allauth
+PyJWT
