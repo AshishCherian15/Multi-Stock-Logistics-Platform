@@ -1,0 +1,1759 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$EMvxLb1dajvvnCDqEJOaRz$Ty+0tmC32LfjHUpzwTgto8Is7t/MX4GkS38E7QQCxgQ=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@multistock.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-03-12T16:15:36.896Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 1,
+  "fields": {
+    "goods_code": "PRD-1001",
+    "goods_desc": "iPhone 15 Pro",
+    "goods_supplier": "Apple Distribution",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Electronics",
+    "goods_brand": "Apple",
+    "safety_stock": 10,
+    "goods_cost": 980.0,
+    "goods_price": 1299.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.363Z",
+    "update_time": "2026-03-12T16:15:38.363Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 2,
+  "fields": {
+    "goods_code": "PRD-1002",
+    "goods_desc": "Samsung Galaxy S24",
+    "goods_supplier": "Samsung Trade Hub",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Electronics",
+    "goods_brand": "Samsung",
+    "safety_stock": 10,
+    "goods_cost": 850.0,
+    "goods_price": 1199.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.707Z",
+    "update_time": "2026-03-12T16:15:38.707Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 3,
+  "fields": {
+    "goods_code": "PRD-1003",
+    "goods_desc": "MacBook Pro M3",
+    "goods_supplier": "Apple Distribution",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Electronics",
+    "goods_brand": "Apple",
+    "safety_stock": 10,
+    "goods_cost": 1450.0,
+    "goods_price": 1899.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:39.056Z",
+    "update_time": "2026-03-12T16:15:39.056Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 4,
+  "fields": {
+    "goods_code": "PRD-1004",
+    "goods_desc": "Dell XPS 15",
+    "goods_supplier": "Home Essentials Ltd",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Electronics",
+    "goods_brand": "Dell",
+    "safety_stock": 10,
+    "goods_cost": 1100.0,
+    "goods_price": 1549.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:39.090Z",
+    "update_time": "2026-03-12T16:15:39.090Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 5,
+  "fields": {
+    "goods_code": "PRD-1005",
+    "goods_desc": "Wireless Earbuds",
+    "goods_supplier": "Smart Home Imports",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Accessories",
+    "goods_brand": "SoundCore",
+    "safety_stock": 10,
+    "goods_cost": 45.0,
+    "goods_price": 89.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:39.141Z",
+    "update_time": "2026-03-12T16:15:39.141Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 6,
+  "fields": {
+    "goods_code": "PRD-1006",
+    "goods_desc": "Bluetooth Speaker",
+    "goods_supplier": "Smart Home Imports",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Accessories",
+    "goods_brand": "JBL",
+    "safety_stock": 10,
+    "goods_cost": 55.0,
+    "goods_price": 99.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:39.800Z",
+    "update_time": "2026-03-12T16:15:39.800Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 7,
+  "fields": {
+    "goods_code": "PRD-1007",
+    "goods_desc": "Running Shoes",
+    "goods_supplier": "Athletic Pro Supply",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Sports",
+    "goods_brand": "Kalenji",
+    "safety_stock": 10,
+    "goods_cost": 38.0,
+    "goods_price": 79.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:40.154Z",
+    "update_time": "2026-03-12T16:15:40.154Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 8,
+  "fields": {
+    "goods_code": "PRD-1008",
+    "goods_desc": "Smartwatch Pro",
+    "goods_supplier": "Smart Home Imports",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Wearables",
+    "goods_brand": "FitPro",
+    "safety_stock": 10,
+    "goods_cost": 120.0,
+    "goods_price": 219.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:40.847Z",
+    "update_time": "2026-03-12T16:15:40.847Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 9,
+  "fields": {
+    "goods_code": "PRD-1009",
+    "goods_desc": "Cordless Drill",
+    "goods_supplier": "Home Essentials Ltd",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Tools",
+    "goods_brand": "Bosch",
+    "safety_stock": 10,
+    "goods_cost": 68.0,
+    "goods_price": 129.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:40.894Z",
+    "update_time": "2026-03-12T16:15:40.894Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 10,
+  "fields": {
+    "goods_code": "PRD-1010",
+    "goods_desc": "Laser Measure",
+    "goods_supplier": "Home Essentials Ltd",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Tools",
+    "goods_brand": "Bosch",
+    "safety_stock": 10,
+    "goods_cost": 28.0,
+    "goods_price": 59.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:40.938Z",
+    "update_time": "2026-03-12T16:15:40.938Z"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 1,
+  "fields": {
+    "goods_code": "PRD-1001",
+    "goods_desc": "iPhone 15 Pro",
+    "goods_qty": 133,
+    "onhand_stock": 133,
+    "can_order_stock": 130,
+    "ordered_stock": 0,
+    "damage_stock": 3,
+    "supplier": "Apple Distribution",
+    "goods_image": "stock_images/iPhone_15_Pro_Max.webp",
+    "create_time": "2026-03-12T16:15:38.381Z",
+    "update_time": "2026-03-12T16:15:38.396Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 2,
+  "fields": {
+    "goods_code": "PRD-1002",
+    "goods_desc": "Samsung Galaxy S24",
+    "goods_qty": 149,
+    "onhand_stock": 149,
+    "can_order_stock": 148,
+    "ordered_stock": 0,
+    "damage_stock": 1,
+    "supplier": "Samsung Trade Hub",
+    "goods_image": "stock_images/Samsung_Galaxy_S24_Ultra.jpg",
+    "create_time": "2026-03-12T16:15:39.021Z",
+    "update_time": "2026-03-12T16:15:39.039Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 3,
+  "fields": {
+    "goods_code": "PRD-1003",
+    "goods_desc": "MacBook Pro M3",
+    "goods_qty": 142,
+    "onhand_stock": 142,
+    "can_order_stock": 137,
+    "ordered_stock": 0,
+    "damage_stock": 5,
+    "supplier": "Apple Distribution",
+    "goods_image": "stock_images/MacBook_Pro_M3.webp",
+    "create_time": "2026-03-12T16:15:39.070Z",
+    "update_time": "2026-03-12T16:15:39.080Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 4,
+  "fields": {
+    "goods_code": "PRD-1004",
+    "goods_desc": "Dell XPS 15",
+    "goods_qty": 162,
+    "onhand_stock": 162,
+    "can_order_stock": 160,
+    "ordered_stock": 0,
+    "damage_stock": 2,
+    "supplier": "Home Essentials Ltd",
+    "goods_image": "stock_images/Dell_XPS_15.jpg",
+    "create_time": "2026-03-12T16:15:39.104Z",
+    "update_time": "2026-03-12T16:15:39.122Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 5,
+  "fields": {
+    "goods_code": "PRD-1005",
+    "goods_desc": "Wireless Earbuds",
+    "goods_qty": 183,
+    "onhand_stock": 183,
+    "can_order_stock": 178,
+    "ordered_stock": 0,
+    "damage_stock": 5,
+    "supplier": "Smart Home Imports",
+    "goods_image": "stock_images/Wireless_Earbuds.webp",
+    "create_time": "2026-03-12T16:15:39.157Z",
+    "update_time": "2026-03-12T16:15:39.782Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 6,
+  "fields": {
+    "goods_code": "PRD-1006",
+    "goods_desc": "Bluetooth Speaker",
+    "goods_qty": 102,
+    "onhand_stock": 102,
+    "can_order_stock": 99,
+    "ordered_stock": 0,
+    "damage_stock": 3,
+    "supplier": "Smart Home Imports",
+    "goods_image": "stock_images/Bluetooth_Speaker.webp",
+    "create_time": "2026-03-12T16:15:39.814Z",
+    "update_time": "2026-03-12T16:15:40.136Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 7,
+  "fields": {
+    "goods_code": "PRD-1007",
+    "goods_desc": "Running Shoes",
+    "goods_qty": 139,
+    "onhand_stock": 139,
+    "can_order_stock": 134,
+    "ordered_stock": 0,
+    "damage_stock": 5,
+    "supplier": "Athletic Pro Supply",
+    "goods_image": "stock_images/Running_Shoes.webp",
+    "create_time": "2026-03-12T16:15:40.169Z",
+    "update_time": "2026-03-12T16:15:40.820Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 8,
+  "fields": {
+    "goods_code": "PRD-1008",
+    "goods_desc": "Smartwatch Pro",
+    "goods_qty": 133,
+    "onhand_stock": 133,
+    "can_order_stock": 131,
+    "ordered_stock": 0,
+    "damage_stock": 2,
+    "supplier": "Smart Home Imports",
+    "goods_image": "stock_images/Smartwatch_Pro.webp",
+    "create_time": "2026-03-12T16:15:40.867Z",
+    "update_time": "2026-03-12T16:15:40.882Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 9,
+  "fields": {
+    "goods_code": "PRD-1009",
+    "goods_desc": "Cordless Drill",
+    "goods_qty": 150,
+    "onhand_stock": 150,
+    "can_order_stock": 146,
+    "ordered_stock": 0,
+    "damage_stock": 4,
+    "supplier": "Home Essentials Ltd",
+    "goods_image": "stock_images/Cordless_Drill.webp",
+    "create_time": "2026-03-12T16:15:40.907Z",
+    "update_time": "2026-03-12T16:15:40.922Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 10,
+  "fields": {
+    "goods_code": "PRD-1010",
+    "goods_desc": "Laser Measure",
+    "goods_qty": 164,
+    "onhand_stock": 164,
+    "can_order_stock": 160,
+    "ordered_stock": 0,
+    "damage_stock": 4,
+    "supplier": "Home Essentials Ltd",
+    "goods_image": "stock_images/Laser_Measure.webp",
+    "create_time": "2026-03-12T16:15:41.257Z",
+    "update_time": "2026-03-12T16:15:41.275Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "warehouse.listmodel",
+  "pk": 1,
+  "fields": {
+    "warehouse_name": "Main Warehouse",
+    "warehouse_city": "Lagos",
+    "warehouse_address": "1 Logistics Avenue",
+    "warehouse_contact": "+2340000000",
+    "warehouse_manager": "Warehouse Manager",
+    "warehouse_image": null,
+    "creater": "admin",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:37.286Z",
+    "update_time": "2026-03-12T16:15:37.286Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 1,
+  "fields": {
+    "customer_name": "Prime Retail",
+    "customer_city": "Lagos",
+    "customer_address": "Lagos Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:37.979Z",
+    "update_time": "2026-03-12T16:15:37.979Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 2,
+  "fields": {
+    "customer_name": "City Market",
+    "customer_city": "Abuja",
+    "customer_address": "Abuja Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:37.998Z",
+    "update_time": "2026-03-12T16:15:37.998Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 3,
+  "fields": {
+    "customer_name": "HomePro Stores",
+    "customer_city": "Kano",
+    "customer_address": "Kano Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.015Z",
+    "update_time": "2026-03-12T16:15:38.015Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 4,
+  "fields": {
+    "customer_name": "Mega Mart",
+    "customer_city": "Port Harcourt",
+    "customer_address": "Port Harcourt Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.027Z",
+    "update_time": "2026-03-12T16:15:38.027Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 5,
+  "fields": {
+    "customer_name": "Urban Commerce",
+    "customer_city": "Lagos",
+    "customer_address": "Lagos Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.339Z",
+    "update_time": "2026-03-12T16:15:38.339Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 1,
+  "fields": {
+    "supplier_name": "Apple Distribution",
+    "supplier_city": "Lagos",
+    "supplier_address": "Lagos Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.299Z",
+    "update_time": "2026-03-12T16:15:37.299Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 2,
+  "fields": {
+    "supplier_name": "Samsung Trade Hub",
+    "supplier_city": "Abuja",
+    "supplier_address": "Abuja Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.614Z",
+    "update_time": "2026-03-12T16:15:37.614Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 3,
+  "fields": {
+    "supplier_name": "Home Essentials Ltd",
+    "supplier_city": "Port Harcourt",
+    "supplier_address": "Port Harcourt Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.633Z",
+    "update_time": "2026-03-12T16:15:37.633Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 4,
+  "fields": {
+    "supplier_name": "Athletic Pro Supply",
+    "supplier_city": "Ibadan",
+    "supplier_address": "Ibadan Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.654Z",
+    "update_time": "2026-03-12T16:15:37.654Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 5,
+  "fields": {
+    "supplier_name": "Smart Home Imports",
+    "supplier_city": "Enugu",
+    "supplier_address": "Enugu Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.668Z",
+    "update_time": "2026-03-12T16:15:37.668Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 1,
+  "fields": {
+    "order_number": "ORD-2026-0001",
+    "order_type": "sale",
+    "customer": 3,
+    "customer_user": null,
+    "supplier": 3,
+    "status": "delivered",
+    "payment_status": "paid",
+    "total_amount": "8081.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "8121.00",
+    "delivery_address": "Kano Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "bank_transfer",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.550Z",
+    "updated_at": "2026-03-12T16:15:41.605Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 2,
+  "fields": {
+    "order_number": "ORD-2026-0002",
+    "order_type": "sale",
+    "customer": 1,
+    "customer_user": null,
+    "supplier": 4,
+    "status": "confirmed",
+    "payment_status": "unpaid",
+    "total_amount": "8971.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "9011.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "cash",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.634Z",
+    "updated_at": "2026-03-12T16:15:41.686Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 3,
+  "fields": {
+    "order_number": "ORD-2026-0003",
+    "order_type": "sale",
+    "customer": 2,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "shipped",
+    "payment_status": "paid",
+    "total_amount": "7971.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "8011.00",
+    "delivery_address": "Abuja Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "bank_transfer",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.697Z",
+    "updated_at": "2026-03-12T16:15:41.753Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 4,
+  "fields": {
+    "order_number": "ORD-2026-0004",
+    "order_type": "sale",
+    "customer": 1,
+    "customer_user": null,
+    "supplier": 3,
+    "status": "confirmed",
+    "payment_status": "unpaid",
+    "total_amount": "2664.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "2704.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.762Z",
+    "updated_at": "2026-03-12T16:15:41.815Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 5,
+  "fields": {
+    "order_number": "ORD-2026-0005",
+    "order_type": "sale",
+    "customer": 5,
+    "customer_user": null,
+    "supplier": 4,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "total_amount": "3423.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "3463.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "cash",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.828Z",
+    "updated_at": "2026-03-12T16:15:41.865Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 6,
+  "fields": {
+    "order_number": "ORD-2026-0006",
+    "order_type": "sale",
+    "customer": 3,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "confirmed",
+    "payment_status": "paid",
+    "total_amount": "2853.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "2893.00",
+    "delivery_address": "Kano Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.879Z",
+    "updated_at": "2026-03-12T16:15:41.927Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 7,
+  "fields": {
+    "order_number": "ORD-2026-0007",
+    "order_type": "sale",
+    "customer": 1,
+    "customer_user": null,
+    "supplier": 4,
+    "status": "processing",
+    "payment_status": "paid",
+    "total_amount": "10691.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "10731.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.938Z",
+    "updated_at": "2026-03-12T16:15:41.994Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 8,
+  "fields": {
+    "order_number": "ORD-2026-0008",
+    "order_type": "sale",
+    "customer": 3,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "total_amount": "8195.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "8235.00",
+    "delivery_address": "Kano Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.004Z",
+    "updated_at": "2026-03-12T16:15:42.072Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 9,
+  "fields": {
+    "order_number": "ORD-2026-0009",
+    "order_type": "sale",
+    "customer": 4,
+    "customer_user": null,
+    "supplier": 2,
+    "status": "delivered",
+    "payment_status": "unpaid",
+    "total_amount": "6870.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "6910.00",
+    "delivery_address": "Port Harcourt Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "bank_transfer",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.083Z",
+    "updated_at": "2026-03-12T16:15:42.126Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 10,
+  "fields": {
+    "order_number": "ORD-2026-0010",
+    "order_type": "sale",
+    "customer": 4,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "pending",
+    "payment_status": "paid",
+    "total_amount": "7831.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "7871.00",
+    "delivery_address": "Port Harcourt Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "cash",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.157Z",
+    "updated_at": "2026-03-12T16:15:42.202Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 11,
+  "fields": {
+    "order_number": "ORD-2026-0011",
+    "order_type": "sale",
+    "customer": 5,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "total_amount": "1311.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "1351.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.219Z",
+    "updated_at": "2026-03-12T16:15:42.276Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 12,
+  "fields": {
+    "order_number": "ORD-2026-0012",
+    "order_type": "sale",
+    "customer": 3,
+    "customer_user": null,
+    "supplier": 1,
+    "status": "delivered",
+    "payment_status": "paid",
+    "total_amount": "12550.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "12590.00",
+    "delivery_address": "Kano Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "bank_transfer",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.287Z",
+    "updated_at": "2026-03-12T16:15:42.350Z"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "product": 5,
+    "product_name": "Wireless Earbuds",
+    "quantity": 1,
+    "unit_price": "89.00",
+    "total_price": "89.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 2,
+  "fields": {
+    "order": 1,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 4,
+    "unit_price": "1899.00",
+    "total_price": "7596.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 3,
+  "fields": {
+    "order": 1,
+    "product": 6,
+    "product_name": "Bluetooth Speaker",
+    "quantity": 4,
+    "unit_price": "99.00",
+    "total_price": "396.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 4,
+  "fields": {
+    "order": 2,
+    "product": 8,
+    "product_name": "Smartwatch Pro",
+    "quantity": 4,
+    "unit_price": "219.00",
+    "total_price": "876.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 5,
+  "fields": {
+    "order": 2,
+    "product": 4,
+    "product_name": "Dell XPS 15",
+    "quantity": 4,
+    "unit_price": "1549.00",
+    "total_price": "6196.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 6,
+  "fields": {
+    "order": 2,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 1,
+    "unit_price": "1899.00",
+    "total_price": "1899.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 7,
+  "fields": {
+    "order": 3,
+    "product": 7,
+    "product_name": "Running Shoes",
+    "quantity": 4,
+    "unit_price": "79.00",
+    "total_price": "316.00",
+    "seller": "Athletic Pro Supply"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 8,
+  "fields": {
+    "order": 3,
+    "product": 10,
+    "product_name": "Laser Measure",
+    "quantity": 1,
+    "unit_price": "59.00",
+    "total_price": "59.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 9,
+  "fields": {
+    "order": 3,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 4,
+    "unit_price": "1899.00",
+    "total_price": "7596.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 10,
+  "fields": {
+    "order": 4,
+    "product": 5,
+    "product_name": "Wireless Earbuds",
+    "quantity": 1,
+    "unit_price": "89.00",
+    "total_price": "89.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 11,
+  "fields": {
+    "order": 4,
+    "product": 10,
+    "product_name": "Laser Measure",
+    "quantity": 3,
+    "unit_price": "59.00",
+    "total_price": "177.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 12,
+  "fields": {
+    "order": 4,
+    "product": 2,
+    "product_name": "Samsung Galaxy S24",
+    "quantity": 2,
+    "unit_price": "1199.00",
+    "total_price": "2398.00",
+    "seller": "Samsung Trade Hub"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 13,
+  "fields": {
+    "order": 5,
+    "product": 10,
+    "product_name": "Laser Measure",
+    "quantity": 4,
+    "unit_price": "59.00",
+    "total_price": "236.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 14,
+  "fields": {
+    "order": 5,
+    "product": 5,
+    "product_name": "Wireless Earbuds",
+    "quantity": 1,
+    "unit_price": "89.00",
+    "total_price": "89.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 15,
+  "fields": {
+    "order": 5,
+    "product": 4,
+    "product_name": "Dell XPS 15",
+    "quantity": 2,
+    "unit_price": "1549.00",
+    "total_price": "3098.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 16,
+  "fields": {
+    "order": 6,
+    "product": 8,
+    "product_name": "Smartwatch Pro",
+    "quantity": 3,
+    "unit_price": "219.00",
+    "total_price": "657.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 17,
+  "fields": {
+    "order": 6,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 1,
+    "unit_price": "1899.00",
+    "total_price": "1899.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 18,
+  "fields": {
+    "order": 6,
+    "product": 6,
+    "product_name": "Bluetooth Speaker",
+    "quantity": 3,
+    "unit_price": "99.00",
+    "total_price": "297.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 19,
+  "fields": {
+    "order": 7,
+    "product": 6,
+    "product_name": "Bluetooth Speaker",
+    "quantity": 2,
+    "unit_price": "99.00",
+    "total_price": "198.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 20,
+  "fields": {
+    "order": 7,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 3,
+    "unit_price": "1899.00",
+    "total_price": "5697.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 21,
+  "fields": {
+    "order": 7,
+    "product": 2,
+    "product_name": "Samsung Galaxy S24",
+    "quantity": 4,
+    "unit_price": "1199.00",
+    "total_price": "4796.00",
+    "seller": "Samsung Trade Hub"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 22,
+  "fields": {
+    "order": 8,
+    "product": 1,
+    "product_name": "iPhone 15 Pro",
+    "quantity": 1,
+    "unit_price": "1299.00",
+    "total_price": "1299.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 23,
+  "fields": {
+    "order": 8,
+    "product": 4,
+    "product_name": "Dell XPS 15",
+    "quantity": 2,
+    "unit_price": "1549.00",
+    "total_price": "3098.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 24,
+  "fields": {
+    "order": 8,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 2,
+    "unit_price": "1899.00",
+    "total_price": "3798.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 25,
+  "fields": {
+    "order": 9,
+    "product": 9,
+    "product_name": "Cordless Drill",
+    "quantity": 4,
+    "unit_price": "129.00",
+    "total_price": "516.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 26,
+  "fields": {
+    "order": 9,
+    "product": 7,
+    "product_name": "Running Shoes",
+    "quantity": 2,
+    "unit_price": "79.00",
+    "total_price": "158.00",
+    "seller": "Athletic Pro Supply"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 27,
+  "fields": {
+    "order": 9,
+    "product": 4,
+    "product_name": "Dell XPS 15",
+    "quantity": 4,
+    "unit_price": "1549.00",
+    "total_price": "6196.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 28,
+  "fields": {
+    "order": 10,
+    "product": 7,
+    "product_name": "Running Shoes",
+    "quantity": 3,
+    "unit_price": "79.00",
+    "total_price": "237.00",
+    "seller": "Athletic Pro Supply"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 29,
+  "fields": {
+    "order": 10,
+    "product": 2,
+    "product_name": "Samsung Galaxy S24",
+    "quantity": 2,
+    "unit_price": "1199.00",
+    "total_price": "2398.00",
+    "seller": "Samsung Trade Hub"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 30,
+  "fields": {
+    "order": 10,
+    "product": 1,
+    "product_name": "iPhone 15 Pro",
+    "quantity": 4,
+    "unit_price": "1299.00",
+    "total_price": "5196.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 31,
+  "fields": {
+    "order": 11,
+    "product": 6,
+    "product_name": "Bluetooth Speaker",
+    "quantity": 4,
+    "unit_price": "99.00",
+    "total_price": "396.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 32,
+  "fields": {
+    "order": 11,
+    "product": 8,
+    "product_name": "Smartwatch Pro",
+    "quantity": 3,
+    "unit_price": "219.00",
+    "total_price": "657.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 33,
+  "fields": {
+    "order": 11,
+    "product": 9,
+    "product_name": "Cordless Drill",
+    "quantity": 2,
+    "unit_price": "129.00",
+    "total_price": "258.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 34,
+  "fields": {
+    "order": 12,
+    "product": 2,
+    "product_name": "Samsung Galaxy S24",
+    "quantity": 4,
+    "unit_price": "1199.00",
+    "total_price": "4796.00",
+    "seller": "Samsung Trade Hub"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 35,
+  "fields": {
+    "order": 12,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 4,
+    "unit_price": "1899.00",
+    "total_price": "7596.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 36,
+  "fields": {
+    "order": 12,
+    "product": 7,
+    "product_name": "Running Shoes",
+    "quantity": 2,
+    "unit_price": "79.00",
+    "total_price": "158.00",
+    "seller": "Athletic Pro Supply"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0001 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.556Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0001 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.618Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0002 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.641Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0003 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.702Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 5,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0004 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.765Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 6,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0005 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.830Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 7,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0006 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.885Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 8,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0007 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.942Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 9,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0008 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.008Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 10,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0009 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.086Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 11,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0009 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.141Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 12,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0010 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.160Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 13,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0011 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.226Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 14,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0012 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.292Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 15,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0012 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.360Z"
+  }
+},
+{
+  "model": "users.userprofile",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "role": "staff",
+    "phone": "",
+    "department": "",
+    "employee_id": null,
+    "avatar": "",
+    "avatar_url": null,
+    "bio": "",
+    "is_active": true,
+    "last_login_ip": null,
+    "created_at": "2026-03-12T16:15:37.269Z",
+    "updated_at": "2026-03-12T16:15:37.269Z"
+  }
+},
+{
+  "model": "profile.profile",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "avatar": "",
+    "phone": "",
+    "address": "",
+    "city": "",
+    "state": "",
+    "pincode": "",
+    "created_at": "2026-03-12T16:15:37.235Z",
+    "updated_at": "2026-03-12T16:15:37.250Z"
+  }
+},
+{
+  "model": "sites.site",
+  "pk": 1,
+  "fields": {
+    "domain": "example.com",
+    "name": "example.com"
+  }
+}
+]
