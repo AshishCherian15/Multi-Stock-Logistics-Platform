@@ -7,5 +7,7 @@ db.sqlite3-wal
 staticfiles/
 media/
 *.log
+render_backup.json
+*.dump
 .venv/
 venv/

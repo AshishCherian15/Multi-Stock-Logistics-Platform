@@ -11,7 +11,7 @@ if str(APPS_DIR) not in sys.path:
     sys.path.insert(0, str(APPS_DIR))
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-in-production')
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Hosts: add your own Render subdomain and custom domains here
 ALLOWED_HOSTS = [
@@ -129,10 +129,16 @@ WSGI_APPLICATION = 'greaterwms.wsgi.application'
 import dj_database_url
 
 # DATABASE_URL is set in Render / local .env for Supabase.
-# Falls back to SQLite for local development when DATABASE_URL is not set.
+# In production, force explicit DATABASE_URL to avoid silent fallback to SQLite.
+DATABASE_URL = config('DATABASE_URL', default='').strip()
+if not DEBUG and not DATABASE_URL:
+    raise RuntimeError('DATABASE_URL must be set when DEBUG=False')
+
+database_default = DATABASE_URL or f'sqlite:///{BASE_DIR / "db.sqlite3"}'
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
+        default=database_default,
         conn_max_age=600,
         conn_health_checks=True,
         ssl_require=config('DB_SSL_REQUIRE', default=not DEBUG, cast=bool),
