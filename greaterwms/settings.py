@@ -12,7 +12,15 @@ if str(APPS_DIR) not in sys.path:
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-in-production')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['.vercel.app', '.onrender.com', 'localhost', '127.0.0.1']
+
+# Hosts: add your own Render subdomain and custom domains here
+ALLOWED_HOSTS = [
+    '.vercel.app',
+    '.onrender.com',
+    'localhost',
+    '127.0.0.1',
+    *config('EXTRA_ALLOWED_HOSTS', default='', cast=Csv()),  # add custom domains via env
+]
 
 # Suppress specific 404 errors
 IGNORABLE_404_URLS = [
@@ -73,6 +81,7 @@ INSTALLED_APPS = [
     'staff_panel',
     'guest',
     'superadmin_panel',
+    'quotations',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -117,21 +126,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'greaterwms.wsgi.application'
 
-# import dj_database_url
+import dj_database_url
 
+# DATABASE_URL is set in Render / local .env for Supabase.
+# Falls back to SQLite for local development when DATABASE_URL is not set.
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=config('DB_SSL_REQUIRE', default=not DEBUG, cast=bool),
+    )
 }
-# Production Database (Uncomment for deployment)
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         default=config('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
-#         conn_max_age=600
-#     )
-# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -170,7 +176,22 @@ REST_FRAMEWORK = {
     ],
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS – allow all origins in DEBUG; restrict to explicit list in production
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [
+        o.strip()
+        for o in config('CORS_ALLOWED_ORIGINS', default='').split(',')
+        if o.strip()
+    ]
+    # Always allow Vercel previews and the Render service itself
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r'^https://.*\.vercel\.app$',
+        r'^https://.*\.onrender\.com$',
+    ]
+CORS_ALLOW_CREDENTIALS = True
 LOGIN_URL = '/auth/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
@@ -204,11 +225,27 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_SAVE_EVERY_REQUEST = True
 
-# CSRF Settings
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
-CSRF_COOKIE_HTTPONLY = False
+# CSRF / Security Settings
+CSRF_COOKIE_SECURE = not DEBUG          # True in production (HTTPS)
+CSRF_COOKIE_HTTPONLY = False            # Needs to be readable by JS for AJAX
 CSRF_USE_SESSIONS = False
 CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = not DEBUG       # True in production
+SECURE_SSL_REDIRECT = not DEBUG         # Redirect HTTP -> HTTPS on Render
+SECURE_HSTS_SECONDS = 0 if DEBUG else 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+
+# Supabase / Render trusted origins (CSRF for POST from frontend)
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://*.onrender.com',
+    *[
+        o.strip()
+        for o in config('CSRF_TRUSTED_ORIGINS_EXTRA', default='').split(',')
+        if o.strip()
+    ],
+]
 
 # Email Settings - Real SMTP with secure credentials
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')

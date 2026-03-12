@@ -1,13 +1,25 @@
 {
+  "version": 2,
+  "comment": "This app is a Django monolith. The canonical deployment is Render (backend + templates). This vercel.json is kept as a fallback/secondary deployment only. For production, use render.yaml.",
   "functions": {
     "api/index.py": {
-      "runtime": "@vercel/python@3.12"
+      "runtime": "@vercel/python@3.12",
+      "maxDuration": 30
     }
   },
   "routes": [
     {
+      "src": "/static/(.*)",
+      "headers": { "Cache-Control": "public, max-age=31536000, immutable" },
+      "dest": "/api/index.py"
+    },
+    {
       "src": "/(.*)",
-      "dest": "api/index.py"
+      "dest": "/api/index.py"
     }
-  ]
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "greaterwms.settings"
+  }
 }
+

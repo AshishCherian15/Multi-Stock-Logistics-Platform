@@ -1,18 +1,50 @@
 services:
   - type: web
-    name: multi-stock-logistics-platform
+    name: multistock-backend
     env: python
-    plan: free
+    plan: starter          # upgrade to 'standard' for always-on; 'free' spins down
     runtime: python
+    region: oregon         # pick the region closest to your users
     buildCommand: |
       pip install -r requirements.txt
       python manage.py collectstatic --noinput
-      python manage.py migrate
-    startCommand: gunicorn greaterwms.wsgi:application
+      python manage.py migrate --noinput
+    startCommand: gunicorn greaterwms.wsgi:application --workers 2 --threads 2 --timeout 120
+    healthCheckPath: /health/
+    autoDeploy: true       # redeploy automatically on every GitHub push
+
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.9
+        value: "3.11.9"
+
+      # Django core
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
-        value: False
+        value: "False"
+
+      # ── Supabase PostgreSQL ──────────────────────────────────────────────────
+      # Paste your Supabase connection string here (Transaction Pooler recommended):
+      # postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres
+      - key: DATABASE_URL
+        sync: false          # set this in the Render dashboard manually (keeps secret out of git)
+
+      # Allow HTTPS-only DB connections (Supabase requires SSL)
+      - key: DB_SSL_REQUIRE
+        value: "True"
+
+      # ── Frontend origins ─────────────────────────────────────────────────────
+      # Comma-separated list of your Vercel deployment URLs, e.g.:
+      # https://multistock.vercel.app,https://www.yourdomain.com
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+      # ── CSRF ─────────────────────────────────────────────────────────────────
+      - key: CSRF_TRUSTED_ORIGINS_EXTRA
+        sync: false          # same value as CORS_ALLOWED_ORIGINS if using cookies
+
+      # ── Email (optional – leave blank to use console backend) ────────────────
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
