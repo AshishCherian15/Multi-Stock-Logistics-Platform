@@ -240,8 +240,7 @@
                         </a>
                         <div class="d-flex gap-2">
                             <button class="action-btn btn-cart flex-grow-1"
-                                onclick="addToCart({{ item.id }}, '{{ item.name }}', {{ item.daily_rate }})" {% if
-                                item.status !='available' %}disabled{% endif %}>
+                                onclick="addToCart({{ item.id }}, '{{ item.name }}', {{ item.daily_rate }})" {% if item.status != 'available' %}disabled{% endif %}>
                                 <i class="fas fa-shopping-cart me-1"></i>Add to Cart
                             </button>
                             <button class="action-btn btn-wishlist"
@@ -250,8 +249,7 @@
                             </button>
                         </div>
                         <button class="action-btn btn-book flex-grow-1"
-                            onclick="bookNow({{ item.id }}, '{{ item.name }}', {{ item.hourly_rate }}, {{ item.daily_rate }}, {{ item.weekly_rate }}, {{ item.monthly_rate }})" {% if
-                            item.status !='available' %}disabled{% endif %}>
+                            onclick="bookNow({{ item.id }}, '{{ item.name }}', {{ item.hourly_rate }}, {{ item.daily_rate }}, {{ item.weekly_rate }}, {{ item.monthly_rate }})" {% if item.status != 'available' %}disabled{% endif %}>
                             <i class="fas fa-calendar-check me-1"></i>Book Now
                         </button>
                     </div>
