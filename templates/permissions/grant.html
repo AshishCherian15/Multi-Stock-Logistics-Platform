@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Grant Permission{% endblock %}
+{% block content %}
+<style>
+.form-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:40px;box-shadow:0 4px 15px rgba(0,20,168,0.08)}
+.form-label{color:#0014A8;font-weight:600;margin-bottom:8px}
+.form-control{border:2px solid rgba(0,20,168,0.2);border-radius:8px;padding:12px;transition:all .3s}
+.form-control:focus{border-color:#0014A8;box-shadow:0 0 0 3px rgba(0,20,168,0.1)}
+.btn-submit{background:linear-gradient(135deg,#28a745,#218838);color:#fff;padding:12px 40px;border-radius:10px;font-weight:600;border:none}
+.btn-cancel{background:#fff;color:#0014A8;border:2px solid #0014A8;padding:12px 40px;border-radius:10px;font-weight:600}
+</style>
+
+<div class="container" style="padding:30px;max-width:800px">
+    <div class="mb-4">
+        <a href="{% url 'user_permissions' user_obj.id %}" style="color:#0014A8;text-decoration:none"><i class="fas fa-arrow-left me-2"></i>Back</a>
+        <h2 style="color:#0014A8;font-weight:700;margin-top:15px"><i class="fas fa-key me-2"></i>Grant Permission to {{ user_obj.username }}</h2>
+    </div>
+
+    <div class="form-card">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Permission *</label>
+                <select name="permission" class="form-control" required>
+                    <option value="">Select Permission</option>
+                    {% regroup permissions by module as module_list %}
+                    {% for module_group in module_list %}
+                    <optgroup label="{{ module_group.grouper|upper }}">
+                        {% for perm in module_group.list %}
+                        <option value="{{ perm.id }}">{{ perm.name }} ({{ perm.get_action_display }})</option>
+                        {% endfor %}
+                    </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Reason</label>
+                <textarea name="reason" class="form-control" rows="3" placeholder="Why is this permission being granted?"></textarea>
+            </div>
+            <div class="d-flex gap-3 mt-4">
+                <button type="submit" class="btn btn-submit"><i class="fas fa-check me-2"></i>Grant Permission</button>
+                <a href="{% url 'user_permissions' user_obj.id %}" class="btn btn-cancel"><i class="fas fa-times me-2"></i>Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

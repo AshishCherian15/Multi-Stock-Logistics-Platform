@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+{% block title %}Group Settings - {{ conversation.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="padding: 30px;">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cog me-2"></i>Group Settings - {{ conversation.name }}
+                        </h5>
+                        <a href="{% url 'messaging:chat' conversation.id %}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Chat
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    {% if is_admin %}
+                    <!-- Group Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h6 class="text-primary">Group Information</h6>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update_info">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Group Name</label>
+                                    <input type="text" name="name" class="form-control" value="{{ conversation.name }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea name="description" class="form-control" rows="3">{{ conversation.description }}</textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Visibility</label>
+                                    <select name="visibility" class="form-select">
+                                        {% for value, label in visibility_choices %}
+                                        <option value="{{ value }}" {% if conversation.visibility == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">
+                                        <strong>Public:</strong> Visible to all team members<br>
+                                        <strong>Private:</strong> Visible only to selected members<br>
+                                        <strong>Hidden:</strong> Visible only to creator and added members
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Update Group
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6>Group Stats</h6>
+                                    <p><strong>Created:</strong> {{ conversation.created_at|date:"M d, Y" }}</p>
+                                    <p><strong>Creator:</strong> {{ conversation.created_by.username }}</p>
+                                    <p><strong>Members:</strong> {{ conversation.members.count }}</p>
+                                    <p><strong>Messages:</strong> {{ conversation.messages.count }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Members Management -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6 class="text-primary">Members ({{ conversation.members.count }})</h6>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Member</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            {% if is_admin %}
+                                            <th>Actions</th>
+                                            {% endif %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for member in conversation.members.all %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="member-avatar me-2" style="width:32px;height:32px;border-radius:50%;background:#0014A8;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;">
+                                                        {{ member.username|slice:":1"|upper }}
+                                                    </div>
+                                                    <div>
+                                                        <strong>{{ member.username }}</strong>
+                                                        {% if member.first_name or member.last_name %}
+                                                        <br><small class="text-muted">{{ member.get_full_name }}</small>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if member == conversation.created_by %}
+                                                    <span class="badge bg-success">Creator</span>
+                                                {% elif conversation.admins.all and member in conversation.admins.all %}
+                                                    <span class="badge bg-primary">Admin</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Member</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if member.is_staff or member.is_superuser %}
+                                                    <span class="badge bg-info">Team</span>
+                                                {% else %}
+                                                    <span class="badge bg-light text-dark">Customer</span>
+                                                {% endif %}
+                                            </td>
+                                            {% if is_admin %}
+                                            <td>
+                                                {% if member != conversation.created_by and member != request.user %}
+                                                <div class="btn-group btn-group-sm">
+                                                    <form method="post" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="toggle_admin">
+                                                        <input type="hidden" name="user_id" value="{{ member.id }}">
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm" title="Toggle Admin">
+                                                            {% if member in conversation.admins.all %}
+                                                                <i class="fas fa-user-minus"></i>
+                                                            {% else %}
+                                                                <i class="fas fa-user-plus"></i>
+                                                            {% endif %}
+                                                        </button>
+                                                    </form>
+                                                    
+                                                    <form method="post" class="d-inline" onsubmit="return confirm('Remove {{ member.username }} from group?')">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="remove_member">
+                                                        <input type="hidden" name="user_id" value="{{ member.id }}">
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Remove Member">
+                                                            <i class="fas fa-user-times"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                {% endif %}
+                                            </td>
+                                            {% endif %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        {% if is_admin and available_users %}
+                        <div class="col-md-4">
+                            <h6 class="text-primary">Add Members</h6>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="add_member">
+                                
+                                <div class="mb-3">
+                                    <select name="user_id" class="form-select" required>
+                                        <option value="">Select user to add...</option>
+                                        {% for user in available_users %}
+                                        <option value="{{ user.id }}">
+                                            {{ user.username }}
+                                            {% if user.first_name or user.last_name %}
+                                            ({{ user.get_full_name }})
+                                            {% endif %}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="fas fa-user-plus me-1"></i>Add Member
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if is_admin %}
+                    <!-- Group Actions -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary">Group Actions</h6>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'messaging:create_group_advanced' %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Create New Group
+                                </a>
+                                
+                                <button class="btn btn-outline-danger btn-sm" onclick="deleteGroup()">
+                                    <i class="fas fa-trash me-1"></i>Delete Group
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Recent Activity -->
+                    {% if group_actions %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-primary">Recent Activity</h6>
+                            <div class="list-group">
+                                {% for action in group_actions %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <strong>{{ action.performed_by.username }}</strong>
+                                            {{ action.get_action_display|lower }}
+                                            {% if action.target_user %}
+                                            <strong>{{ action.target_user.username }}</strong>
+                                            {% endif %}
+                                            {% if action.new_value %}
+                                            to "{{ action.new_value }}"
+                                            {% endif %}
+                                        </div>
+                                        <small class="text-muted">{{ action.timestamp|timesince }} ago</small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function deleteGroup() {
+    if (confirm('Are you sure you want to delete this group? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all messages and remove all members. Continue?')) {
+            fetch(`/messages/groups/{{ conversation.id }}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({confirm: true})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = '{% url "messaging:home" %}';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            });
+        }
+    }
+}
+</script>
+{% endblock %}

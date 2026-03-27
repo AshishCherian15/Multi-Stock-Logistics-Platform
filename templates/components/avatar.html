@@ -1,0 +1,42 @@
+{% comment %}
+Reusable Avatar Component
+Usage: {% include 'components/avatar.html' with user=user size=40 clickable=True %}
+{% endcomment %}
+
+{% load static %}
+
+{% with avatar_url=user.profile.avatar_url|default:user.avatar_url|default:'' %}
+{% with initials=user.username|slice:":2"|upper %}
+{% with size_val=size|default:40 %}
+{% with font_size=size_val|floatformat:0|add:"-24"|floatformat:0 %}
+
+<div class="avatar-wrapper d-inline-block position-relative" 
+     {% if clickable %}onclick="openAvatarModal('{{ avatar_url }}', '{{ initials }}')" 
+     style="cursor:pointer;" 
+     role="button" 
+     tabindex="0" 
+     aria-label="View avatar for {{ user.username }}"
+     onkeypress="if(event.key==='Enter')openAvatarModal('{{ avatar_url }}', '{{ initials }}')"{% endif %}>
+    
+    {% if avatar_url %}
+        <img src="{{ avatar_url }}" 
+             alt="{{ user.username }}'s avatar" 
+             class="rounded-circle" 
+             style="width:{{ size_val }}px;height:{{ size_val }}px;object-fit:cover;border:2px solid #0014A8;"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="avatar-initials rounded-circle" 
+             style="width:{{ size_val }}px;height:{{ size_val }}px;background:#0014A8;color:white;display:none;align-items:center;justify-content:center;font-weight:bold;font-size:{{ font_size }}px;border:2px solid #0014A8;">
+            {{ initials }}
+        </div>
+    {% else %}
+        <div class="avatar-initials rounded-circle" 
+             style="width:{{ size_val }}px;height:{{ size_val }}px;background:#0014A8;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:{{ font_size }}px;border:2px solid #0014A8;">
+            {{ initials }}
+        </div>
+    {% endif %}
+</div>
+
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endwith %}

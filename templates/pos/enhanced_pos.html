@@ -1,0 +1,993 @@
+{% extends 'base.html' %}
+
+{% block title %}Enhanced POS System - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Point of Sale System</h1>
+        <div>
+            <button class="btn btn-primary me-2" onclick="toggleBarcodeScanner()" id="scannerBtn">
+                <i class="fas fa-barcode me-2"></i>Start Scanner
+            </button>
+            <button class="btn btn-success me-2" onclick="newSale()">
+                <i class="fas fa-plus me-2"></i>New Sale
+            </button>
+            <button class="btn btn-warning me-2" onclick="openStockUpdate()">
+                <i class="fas fa-boxes me-2"></i>Update Stock
+            </button>
+            <button class="btn btn-info" onclick="viewSalesHistory()">
+                <i class="fas fa-history me-2"></i>Sales History
+            </button>
+        </div>
+    </div>
+
+    <!-- POS Interface -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Product Selection</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" placeholder="Search products or scan barcode..."
+                                id="productSearch">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-primary w-100" onclick="toggleBarcodeScanner()">
+                                <i class="fas fa-barcode"></i> Scan
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="categoryFilter">
+                                <option value="">All Categories</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="fashion">Fashion</option>
+                                <option value="home">Home & Garden</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row" id="productGrid">
+                        <!-- Products will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h5 class="mb-0">Current Sale</h5>
+                    <button class="btn btn-sm btn-outline-danger" onclick="clearCart()">Clear</button>
+                </div>
+                <div class="card-body">
+                    <div id="cartItems" class="mb-3">
+                        <p class="text-muted text-center">No items added</p>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">₹0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax (18%):</span>
+                        <span id="tax">₹0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong id="total">₹0</strong>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-info" onclick="previewBill()" id="previewBtn" disabled>
+                            <i class="fas fa-eye me-2"></i>Preview Bill
+                        </button>
+                        <button class="btn btn-success" onclick="processPayment()" id="checkoutBtn" disabled>
+                            <i class="fas fa-credit-card me-2"></i>Process Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Barcode Scanner Modal -->
+<div class="modal fade" id="barcodeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Barcode Scanner</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="scanner-container">
+                    <video id="scanner-video" width="100%" height="300"
+                        style="border: 2px solid #007bff; border-radius: 10px;"></video>
+                    <div class="mt-3">
+                        <p class="text-muted">Position barcode within the frame</p>
+                        <div id="scan-result" class="alert alert-info d-none"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="text" class="form-control me-2" id="manualBarcode" placeholder="Or enter barcode manually">
+                <button class="btn btn-primary" onclick="processManualBarcode()">Add</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bill Preview Modal -->
+<div class="modal fade" id="billPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bill Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="billPreviewContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="editCart()">Edit Cart</button>
+                <button type="button" class="btn btn-success" onclick="proceedToPayment()">Proceed to Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Gateway Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Payment Gateway</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Payment Method</label>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="paymentMethod" id="cash" value="cash" checked>
+                            <label class="btn btn-outline-success w-100" for="cash">
+                                <i class="fas fa-money-bill-wave"></i><br>Cash
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="paymentMethod" id="card" value="card">
+                            <label class="btn btn-outline-primary w-100" for="card">
+                                <i class="fas fa-credit-card"></i><br>Card
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="paymentMethod" id="upi" value="upi">
+                            <label class="btn btn-outline-info w-100" for="upi">
+                                <i class="fas fa-mobile-alt"></i><br>UPI
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="paymentMethod" id="wallet" value="wallet">
+                            <label class="btn btn-outline-warning w-100" for="wallet">
+                                <i class="fas fa-wallet"></i><br>Wallet
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Amount to Pay</label>
+                    <input type="number" class="form-control" id="paymentAmount" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="completePayment()">Complete Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stock Update Modal -->
+<div class="modal fade" id="stockUpdateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" id="stockBarcode" placeholder="Scan or enter barcode">
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-primary w-100" onclick="scanForStock()">Scan Barcode</button>
+                    </div>
+                </div>
+                <div id="stockProductInfo"></div>
+                <div class="row" id="stockUpdateForm" style="display: none;">
+                    <div class="col-md-6">
+                        <label class="form-label">Supplier</label>
+                        <select class="form-select" id="supplierSelect">
+                            <option value="">Select Supplier</option>
+                            <option value="supplier1">ABC Electronics</option>
+                            <option value="supplier2">XYZ Fashion</option>
+                            <option value="supplier3">Tech Distributors</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary mt-1" onclick="addNewSupplier()">Add New
+                            Supplier</button>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Quantity Received</label>
+                        <input type="number" class="form-control" id="receivedQuantity" min="1">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Cost per Unit</label>
+                        <input type="number" class="form-control" id="unitCost" step="0.01">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="updateStock()" id="updateStockBtn"
+                    disabled>Update Stock</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Supplier Modal -->
+<div class="modal fade" id="addSupplierModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Supplier</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Supplier Name</label>
+                    <input type="text" class="form-control" id="supplierName" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Contact Person</label>
+                    <input type="text" class="form-control" id="supplierContact">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-control" id="supplierPhone">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="supplierEmail">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveSupplier()">Save Supplier</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Receipt Modal -->
+<div class="modal fade" id="receiptModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Receipt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="receiptContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="printReceipt()">Print Receipt</button>
+                <button type="button" class="btn btn-info" onclick="downloadReceipt()">Download PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+<script>
+    let cart = [];
+    let products = [
+        { id: 1, name: 'iPhone 15 Pro', price: 125000, category: 'electronics', stock: 5, barcode: '1234567890123', icon: '📱', color: '#007bff' },
+        { id: 2, name: 'Samsung Galaxy S24', price: 85000, category: 'electronics', stock: 8, barcode: '2345678901234', icon: '📱', color: '#28a745' },
+        { id: 3, name: 'Nike Air Max', price: 12000, category: 'fashion', stock: 12, barcode: '3456789012345', icon: '👟', color: '#dc3545' },
+        { id: 4, name: 'Dell Laptop', price: 65000, category: 'electronics', stock: 3, barcode: '4567890123456', icon: '💻', color: '#6c757d' },
+        { id: 5, name: 'Adidas Shoes', price: 8500, category: 'fashion', stock: 15, barcode: '5678901234567', icon: '👟', color: '#ffc107' }
+    ];
+    let scannerActive = false;
+    let lastScannedItem = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        displayProducts();
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                toggleBarcodeScanner();
+            }
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                previewBill();
+            }
+            if (e.key === 'F9') {
+                e.preventDefault();
+                processPayment();
+            }
+        });
+    });
+
+    function displayProducts() {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = products.map(product => `
+        <div class="col-md-4 mb-3">
+            <div class="card h-100" style="cursor: pointer;" onclick="addToCart(${product.id})">
+                <div class="card-body text-center">
+                    <div class="mb-2 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background-color: ${product.color}; border-radius: 8px; font-size: 24px;">${product.icon}</div>
+                    <h6 class="card-title">${product.name}</h6>
+                    <p class="text-success">₹${product.price.toLocaleString('en-IN')}</p>
+                    <small class="text-muted">Stock: ${product.stock}</small>
+                    <br><small class="text-info">SKU: ${product.barcode}</small>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    }
+
+    function addToCart(productId) {
+        const product = products.find(p => p.id === productId);
+        if (!product || product.stock <= 0) {
+            alert('Product out of stock!');
+            return;
+        }
+
+        const existingItem = cart.find(item => item.id === productId);
+        if (existingItem) {
+            if (existingItem.quantity >= product.stock) {
+                alert('Cannot add more items. Stock limit reached.');
+                return;
+            }
+            existingItem.quantity += 1;
+        } else {
+            cart.push({ ...product, quantity: 1 });
+        }
+
+        updateCart();
+    }
+
+    function updateCart() {
+        const cartItems = document.getElementById('cartItems');
+        const subtotalEl = document.getElementById('subtotal');
+        const taxEl = document.getElementById('tax');
+        const totalEl = document.getElementById('total');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const previewBtn = document.getElementById('previewBtn');
+
+        if (cart.length === 0) {
+            cartItems.innerHTML = '<p class="text-muted text-center">No items added</p>';
+            subtotalEl.textContent = '₹0';
+            taxEl.textContent = '₹0';
+            totalEl.textContent = '₹0';
+            checkoutBtn.disabled = true;
+            previewBtn.disabled = true;
+            return;
+        }
+
+        cartItems.innerHTML = cart.map(item => `
+        <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded" id="cart-item-${item.id}">
+            <div class="flex-grow-1">
+                <small><strong>${item.name}</strong></small>
+                <br><small class="text-muted">₹${item.price.toLocaleString('en-IN')} each</small>
+                <br><small class="text-info">SKU: ${item.barcode}</small>
+            </div>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary me-1" onclick="updateQuantity(${item.id}, -1)">-</button>
+                <input type="number" class="form-control form-control-sm mx-1" style="width: 60px;" value="${item.quantity}" onchange="setQuantity(${item.id}, this.value)" min="1" max="${item.stock}">
+                <button class="btn btn-sm btn-outline-secondary me-1" onclick="updateQuantity(${item.id}, 1)">+</button>
+                <button class="btn btn-sm btn-outline-warning me-1" onclick="editPrice(${item.id})" title="Edit Price">₹</button>
+                <button class="btn btn-sm btn-outline-info me-1" onclick="applyDiscount(${item.id})" title="Apply Discount">%</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${item.id})" title="Remove">×</button>
+            </div>
+        </div>
+    `).join('');
+
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const tax = subtotal * 0.18;
+        const total = subtotal + tax;
+
+        subtotalEl.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+        taxEl.textContent = `₹${Math.round(tax).toLocaleString('en-IN')}`;
+        totalEl.textContent = `₹${Math.round(total).toLocaleString('en-IN')}`;
+        checkoutBtn.disabled = false;
+        previewBtn.disabled = false;
+    }
+
+    function updateQuantity(productId, change) {
+        const item = cart.find(item => item.id === productId);
+        const product = products.find(p => p.id === productId);
+
+        if (item) {
+            const newQuantity = item.quantity + change;
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+            } else if (newQuantity <= product.stock) {
+                item.quantity = newQuantity;
+                updateCart();
+            } else {
+                alert('Cannot exceed stock limit');
+            }
+        }
+    }
+
+    function removeFromCart(productId) {
+        const item = cart.find(item => item.id === productId);
+        if (item && confirm(`Remove ${item.name} from cart?`)) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+            showUndoOption(item);
+        }
+    }
+
+    function setQuantity(productId, newQuantity) {
+        const item = cart.find(item => item.id === productId);
+        const product = products.find(p => p.id === productId);
+
+        if (item && product) {
+            const qty = parseInt(newQuantity);
+            if (qty > 0 && qty <= product.stock) {
+                item.quantity = qty;
+                updateCart();
+            } else if (qty > product.stock) {
+                alert(`Maximum available quantity is ${product.stock}`);
+                updateCart();
+            }
+        }
+    }
+
+    function editPrice(productId) {
+        const item = cart.find(item => item.id === productId);
+        if (item) {
+            const newPrice = prompt(`Edit price for ${item.name}:`, item.price);
+            if (newPrice && !isNaN(newPrice) && parseFloat(newPrice) > 0) {
+                item.price = parseFloat(newPrice);
+                updateCart();
+            }
+        }
+    }
+
+    function applyDiscount(productId) {
+        const item = cart.find(item => item.id === productId);
+        if (item) {
+            const discount = prompt(`Apply discount % for ${item.name}:`, '0');
+            if (discount && !isNaN(discount)) {
+                const discountPercent = parseFloat(discount);
+                if (discountPercent >= 0 && discountPercent <= 100) {
+                    const originalPrice = products.find(p => p.id === productId).price;
+                    item.price = originalPrice * (1 - discountPercent / 100);
+                    updateCart();
+                }
+            }
+        }
+    }
+
+    function showUndoOption(removedItem) {
+        const undoDiv = document.createElement('div');
+        undoDiv.className = 'alert alert-warning alert-dismissible fade show';
+        undoDiv.innerHTML = `
+        Removed ${removedItem.name} from cart
+        <button class="btn btn-sm btn-outline-primary ms-2" onclick="undoRemove(${JSON.stringify(removedItem).replace(/"/g, '&quot;')})">Undo</button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+        document.getElementById('cartItems').prepend(undoDiv);
+
+        setTimeout(() => {
+            if (undoDiv.parentNode) {
+                undoDiv.remove();
+            }
+        }, 5000);
+    }
+
+    function undoRemove(itemData) {
+        const item = typeof itemData === 'string' ? JSON.parse(itemData) : itemData;
+        cart.push(item);
+        updateCart();
+        document.querySelector('.alert-warning')?.remove();
+    }
+
+    function clearCart() {
+        cart = [];
+        updateCart();
+    }
+
+    function toggleBarcodeScanner() {
+        if (!scannerActive) {
+            startBarcodeScanner();
+        } else {
+            stopBarcodeScanner();
+        }
+    }
+
+    function startBarcodeScanner() {
+        const modal = new bootstrap.Modal(document.getElementById('barcodeModal'));
+        modal.show();
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(stream => {
+                const video = document.getElementById('scanner-video');
+                video.srcObject = stream;
+                video.play();
+
+                Quagga.init({
+                    inputStream: {
+                        name: "Live",
+                        type: "LiveStream",
+                        target: video
+                    },
+                    decoder: {
+                        readers: ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader"]
+                    }
+                }, function (err) {
+                    if (err) {
+                        alert('Barcode scanner initialization failed. Please try again.');
+                        return;
+                    }
+                    Quagga.start();
+                    scannerActive = true;
+                    document.getElementById('scannerBtn').innerHTML = '<i class="fas fa-stop me-2"></i>Stop Scanner';
+                });
+
+                Quagga.onDetected(function (data) {
+                    const barcode = data.codeResult.code;
+                    processBarcodeResult(barcode);
+                });
+            })
+            .catch(err => {
+                alert('Camera access denied. Please use manual barcode entry.');
+            });
+    }
+
+    function stopBarcodeScanner() {
+        const video = document.getElementById('scanner-video');
+        if (video.srcObject) {
+            video.srcObject.getTracks().forEach(track => track.stop());
+        }
+        scannerActive = false;
+        document.getElementById('scannerBtn').innerHTML = '<i class="fas fa-barcode me-2"></i>Start Scanner';
+    }
+
+    function processManualBarcode() {
+        const barcode = document.getElementById('manualBarcode').value.trim();
+        if (barcode) {
+            processBarcodeResult(barcode);
+            document.getElementById('manualBarcode').value = '';
+        }
+    }
+
+    function processBarcodeResult(barcode) {
+        const product = products.find(p => p.barcode === barcode);
+        if (product) {
+            addToCart(product.id);
+            document.getElementById('scan-result').className = 'alert alert-success';
+            document.getElementById('scan-result').innerHTML = `
+            <strong>Product Found!</strong><br>
+            <div class="me-2 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: ${product.color}; border-radius: 5px; font-size: 20px;">${product.icon}</div>
+            ${product.name} - ₹${product.price.toLocaleString('en-IN')}<br>
+            <small>Stock: ${product.stock} | SKU: ${product.barcode}</small>
+        `;
+            document.getElementById('scan-result').classList.remove('d-none');
+
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('barcodeModal'))?.hide();
+                stopBarcodeScanner();
+            }, 2000);
+        } else {
+            document.getElementById('scan-result').className = 'alert alert-danger';
+            document.getElementById('scan-result').innerHTML = `
+            <strong>Product Not Found!</strong><br>
+            Barcode: ${barcode}<br>
+            <button class="btn btn-sm btn-primary mt-2" onclick="addManualProduct('${barcode}')">Add Manually</button>
+        `;
+            document.getElementById('scan-result').classList.remove('d-none');
+        }
+    }
+
+    function addManualProduct(barcode) {
+        const name = prompt('Enter product name:');
+        const price = prompt('Enter product price:');
+        if (name && price) {
+            const newProduct = {
+                id: Date.now(),
+                name: name,
+                price: parseFloat(price),
+                category: 'manual',
+                stock: 999,
+                barcode: barcode,
+                icon: '📦', color: '#6c757d'
+            };
+            products.push(newProduct);
+            addToCart(newProduct.id);
+            displayProducts();
+            bootstrap.Modal.getInstance(document.getElementById('barcodeModal'))?.hide();
+        }
+    }
+
+    function previewBill() {
+        if (cart.length === 0) return;
+
+        // Remove any existing backdrops
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const tax = subtotal * 0.18;
+        const total = subtotal + tax;
+
+        const billHTML = `
+        <div class="text-center mb-4">
+            <h4><strong>MultiStock</strong></h4>
+            <p class="text-muted">Point of Sale System</p>
+            <hr>
+        </div>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${cart.map(item => `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>₹${item.price.toLocaleString('en-IN')}</td>
+                        <td>₹${(item.price * item.quantity).toLocaleString('en-IN')}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        <hr>
+        <div class="row">
+            <div class="col-6"><strong>Subtotal:</strong></div>
+            <div class="col-6 text-end">₹${subtotal.toLocaleString('en-IN')}</div>
+        </div>
+        <div class="row">
+            <div class="col-6"><strong>Tax (18%):</strong></div>
+            <div class="col-6 text-end">₹${Math.round(tax).toLocaleString('en-IN')}</div>
+        </div>
+        <div class="row">
+            <div class="col-6"><h5>Total:</h5></div>
+            <div class="col-6 text-end"><h5>₹${Math.round(total).toLocaleString('en-IN')}</h5></div>
+        </div>
+    `;
+
+        document.getElementById('billPreviewContent').innerHTML = billHTML;
+        $('#billPreviewModal').modal('show');
+    }
+
+    function processPayment() {
+        if (cart.length === 0) return;
+        proceedToPayment();
+    }
+
+    function proceedToPayment() {
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 1.18;
+        document.getElementById('paymentAmount').value = Math.round(total);
+
+        // Clean up any existing modals
+        $('.modal').modal('hide');
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+
+        setTimeout(() => {
+            $('#paymentModal').modal('show');
+        }, 300);
+    }
+
+    function completePayment() {
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        const amount = document.getElementById('paymentAmount').value;
+        const transactionId = 'TXN' + Date.now();
+
+        // Simulate payment processing
+        setTimeout(() => {
+            generateReceipt(paymentMethod, transactionId, amount);
+
+            // Clean up payment modal
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+
+            setTimeout(() => {
+                $('#receiptModal').modal('show');
+            }, 300);
+            clearCart();
+        }, 1500);
+
+        alert('Processing payment...');
+    }
+
+    function generateReceipt(paymentMethod, transactionId, amount) {
+        const now = new Date();
+        const receiptHTML = `
+        <div class="text-center mb-4" style="font-family: monospace;">
+            <h3><strong>MULTISTOCK</strong></h3>
+            <p>Point of Sale System<br>
+            Bangalore, Karnataka, India<br>
+            Phone: +91 80 1234 5678</p>
+            <hr>
+            <p><strong>RECEIPT</strong></p>
+            <p>Date: ${now.toLocaleDateString()}<br>
+            Time: ${now.toLocaleTimeString()}<br>
+            Transaction ID: ${transactionId}</p>
+            <hr>
+        </div>
+        <table class="table table-sm" style="font-family: monospace;">
+            <tbody>
+                ${cart.map(item => `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity} x ₹${item.price.toLocaleString('en-IN')}</td>
+                        <td class="text-end">₹${(item.price * item.quantity).toLocaleString('en-IN')}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        <hr>
+        <div class="text-end" style="font-family: monospace;">
+            <p>Subtotal: ₹${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('en-IN')}<br>
+            Tax (18%): ₹${Math.round(cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 0.18).toLocaleString('en-IN')}<br>
+            <strong>Total: ₹${amount}</strong></p>
+            <p>Payment Method: ${paymentMethod.toUpperCase()}<br>
+            Status: PAID</p>
+        </div>
+        <hr>
+        <div class="text-center" style="font-family: monospace;">
+            <p><strong>Thank you for shopping with us!</strong><br>
+            Visit us again soon!</p>
+        </div>
+    `;
+
+        document.getElementById('receiptContent').innerHTML = receiptHTML;
+    }
+
+    function printReceipt() {
+        const printContent = document.getElementById('receiptContent').innerHTML;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+        <html>
+            <head><title>Receipt</title></head>
+            <body style="font-family: monospace; margin: 20px;">
+                ${printContent}
+            </body>
+        </html>
+    `);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function downloadReceipt() {
+        alert('Receipt download feature - Coming Soon!');
+    }
+
+    function newSale() {
+        clearCart();
+    }
+
+    function viewSalesHistory() {
+        alert('Sales history feature - Coming Soon!');
+    }
+
+    function openStockUpdate() {
+        $('.modal').modal('hide');
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+
+        setTimeout(() => {
+            $('#stockUpdateModal').modal('show');
+        }, 300);
+    }
+
+    function scanForStock() {
+        const barcode = document.getElementById('stockBarcode').value.trim();
+        if (!barcode) {
+            alert('Please enter a barcode first');
+            return;
+        }
+
+        const product = products.find(p => p.barcode === barcode);
+        const stockInfo = document.getElementById('stockProductInfo');
+        const updateForm = document.getElementById('stockUpdateForm');
+        const updateBtn = document.getElementById('updateStockBtn');
+
+        if (product) {
+            stockInfo.innerHTML = `
+            <div class="alert alert-success">
+                <h6><i class="fas fa-check-circle me-2"></i>Product Found</h6>
+                <p><strong>Name:</strong> ${product.name}<br>
+                <strong>Current Stock:</strong> ${product.stock} units<br>
+                <strong>Price:</strong> ₹${product.price.toLocaleString('en-IN')}</p>
+            </div>
+        `;
+            updateForm.style.display = 'block';
+            updateBtn.disabled = false;
+        } else {
+            stockInfo.innerHTML = `
+            <div class="alert alert-warning">
+                <h6><i class="fas fa-exclamation-triangle me-2"></i>Product Not Found</h6>
+                <p>Barcode: ${barcode}</p>
+                <button class="btn btn-primary" onclick="addNewProduct('${barcode}')">Add New Product</button>
+            </div>
+        `;
+            updateForm.style.display = 'none';
+            updateBtn.disabled = true;
+        }
+    }
+
+    function updateStock() {
+        const barcode = document.getElementById('stockBarcode').value;
+        const supplier = document.getElementById('supplierSelect').value;
+        const quantity = parseInt(document.getElementById('receivedQuantity').value);
+        const cost = parseFloat(document.getElementById('unitCost').value);
+
+        if (!supplier || !quantity || !cost) {
+            alert('Please fill all fields');
+            return;
+        }
+
+        const product = products.find(p => p.barcode === barcode);
+        if (product) {
+            product.stock += quantity;
+            showNotification(`Updated ${product.name} stock: +${quantity} units`, 'success');
+
+            // Stock update complete
+
+            // Reset form
+            document.getElementById('stockBarcode').value = '';
+            document.getElementById('receivedQuantity').value = '';
+            document.getElementById('unitCost').value = '';
+            document.getElementById('stockProductInfo').innerHTML = '';
+            document.getElementById('stockUpdateForm').style.display = 'none';
+
+            $('#stockUpdateModal').modal('hide');
+            displayProducts(); // Refresh product display
+        }
+    }
+
+    function addNewSupplier() {
+        $('#addSupplierModal').modal('show');
+    }
+
+    function saveSupplier() {
+        const name = document.getElementById('supplierName').value;
+        const contact = document.getElementById('supplierContact').value;
+        const phone = document.getElementById('supplierPhone').value;
+        const email = document.getElementById('supplierEmail').value;
+
+        if (!name) {
+            alert('Supplier name is required');
+            return;
+        }
+
+        // Add to supplier dropdown
+        const select = document.getElementById('supplierSelect');
+        const option = document.createElement('option');
+        option.value = name.toLowerCase().replace(/\s+/g, '_');
+        option.textContent = name;
+        select.appendChild(option);
+        select.value = option.value;
+
+        showNotification(`Added supplier: ${name}`, 'success');
+
+        // Reset form
+        document.getElementById('supplierName').value = '';
+        document.getElementById('supplierContact').value = '';
+        document.getElementById('supplierPhone').value = '';
+        document.getElementById('supplierEmail').value = '';
+
+        $('#addSupplierModal').modal('hide');
+    }
+
+    function addNewProduct(barcode) {
+        const name = prompt('Enter product name:');
+        const price = prompt('Enter product price:');
+        const category = prompt('Enter product category:');
+
+        if (name && price && category) {
+            const newProduct = {
+                id: Date.now(),
+                name: name,
+                price: parseFloat(price),
+                category: category,
+                stock: 0,
+                barcode: barcode,
+                icon: '📦',
+                color: '#6c757d'
+            };
+
+            products.push(newProduct);
+            displayProducts();
+            showNotification(`Added new product: ${name}`, 'success');
+
+            // Trigger stock scan for new product
+            document.getElementById('stockBarcode').value = barcode;
+            scanForStock();
+        }
+    }
+
+    function editCart() {
+        $('.modal').modal('hide');
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+    }
+
+    function showNotification(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 5000);
+    }
+
+    // Barcode scanner input handling for hardware scanners
+    let barcodeBuffer = '';
+    let barcodeTimeout;
+
+    document.addEventListener('keydown', function (e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        if (e.key === 'Enter' && barcodeBuffer.length > 0) {
+            processBarcodeResult(barcodeBuffer);
+            barcodeBuffer = '';
+        } else if (e.key.length === 1) {
+            barcodeBuffer += e.key;
+            clearTimeout(barcodeTimeout);
+            barcodeTimeout = setTimeout(() => {
+                barcodeBuffer = '';
+            }, 100);
+        }
+    });
+
+    // Auto-save cart to localStorage
+    function saveCartToStorage() {
+        localStorage.setItem('pos_cart', JSON.stringify(cart));
+    }
+
+    function loadCartFromStorage() {
+        const saved = localStorage.getItem('pos_cart');
+        if (saved) {
+            cart = JSON.parse(saved);
+            updateCart();
+        }
+    }
+
+    // Load saved cart on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        loadCartFromStorage();
+    });
+
+    // Save cart whenever it changes
+    function updateCart() {
+        // ... existing updateCart code ...
+        saveCartToStorage();
+    }
+</script>
+{% endblock %}

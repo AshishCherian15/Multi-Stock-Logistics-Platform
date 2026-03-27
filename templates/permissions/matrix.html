@@ -1,0 +1,415 @@
+﻿{% extends 'base.html' %}
+{% load permission_tags %}
+{% block title %}Role-Based Access Control{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-shield-alt me-2"></i>Role-Based Access Control</h2>
+            <p class="text-muted mb-0">Permission matrix for all roles and modules</p>
+        </div>
+        {% if can_manage_roles or user.is_superuser %}
+        <button class="btn btn-primary" onclick="openModal()">
+            <i class="fas fa-user-cog me-2"></i>Manage User Roles
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Permission Matrix -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-table me-2"></i>Permission Matrix</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="min-width:180px;position:sticky;left:0;background:#212529;z-index:10">Module</th>
+                            {% for role in roles %}
+                            <th class="text-center" style="min-width:120px">{{ role|title }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for module in modules %}
+                        <tr>
+                            <td style="position:sticky;left:0;background:#fff;font-weight:600">
+                                <i class="fas fa-cube me-2 text-primary"></i>{{ module|title }}
+                            </td>
+                            {% for role in roles %}
+                            <td class="text-center">
+                                {% with perms=matrix|get_item:role|get_item:module %}
+                                {% if perms %}
+                                    {% if perms.view and perms.create and perms.edit and perms.delete %}
+                                        <span class="badge bg-success">Full</span>
+                                    {% elif perms.view and perms.edit %}
+                                        <span class="badge bg-warning">Edit</span>
+                                    {% elif perms.view and perms.create %}
+                                        <span class="badge bg-info">Create</span>
+                                    {% elif perms.view %}
+                                        <span class="badge bg-secondary">View</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">None</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-danger">None</span>
+                                {% endif %}
+                                {% endwith %}
+                                {% if user.is_superuser %}
+                                <br><button class="btn btn-xs btn-outline-primary mt-1" onclick="editPermission('{{ role }}', '{{ module }}')" style="font-size:10px;padding:2px 6px;">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Permission Levels</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <span class="badge bg-success me-2">Full</span>
+                            <small>View, Create, Edit, Delete</small>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-warning me-2">Edit</span>
+                            <small>View, Create, Edit</small>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-info me-2">Create</span>
+                            <small>View, Create</small>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-secondary me-2">View</span>
+                            <small>View Only</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manage Roles Modal (Team Roles with Hierarchy) -->
+{% if can_manage_roles or user.is_superuser %}
+<div class="modal" id="manageRolesModal" tabindex="-1" data-bs-backdrop="false" style="padding-top:80px;">
+    <div class="modal-dialog modal-lg" style="margin-top:0;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-user-cog me-2"></i>Manage User Roles</h5>
+                <button type="button" class="btn-close" onclick="closeModal()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="userSearch" placeholder="Search users...">
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Current Role</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userList">
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+{% if user.is_superuser %}
+const modal = document.getElementById('manageRolesModal');
+
+function openModal() {
+    modal.style.display = 'block';
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    loadUsers();
+}
+
+function closeModal() {
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function loadUsers() {
+    fetch('/permissions/api/users/')
+        .then(r => r.json())
+        .then(data => {
+            const tbody = document.getElementById('userList');
+            if (data.users && data.users.length > 0) {
+                tbody.innerHTML = data.users.map(user => `
+                    <tr>
+                        <td>
+                            <strong>${user.username}</strong>
+                            <br><small class="text-muted">${user.email}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-${getRoleBadgeColor(user.role)}">${user.role || 'No Role'}</span>
+                        </td>
+                        <td>
+                            ${user.is_superuser && user.id !== {{ user.id }} ? 
+                                '<small class="text-muted">Cannot modify other superadmins</small>' :
+                                `<select class="form-select form-select-sm" onchange="changeRole(${user.id}, this.value)">
+                                    <option value="">Select Role</option>
+                                    <option value="superadmin" ${user.role === 'superadmin' ? 'selected' : ''}>SuperAdmin</option>
+                                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>admin</option>
+                                    <option value="supervisor" ${user.role === 'supervisor' ? 'selected' : ''}>Supervisor</option>
+                                    <option value="staff" ${user.role === 'staff' ? 'selected' : ''}>Staff</option>
+                                </select>`
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center">No users found</td></tr>';
+            }
+        })
+        .catch(err => {
+            console.error('Error loading users:', err);
+            document.getElementById('userList').innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error loading users</td></tr>';
+        });
+}
+
+function getRoleBadgeColor(role) {
+    const colors = {
+        'superadmin': 'danger',
+        'admin': 'warning',
+        'admin': 'info',
+        'supervisor': 'primary',
+        'staff': 'success'
+    };
+    return colors[role] || 'secondary';
+}
+
+function changeRole(userId, newRole) {
+    if (!newRole) return;
+    
+    if (!confirm(`Change user role to ${newRole}?`)) {
+        loadUsers();
+        return;
+    }
+    
+    fetch('/permissions/api/change-role/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ user_id: userId, role: newRole })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Role updated successfully', 'success');
+            loadUsers();
+        } else {
+            showAlert(data.error || 'Failed to update role', 'danger');
+            loadUsers();
+        }
+    })
+    .catch(err => {
+        showAlert('Error updating role', 'danger');
+        loadUsers();
+    });
+}
+
+function getCookie(name) {
+    let value = `; ${document.cookie}`;
+    let parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function showAlert(message, type) {
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alert.style.cssText = 'top:20px;right:20px;z-index:9999;min-width:300px';
+    alert.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+    document.body.appendChild(alert);
+    setTimeout(() => alert.remove(), 3000);
+}
+
+// Search users
+document.getElementById('userSearch').addEventListener('input', function(e) {
+    const search = e.target.value.toLowerCase();
+    document.querySelectorAll('#userList tr').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(search) ? '' : 'none';
+    });
+});
+{% endif %}
+
+// Edit Permission Functions
+{% if user.is_superuser %}
+let currentEditRole = '';
+let currentEditModule = '';
+
+function editPermission(role, module) {
+    currentEditRole = role;
+    currentEditModule = module;
+    
+    document.getElementById('editRole').textContent = role.toUpperCase();
+    document.getElementById('editModule').textContent = module;
+    
+    fetch(`/permissions/api/get-permission/?role=${role}&module=${module}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const perms = data.permissions;
+                document.getElementById('permView').checked = perms.view || false;
+                document.getElementById('permCreate').checked = perms.create || false;
+                document.getElementById('permEdit').checked = perms.edit || false;
+                document.getElementById('permDelete').checked = perms.delete || false;
+                document.getElementById('permExport').checked = perms.export || false;
+                document.getElementById('permImport').checked = perms.import || false;
+                document.getElementById('permApprove').checked = perms.approve || false;
+            }
+        });
+    
+    const editModal = document.getElementById('editPermissionModal');
+    editModal.style.display = 'block';
+    editModal.classList.add('show');
+}
+
+function closeEditModal() {
+    const editModal = document.getElementById('editPermissionModal');
+    editModal.style.display = 'none';
+    editModal.classList.remove('show');
+}
+
+function savePermission() {
+    const permissions = {
+        view: document.getElementById('permView').checked,
+        create: document.getElementById('permCreate').checked,
+        edit: document.getElementById('permEdit').checked,
+        delete: document.getElementById('permDelete').checked,
+        export: document.getElementById('permExport').checked,
+        import: document.getElementById('permImport').checked,
+        approve: document.getElementById('permApprove').checked
+    };
+    
+    fetch('/permissions/api/update-permission/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            role: currentEditRole,
+            module: currentEditModule,
+            permissions: permissions
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Permission updated successfully! Reloading...', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert(data.error || 'Failed to update permission', 'danger');
+        }
+    })
+    .catch(err => {
+        showAlert('Error updating permission', 'danger');
+    });
+}
+{% endif %}
+</script>
+
+<!-- Edit Permission Modal (SuperAdmin Only) -->
+{% if user.is_superuser %}
+<div class="modal" id="editPermissionModal" tabindex="-1" style="padding-top:80px;">
+    <div class="modal-dialog" style="margin-top:0;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Permission</h5>
+                <button type="button" class="btn-close" onclick="closeEditModal()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <strong>Role:</strong> <span id="editRole"></span><br>
+                    <strong>Module:</strong> <span id="editModule"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" id="permView">
+                        <span class="form-check-label">View</span>
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" id="permCreate">
+                        <span class="form-check-label">Create</span>
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" id="permEdit">
+                        <span class="form-check-label">Edit</span>
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" id="permDelete">
+                        <span class="form-check-label">Delete</span>
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" id="permExport">
+                        <span class="form-check-label">Export</span>
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" id="permImport">
+                        <span class="form-check-label">Import</span>
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" id="permApprove">
+                        <span class="form-check-label">Approve</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="savePermission()">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Create Report{% endblock %}
+{% block content %}
+<style>
+.form-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:40px;box-shadow:0 4px 15px rgba(0,20,168,0.08)}
+.form-label{color:#0014A8;font-weight:600;margin-bottom:8px}
+.form-control{border:2px solid rgba(0,20,168,0.2);border-radius:8px;padding:12px;transition:all .3s}
+.form-control:focus{border-color:#0014A8;box-shadow:0 0 0 3px rgba(0,20,168,0.1)}
+.btn-submit{background:linear-gradient(135deg,#0014A8,#000E75);color:#fff;padding:12px 40px;border-radius:10px;font-weight:600;border:none}
+.format-option{padding:20px;border:2px solid rgba(0,20,168,0.2);border-radius:12px;cursor:pointer;transition:all .3s;text-align:center}
+.format-option:hover{border-color:#0014A8;background:rgba(0,20,168,0.05)}
+.format-option input{display:none}
+.format-option.selected{border-color:#0014A8;background:rgba(0,20,168,0.1)}
+</style>
+
+<div class="container" style="padding:30px;max-width:800px">
+    <div class="mb-4">
+        <a href="{% url 'reports_dashboard' %}" style="color:#0014A8;text-decoration:none"><i class="fas fa-arrow-left me-2"></i>Back</a>
+        <h2 style="color:#0014A8;font-weight:700;margin-top:15px"><i class="fas fa-file-alt me-2"></i>Create Report</h2>
+    </div>
+
+    <div class="form-card">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Report Name *</label>
+                <input type="text" name="name" class="form-control" required placeholder="e.g., Monthly Inventory Report">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Report Type *</label>
+                <select name="report_type" class="form-control" required>
+                    <option value="inventory">Inventory Report</option>
+                    <option value="sales">Sales Report</option>
+                    <option value="purchase">Purchase Report</option>
+                    <option value="customer">Customer Report</option>
+                    <option value="financial">Financial Report</option>
+                    <option value="stock_movement">Stock Movement Report</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Export Format *</label>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="format-option" onclick="selectFormat(this)">
+                            <input type="radio" name="format_type" value="pdf" checked>
+                            <i class="fas fa-file-pdf" style="font-size:48px;color:#dc3545;margin-bottom:10px"></i>
+                            <h5 style="color:#0014A8;margin:0">PDF</h5>
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="format-option" onclick="selectFormat(this)">
+                            <input type="radio" name="format_type" value="excel">
+                            <i class="fas fa-file-excel" style="font-size:48px;color:#28a745;margin-bottom:10px"></i>
+                            <h5 style="color:#0014A8;margin:0">Excel</h5>
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="format-option" onclick="selectFormat(this)">
+                            <input type="radio" name="format_type" value="csv">
+                            <i class="fas fa-file-csv" style="font-size:48px;color:#17a2b8;margin-bottom:10px"></i>
+                            <h5 style="color:#0014A8;margin:0">CSV</h5>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-submit"><i class="fas fa-download me-2"></i>Generate & Download</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function selectFormat(el){
+    document.querySelectorAll('.format-option').forEach(opt=>opt.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input').checked=true;
+}
+document.querySelector('.format-option').classList.add('selected');
+</script>
+{% endblock %}

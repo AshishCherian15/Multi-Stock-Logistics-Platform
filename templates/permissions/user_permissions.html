@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}User Permissions - {{ user_obj.username }}{% endblock %}
+{% block content %}
+<style>
+.section-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:30px;margin-bottom:20px}
+.perm-item{padding:15px;border:1px solid rgba(0,20,168,0.1);border-radius:8px;margin-bottom:10px}
+.badge-granted{background:#28a745;color:#fff;padding:6px 12px;border-radius:20px;font-size:12px}
+.badge-denied{background:#dc3545;color:#fff;padding:6px 12px;border-radius:20px;font-size:12px}
+.btn-grant{background:linear-gradient(135deg,#28a745,#218838);color:#fff;padding:10px 20px;border-radius:10px;font-weight:600;border:none}
+.btn-revoke{background:linear-gradient(135deg,#dc3545,#c82333);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;border:none}
+</style>
+
+<div class="container-fluid" style="padding:30px">
+    <div class="mb-4">
+        <a href="{% url 'user_detail' user_obj.id %}" style="color:#0014A8;text-decoration:none"><i class="fas fa-arrow-left me-2"></i>Back</a>
+        <h2 style="color:#0014A8;font-weight:700;margin-top:15px"><i class="fas fa-user-lock me-2"></i>{{ user_obj.username }} Permissions</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="section-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 style="color:#0014A8;margin:0">Role Permissions</h4>
+                    <span style="background:rgba(0,20,168,0.1);padding:8px 16px;border-radius:20px;color:#0014A8;font-weight:600">{{ user_obj.profile.get_role_display }}</span>
+                </div>
+                {% for rp in role_perms %}
+                <div class="perm-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong style="color:#0014A8">{{ rp.permission.name }}</strong>
+                            <p style="margin:5px 0 0 0;color:#666;font-size:13px">{{ rp.permission.get_module_display }} - {{ rp.permission.get_action_display }}</p>
+                        </div>
+                        <span class="badge-granted">Granted</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:#999;text-align:center;padding:20px">No role permissions</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="section-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 style="color:#0014A8;margin:0">Permission Overrides</h4>
+                    <a href="{% url 'grant_permission' user_obj.id %}" class="btn btn-grant"><i class="fas fa-plus me-2"></i>Grant</a>
+                </div>
+                {% for override in overrides %}
+                <div class="perm-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <strong style="color:#0014A8">{{ override.permission.name }}</strong>
+                            <p style="margin:5px 0;color:#666;font-size:13px">{{ override.permission.get_module_display }} - {{ override.permission.get_action_display }}</p>
+                            {% if override.reason %}
+                            <small style="color:#999">Reason: {{ override.reason }}</small><br>
+                            {% endif %}
+                            <small style="color:#999">By: {{ override.granted_by.username }} on {{ override.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <div class="d-flex flex-column gap-2 align-items-end">
+                            <span class="{% if override.is_granted %}badge-granted{% else %}badge-denied{% endif %}">{% if override.is_granted %}Granted{% else %}Denied{% endif %}</span>
+                            <a href="{% url 'revoke_permission' override.id %}" class="btn btn-revoke" onclick="return confirm('Revoke this permission?')"><i class="fas fa-times me-1"></i>Revoke</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:#999;text-align:center;padding:20px">No permission overrides</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

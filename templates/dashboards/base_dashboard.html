@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+
+{% block title %}{% block dashboard_title %}Dashboard{% endblock %} - MultiStock{% endblock %}
+
+{% block content %}
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px)
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1)
+        }
+
+        50% {
+            transform: scale(1.05)
+        }
+    }
+
+    .metric-card {
+        animation: fadeInUp 0.6s ease;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease
+    }
+
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important
+    }
+
+    .metric-icon {
+        animation: pulse 2s infinite;
+        font-size: 2.5rem;
+        opacity: 0.9
+    }
+
+    .live-badge {
+        animation: pulse 1.5s infinite;
+        background: #ff4444;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        font-weight: 600
+    }
+
+    .metrics-strip {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 12px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05)
+    }
+
+    .metric-pill {
+        background: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        white-space: nowrap;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        transition: all 0.3s ease
+    }
+
+    .metric-pill:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.12)
+    }
+
+    .activity-item {
+        border-left: 3px solid #007bff;
+        padding-left: 15px;
+        margin-bottom: 15px;
+        animation: fadeInUp 0.5s ease
+    }
+
+    .quick-action-btn {
+        border-radius: 12px;
+        padding: 15px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent
+    }
+
+    .quick-action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        border-color: currentColor
+    }
+
+    .card {
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.08);
+        transition: all 0.3s ease
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em
+    }
+
+    .activity-item:hover {
+        background: rgba(0,123,255,0.05);
+        border-radius: 8px;
+        padding: 10px;
+        margin-left: -10px;
+        margin-right: -10px
+    }
+
+    @keyframes countUp {
+        from { opacity: 0; transform: translateY(10px) }
+        to { opacity: 1; transform: translateY(0) }
+    }
+
+    .metric-card h2 {
+        animation: countUp 0.5s ease
+    }
+</style>
+
+<!-- Dashboard Header -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h1><span id="greetingIcon"></span> <span id="greeting"></span>, {{ user.username }}!</h1>
+                <p class="lead mb-0">{% block dashboard_subtitle %}Enterprise Platform{% endblock %} <span class="live-badge">LIVE</span></p>
+                <p class="text-muted fst-italic mt-1" style="font-size:0.9rem">"Efficiency is doing things right; effectiveness is doing the right things. MultiStock delivers both."</p>
+            </div>
+            <div>
+                <span id="systemStatus" class="badge fs-6 me-2"></span>
+                {% block dashboard_actions %}
+                <button class="btn btn-primary" onclick="location.reload()"><i class="fas fa-sync-alt me-2"></i>Refresh</button>
+                {% endblock %}
+            </div>
+        </div>
+        <!-- System Metrics Strip -->
+        <div class="metrics-strip d-flex gap-3 overflow-auto pb-2">
+            <div class="metric-pill" data-bs-toggle="tooltip" title="Server running smoothly">
+                <i class="fas fa-clock text-info"></i> <strong>Uptime:</strong> 99.9%
+            </div>
+            <div class="metric-pill" data-bs-toggle="tooltip" title="API calls processed today">
+                <i class="fas fa-sync text-primary"></i> <strong>API Requests:</strong> 1,247
+            </div>
+            <div class="metric-pill" data-bs-toggle="tooltip" title="Database storage utilization">
+                <i class="fas fa-database text-warning"></i> <strong>Storage:</strong> 68%
+            </div>
+            <div class="metric-pill" data-bs-toggle="tooltip" title="All systems operational">
+                <i class="fas fa-shield-alt text-success"></i> <strong>Security:</strong> Secure
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Metrics Cards -->
+<div class="row mt-4">
+    {% block metrics_cards %}
+    <!-- Override this block in child templates to show role-specific metrics -->
+    {% endblock %}
+</div>
+
+<!-- Quick Actions -->
+{% block quick_actions %}
+<div class="row mt-4">
+    <div class="col-12">
+        <h3><i class="fas fa-bolt me-2"></i>Quick Actions</h3>
+    </div>
+    <!-- Override in child templates -->
+</div>
+{% endblock %}
+
+<!-- Main Content Area -->
+<div class="row mt-4">
+    {% block dashboard_content %}
+    <!-- Override this block for role-specific dashboard content -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-history me-2"></i>Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% block recent_activity %}
+                <p class="text-muted">No recent activity</p>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-tasks me-2"></i>Today's Tasks</h5>
+            </div>
+            <div class="card-body">
+                {% block tasks_panel %}
+                <p class="text-muted">No tasks assigned</p>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</div>
+
+<!-- Additional Sections -->
+{% block additional_sections %}
+{% endblock %}
+
+<script>
+// Time-based greeting with icon
+const hour = new Date().getHours();
+let greeting, icon;
+if (hour < 12) {
+    greeting = 'Good Morning';
+    icon = '🌅';
+} else if (hour < 17) {
+    greeting = 'Good Afternoon';
+    icon = '🌇';
+} else {
+    greeting = 'Good Evening';
+    icon = '🌃';
+}
+document.getElementById('greeting').textContent = greeting;
+document.getElementById('greetingIcon').textContent = icon;
+
+// System status badge
+const statusEl = document.getElementById('systemStatus');
+const status = 'secure'; // Can be: secure, warning, critical
+if (status === 'secure') {
+    statusEl.className = 'badge bg-success fs-6 me-2';
+    statusEl.innerHTML = '🟢 Secure';
+} else if (status === 'warning') {
+    statusEl.className = 'badge bg-warning fs-6 me-2';
+    statusEl.innerHTML = '🟡 Warning';
+} else {
+    statusEl.className = 'badge bg-danger fs-6 me-2';
+    statusEl.innerHTML = '🔴 Critical';
+}
+
+// Initialize tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+
+// Add smooth scroll behavior
+document.documentElement.style.scrollBehavior = 'smooth';
+</script>
+{% endblock %}

@@ -1,0 +1,346 @@
+{% extends 'base_guest.html' %}
+
+{% block title %}Community Forums - Guest Access{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        text-align: center;
+        padding: 3rem 0 2rem;
+        color: #fff;
+        background: linear-gradient(135deg, #0014A8, #1e40af);
+        margin: -90px -15px 2rem;
+        padding-top: 130px;
+    }
+
+    .page-header h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        animation: fadeInDown 0.6s ease;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        animation: fadeInUp 0.6s ease 0.2s both;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .forums-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .forum-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        padding: 2rem;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        animation: fadeIn 0.6s ease both;
+        text-decoration: none;
+        color: #fff;
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .forum-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #fff;
+    }
+
+    .forum-card.primary {
+        border-left: 4px solid #0014A8;
+    }
+
+    .forum-card.success {
+        border-left: 4px solid #10b981;
+    }
+
+    .forum-card.warning {
+        border-left: 4px solid #f59e0b;
+    }
+
+    .forum-card.info {
+        border-left: 4px solid #3b82f6;
+    }
+
+    .forum-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .forum-card:hover .forum-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .forum-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .forum-description {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .forum-stats {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-bottom: 0.75rem;
+    }
+
+    .forum-latest {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        font-style: italic;
+    }
+
+    .recent-posts-section {
+        margin: 3rem 0;
+    }
+
+    .post-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        color: #fff;
+    }
+
+    .post-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(10px);
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .post-avatar {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #0014A8, #1e40af);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .post-meta {
+        flex: 1;
+    }
+
+    .post-author {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .post-time {
+        font-size: 0.85rem;
+        opacity: 0.7;
+    }
+
+    .post-content {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .post-stats {
+        display: flex;
+        gap: 2rem;
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #fff;
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        opacity: 0.5;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-comments me-3"></i>Community Forums</h1>
+        <p>Connect, discuss, and share knowledge</p>
+    </div>
+
+    <!-- Forum Categories -->
+    <h3 style="color: #fff; margin-bottom: 1.5rem;">
+        <i class="fas fa-layer-group me-2"></i>Forum Categories
+    </h3>
+
+    <div class="forums-grid">
+        {% for category in forum_categories %}
+        <a href="#" class="forum-card {{ category.color }}" onclick="event.preventDefault(); showLoginPrompt();">
+            <div class="forum-icon">
+                <i class="{{ category.icon }}"></i>
+            </div>
+            <div class="forum-title">{{ category.name }}</div>
+            <div class="forum-description">{{ category.description }}</div>
+            <div class="forum-stats">
+                <span><i class="fas fa-folder me-1"></i>{{ category.topics }} topics</span>
+                <span><i class="fas fa-comment me-1"></i>{{ category.posts }} posts</span>
+            </div>
+            <div class="forum-latest">{{ category.latest }}</div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Recent Posts -->
+    <div class="recent-posts-section">
+        <h3 style="color: #fff; margin-bottom: 1.5rem;">
+            <i class="fas fa-clock me-2"></i>Recent Discussions
+        </h3>
+
+        {% if recent_posts %}
+        {% for post in recent_posts %}
+        <div class="post-card">
+            <div class="post-header">
+                <div class="post-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="post-meta">
+                    <div class="post-author">{{ post.author.username|default:"Community Member" }}</div>
+                    <div class="post-time">
+                        <i class="fas fa-clock me-1"></i>{{ post.created_at|timesince }} ago
+                    </div>
+                </div>
+            </div>
+            <div class="post-content">
+                <strong>{{ post.forum.title|default:"Interesting Discussion Topic" }}</strong>
+                <p class="mt-2 mb-0">{{ post.content|truncatewords:25|default:"Join the conversation and share your
+                    thoughts..." }}</p>
+            </div>
+            <div class="post-stats">
+                <span><i class="fas fa-comments me-1"></i>Forum: {{ post.forum.title }}</span>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="post-card">
+            <div class="post-header">
+                <div class="post-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="post-meta">
+                    <div class="post-author">Sample User</div>
+                    <div class="post-time"><i class="fas fa-clock me-1"></i>2 hours ago</div>
+                </div>
+            </div>
+            <div class="post-content">
+                <strong>Welcome to MultiStock Forums!</strong>
+                <p class="mt-2 mb-0">This is a sample post. Create an account to view and participate in discussions!
+                </p>
+            </div>
+            <div class="post-stats">
+                <span><i class="fas fa-eye me-1"></i>156 views</span>
+                <span><i class="fas fa-reply me-1"></i>23 replies</span>
+                <span><i class="fas fa-heart me-1"></i>45 likes</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- CTA -->
+    <div
+        style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; padding: 2rem; text-align: center; margin: 3rem 0;">
+        <h3 style="color: #fff; margin-bottom: 1rem;">
+            <i class="fas fa-lock me-2"></i>Login Required
+        </h3>
+        <p style="color: rgba(255,255,255,0.9); margin-bottom: 1.5rem;">
+            Create an account to post topics, reply to discussions, and engage with the community!
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="/auth/register/"
+                style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                <i class="fas fa-user-plus me-2"></i>Create Account
+            </a>
+            <a href="/auth/login/"
+                style="background: rgba(255, 255, 255, 0.2); color: #fff; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.3);">
+                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showLoginPrompt() {
+        if (confirm('Login required to access forum discussions. Would you like to create an account or sign in?')) {
+            window.location.href = '/auth/register/';
+        }
+    }
+</script>
+{% endblock %}

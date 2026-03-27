@@ -1,0 +1,4 @@
+goods_code,goods_desc,onhand_stock,can_order_stock,supplier
+PROD001,Product 1 Description,100,80,Supplier A
+PROD002,Product 2 Description,50,40,Supplier B
+PROD003,Product 3 Description,200,150,Supplier C

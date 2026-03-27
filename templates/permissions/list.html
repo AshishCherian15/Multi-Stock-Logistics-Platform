@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Permissions{% endblock %}
+{% block content %}
+<style>
+.perm-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:20px;margin-bottom:15px;transition:all .3s}
+.perm-card:hover{box-shadow:0 4px 15px rgba(0,20,168,0.15)}
+.module-badge{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;background:linear-gradient(135deg,#0014A8,#000E75);color:#fff}
+.action-badge{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.action-view{background:#17a2b8;color:#fff}
+.action-create{background:#28a745;color:#fff}
+.action-edit{background:#ffc107;color:#333}
+.action-delete{background:#dc3545;color:#fff}
+.action-export{background:#6c757d;color:#fff}
+.action-approve{background:#007bff;color:#fff}
+.search-box{border:2px solid rgba(0,20,168,0.2);border-radius:10px;padding:12px 20px;transition:all .3s}
+.search-box:focus{border-color:#0014A8;box-shadow:0 0 0 3px rgba(0,20,168,0.1)}
+</style>
+
+<div class="container-fluid" style="padding:30px">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color:#0014A8;font-weight:700"><i class="fas fa-shield-alt me-2"></i>Permissions</h2>
+        <div class="d-flex gap-2">
+            <a href="/permissions/matrix/" class="btn" style="background:linear-gradient(135deg,#17a2b8,#138496);color:#fff;padding:10px 20px;border-radius:10px;font-weight:600"><i class="fas fa-table me-2"></i>Matrix</a>
+        </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:30px">
+        <form method="get" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <input type="text" name="search" class="form-control search-box" placeholder="Search permissions..." value="{{ search }}">
+                </div>
+                <div class="col-md-4">
+                    <select name="module" class="form-control search-box">
+                        <option value="">All Modules</option>
+                        {% for code, name in modules %}
+                        <option value="{{ code }}" {% if module_filter == code %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn w-100" style="background:#0014A8;color:#fff;padding:12px;border-radius:10px;font-weight:600"><i class="fas fa-filter me-2"></i>Filter</button>
+                </div>
+            </div>
+        </form>
+
+        {% for perm in permissions %}
+        <div class="perm-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <h5 style="color:#0014A8;font-weight:700;margin-bottom:10px">{{ perm.name }}</h5>
+                    <p style="color:#666;font-size:14px;margin-bottom:10px">{{ perm.description }}</p>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="module-badge">{{ perm.get_module_display }}</span>
+                        <span class="action-badge action-{{ perm.action }}">{{ perm.get_action_display }}</span>
+                        <small style="color:#999">Code: {{ perm.code }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:60px 20px">
+            <i class="fas fa-shield-alt" style="font-size:64px;color:#ddd;margin-bottom:20px"></i>
+            <p style="color:#999">No permissions found</p>
+        </div>
+        {% endfor %}
+
+        {% if permissions.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if permissions.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ permissions.previous_page_number }}&search={{ search }}&module={{ module_filter }}">Previous</a></li>
+                {% endif %}
+                {% for num in permissions.paginator.page_range %}
+                <li class="page-item {% if permissions.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}&search={{ search }}&module={{ module_filter }}">{{ num }}</a></li>
+                {% endfor %}
+                {% if permissions.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ permissions.next_page_number }}&search={{ search }}&module={{ module_filter }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

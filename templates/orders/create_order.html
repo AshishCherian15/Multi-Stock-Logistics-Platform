@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Order - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-plus me-2"></i>Create New Order</h1>
+            <p class="text-muted">Create sales or purchase orders</p>
+        </div>
+    </div>
+
+    <!-- Order Type Selection -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-receipt me-2"></i>Sales Order</h5>
+                </div>
+                <div class="card-body">
+                    <p>Create an order for customer purchases</p>
+                    <button class="btn btn-success w-100" onclick="selectOrderType('sales')">Create Sales Order</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-shopping-bag me-2"></i>Purchase Order</h5>
+                </div>
+                <div class="card-body">
+                    <p>Create an order from suppliers</p>
+                    <button class="btn btn-primary w-100" onclick="selectOrderType('purchase')">Create Purchase Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Form -->
+    <div class="row" id="orderForm" style="display: none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 id="formTitle">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_type" id="orderTypeInput" value="sale">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Order Number</label>
+                                    <input type="text" class="form-control" value="Auto-generated" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" class="form-control" value="{% now 'Y-m-d' %}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" id="customerLabel">Customer</label>
+                                    <select class="form-select" name="customer" id="customerSelect">
+                                        <option value="">Select Customer</option>
+                                        {% for customer in customers %}
+                                        <option value="{{ customer.id }}">{{ customer.customer_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="form-select" name="supplier" id="supplierSelect" style="display:none;">
+                                        <option value="">Select Supplier</option>
+                                        {% for supplier in suppliers %}
+                                        <option value="{{ supplier.id }}">{{ supplier.supplier_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" name="status">
+                                        <option value="pending">Pending</option>
+                                        <option value="confirmed">Confirmed</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items -->
+                        <div class="mb-3">
+                            <label class="form-label">Order Items</label>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Total</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orderItems">
+                                        <tr>
+                                            <td>
+                                                <select class="form-select">
+                                                    <option>Select Product</option>
+                                                    <option>iPhone 15 Pro</option>
+                                                    <option>MacBook Pro M3</option>
+                                                    <option>Samsung Galaxy S24</option>
+                                                </select>
+                                            </td>
+                                            <td><input type="number" class="form-control" value="1"></td>
+                                            <td><input type="number" class="form-control" value="999.00"></td>
+                                            <td>$999.00</td>
+                                            <td><button type="button" class="btn btn-sm btn-danger">Remove</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary">Add Item</button>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Subtotal:</span>
+                                            <span>$999.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Tax (8%):</span>
+                                            <span>$79.92</span>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Total:</strong>
+                                            <strong>$1,078.92</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-success me-2">Create Order</button>
+                            <button type="button" class="btn btn-secondary">Save as Draft</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectOrderType(type) {
+    document.getElementById('orderForm').style.display = 'block';
+    const title = document.getElementById('formTitle');
+    const label = document.getElementById('customerLabel');
+    const customerSelect = document.getElementById('customerSelect');
+    const supplierSelect = document.getElementById('supplierSelect');
+    const orderTypeInput = document.getElementById('orderTypeInput');
+    
+    if (type === 'sales') {
+        title.textContent = 'Sales Order Details';
+        label.textContent = 'Customer';
+        customerSelect.style.display = 'block';
+        supplierSelect.style.display = 'none';
+        orderTypeInput.value = 'sale';
+    } else {
+        title.textContent = 'Purchase Order Details';
+        label.textContent = 'Supplier';
+        customerSelect.style.display = 'none';
+        supplierSelect.style.display = 'block';
+        orderTypeInput.value = 'purchase';
+    }
+}
+</script>
+{% endblock %}

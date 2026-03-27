@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Browse Products - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-shopping-cart me-2"></i>Browse Products</h2>
+            <p class="text-muted mb-0">Explore our product catalog</p>
+        </div>
+        <div>
+            <a href="{% url 'guest:home' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-home me-2"></i>Back to Home
+            </a>
+            <a href="{% url 'auth:login' %}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-2"></i>Login to Buy
+            </a>
+        </div>
+    </div>
+
+    <!-- Info Alert -->
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>{{ total_products }}</strong> products found.
+        <a href="{% url 'auth:register' %}" class="alert-link">Sign up</a> to add items to cart and make
+        purchases!
+    </div>
+
+    <!-- Products Grid -->
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-center mb-3" style="height: 150px; overflow: hidden;">
+                        {% if product.stock_image %}
+                        <img src="{{ product.stock_image }}" alt="{{ product.goods_desc }}" class="img-fluid"
+                            style="max-height: 150px; object-fit: contain;">
+                        {% else %}
+                        <i class="fas fa-box text-primary" style="font-size: 4rem;"></i>
+                        {% endif %}
+                    </div>
+                    <h6 class="card-title">{{ product.goods_desc }}</h6>
+                    <p class="text-muted small mb-2"><code>{{ product.goods_code }}</code></p>
+                    <p class="text-muted small">{{ product.goods_desc|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-primary fw-bold">₹{{ product.goods_price }}</span>
+                        {% if product.goods_class %}
+                        <span class="badge bg-secondary">{{ product.goods_class }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'guest:product_detail' product.id %}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-eye me-2"></i>View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-box-open" style="font-size: 5rem; opacity: 0.3;"></i>
+                <p class="mt-3">No products found</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if products|length == 50 %}
+    <div class="alert alert-warning mt-4">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        Showing first 50 products. <a href="{% url 'auth:register' %}" class="alert-link">Sign up</a> to see all
+        products!
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}

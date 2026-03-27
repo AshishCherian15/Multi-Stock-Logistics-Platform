@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}Create Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="padding: 30px;">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-plus me-2"></i>Create New Group
+                        </h5>
+                        <a href="{% url 'messaging:group_list' %}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Groups
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Group Name *</label>
+                                    <input type="text" id="name" name="name" class="form-control" required maxlength="100" placeholder="Enter group name">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Optional group description"></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="visibility" class="form-label">Visibility</label>
+                                    <select id="visibility" name="visibility" class="form-select">
+                                        {% for value, label in visibility_choices %}
+                                        <option value="{{ value }}" {% if value == 'public' %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">
+                                        <strong>Public:</strong> Visible to all team members<br>
+                                        <strong>Private:</strong> Visible only to selected members<br>
+                                        <strong>Hidden:</strong> Visible only to creator and added members
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Add Members</label>
+                                    <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                                        {% if available_users %}
+                                        {% for user in available_users %}
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="members" value="{{ user.id }}" id="user_{{ user.id }}">
+                                            <label class="form-check-label d-flex align-items-center" for="user_{{ user.id }}">
+                                                <div class="member-avatar me-2" style="width:24px;height:24px;border-radius:50%;background:#0014A8;color:white;display:flex;align-items:center;justify-content:center;font-size:10px;">
+                                                    {{ user.username|slice:":1"|upper }}
+                                                </div>
+                                                <div>
+                                                    <strong>{{ user.username }}</strong>
+                                                    {% if user.first_name or user.last_name %}
+                                                    <br><small class="text-muted">{{ user.get_full_name }}</small>
+                                                    {% endif %}
+                                                    {% if user.is_staff or user.is_superuser %}
+                                                    <span class="badge bg-info ms-1">Team</span>
+                                                    {% else %}
+                                                    <span class="badge bg-light text-dark ms-1">Customer</span>
+                                                    {% endif %}
+                                                </div>
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                        {% else %}
+                                        <p class="text-muted">No users available to add.</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-text">
+                                        {% if user_is_team %}
+                                        You can add both team members and customers to your group.
+                                        {% else %}
+                                        You can only add other customers to your group.
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="selectAll()">
+                                            <i class="fas fa-check-square me-1"></i>Select All
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary ms-2" onclick="selectNone()">
+                                            <i class="fas fa-square me-1"></i>Select None
+                                        </button>
+                                    </div>
+                                    
+                                    <div>
+                                        <a href="{% url 'messaging:group_list' %}" class="btn btn-secondary me-2">
+                                            <i class="fas fa-times me-1"></i>Cancel
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-plus me-1"></i>Create Group
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Help Card -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Group Creation Tips</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><strong>Group Name:</strong> Choose a descriptive name that reflects the group's purpose</li>
+                        <li><strong>Visibility:</strong> 
+                            <ul>
+                                <li><strong>Public:</strong> All team members can see and join</li>
+                                <li><strong>Private:</strong> Only invited members can see and join</li>
+                                <li><strong>Hidden:</strong> Completely private, invisible to others</li>
+                            </ul>
+                        </li>
+                        <li><strong>Members:</strong> You can add more members later from group settings</li>
+                        <li><strong>Admin Rights:</strong> As the creator, you'll automatically become the group admin</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectAll() {
+    const checkboxes = document.querySelectorAll('input[name="members"]');
+    checkboxes.forEach(cb => cb.checked = true);
+}
+
+function selectNone() {
+    const checkboxes = document.querySelectorAll('input[name="members"]');
+    checkboxes.forEach(cb => cb.checked = false);
+}
+
+// Update visibility help text
+document.getElementById('visibility').addEventListener('change', function() {
+    const helpText = document.querySelector('#visibility + .form-text');
+    const value = this.value;
+    
+    let text = '';
+    switch(value) {
+        case 'public':
+            text = '<strong>Public:</strong> All team members can see this group and request to join.';
+            break;
+        case 'private':
+            text = '<strong>Private:</strong> Only invited members can see and join this group.';
+            break;
+        case 'hidden':
+            text = '<strong>Hidden:</strong> Completely private group, invisible to all other users.';
+            break;
+    }
+    
+    helpText.innerHTML = text;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Delete Coupon - MultiStock{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm" style="border:none;border-radius:15px">
+                <div class="card-header bg-danger text-white" style="border-radius:15px 15px 0 0">
+                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Delete Coupon</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone!
+                    </div>
+                    <p class="mb-4">Are you sure you want to delete the coupon <strong>"{{ coupon.code }}"</strong>?</p>
+                    <div class="border rounded p-3 mb-4" style="background:#f8f9fa">
+                        <p class="mb-1"><strong>Code:</strong> {{ coupon.code }}</p>
+                        <p class="mb-1"><strong>Description:</strong> {{ coupon.description }}</p>
+                        <p class="mb-0"><strong>Used:</strong> {{ coupon.used_count }} times</p>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'coupons:list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Cancel</a>
+                            <button type="submit" class="btn btn-danger"><i class="fas fa-trash me-2"></i>Delete Coupon</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

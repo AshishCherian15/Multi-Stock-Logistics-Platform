@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Request Return{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:600px">
+  <h2 class="fw-bold mb-4">Request a Return</h2>
+  <div class="card shadow-sm"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="mb-3"><label class="form-label fw-semibold">Order</label>
+        <select name="order_id" class="form-select" required>{% for o in orders %}<option value="{{ o.id }}">{{ o.order_number }} — ₹{{ o.grand_total }}</option>{% endfor %}</select></div>
+      <div class="mb-3"><label class="form-label fw-semibold">Reason</label>
+        <select name="reason" class="form-select"><option value="defective">Defective</option><option value="wrong_item">Wrong Item</option><option value="not_as_described">Not as Described</option><option value="damaged_in_transit">Damaged in Transit</option><option value="other">Other</option></select></div>
+      <div class="mb-3"><label class="form-label fw-semibold">Description</label>
+        <textarea name="description" class="form-control" rows="4" required></textarea></div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+        <a href="{% url 'orders:my_orders' %}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}

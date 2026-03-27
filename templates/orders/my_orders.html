@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}My Orders{% endblock %}
+{% block content %}
+<style>
+:root{--primary:#1A73E8}
+.order-card{border:none;border-radius:15px;box-shadow:0 2px 12px rgba(0,20,168,0.1);padding:1.5rem;margin-bottom:1rem;transition:all 0.3s}
+.order-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,20,168,0.15)}
+.status-badge{padding:0.5rem 1rem;border-radius:20px;font-weight:600;font-size:0.85rem}
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-box me-2" style="color:var(--primary)"></i>My Orders</h2>
+        <a href="/mine/" class="btn btn-outline-primary"><i class="fas fa-arrow-left me-1"></i>Back to Mine</a>
+    </div>
+
+    <ul class="nav nav-pills mb-4">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#current">Current Orders</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#previous">Previous Orders</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="current">
+            {% for order in orders %}
+            {% if order.status in 'confirmed,processing,shipped' %}
+            <div class="order-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5>{{ order.order_number }}</h5>
+                        <small class="text-muted">{{ order.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    <span class="status-badge {% if order.status == 'confirmed' %}bg-info{% elif order.status == 'shipped' %}bg-primary{% else %}bg-warning{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <p><strong>Items:</strong> {{ order.items.all|length }}</p>
+                        <p><strong>Delivery:</strong> {{ order.delivery_date|date:"M d, Y"|default:"Calculating..." }}</p>
+                        <p><strong>Payment:</strong> {{ order.get_payment_method_display|default:"COD" }}</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <h4 style="color:var(--primary)">₹{{ order.grand_total }}</h4>
+                    </div>
+                </div>
+                <div class="btn-group btn-group-sm">
+                    <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline-primary"><i class="fas fa-eye me-1"></i>Details</a>
+                    <a href="{% url 'billing:invoice_list' %}" class="btn btn-outline-success"><i class="fas fa-file-invoice me-1"></i>View Bill</a>
+                    {% if user.role.role in 'superadmin,admin' %}
+                    <a href="{% url 'orders:delete_order' order.id %}" class="btn btn-outline-danger" onclick="return confirm('Delete order?')"><i class="fas fa-trash me-1"></i>Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="text-center py-5">
+                <i class="fas fa-box fa-3x mb-3 text-muted"></i>
+                <p class="text-muted">No current orders</p>
+                <a href="/marketplace/" class="btn btn-primary">Start Shopping</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="tab-pane fade" id="previous">
+            {% for order in orders %}
+            {% if order.status in 'delivered,cancelled' %}
+            <div class="order-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5>{{ order.order_number }}</h5>
+                        <small class="text-muted">{{ order.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    <span class="status-badge {% if order.status == 'delivered' %}bg-success{% else %}bg-danger{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <p><strong>Items:</strong> {{ order.items.all|length }}</p>
+                        <p><strong>Delivered:</strong> {{ order.delivery_date|date:"M d, Y"|default:"N/A" }}</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <h4 style="color:var(--primary)">₹{{ order.grand_total }}</h4>
+                    </div>
+                </div>
+                <div class="btn-group btn-group-sm">
+                    <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline-primary"><i class="fas fa-eye me-1"></i>Details</a>
+                    <a href="{% url 'billing:invoice_list' %}" class="btn btn-outline-success"><i class="fas fa-file-invoice me-1"></i>View Bill</a>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="text-center py-5">
+                <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
+                <p class="text-muted">No previous orders</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

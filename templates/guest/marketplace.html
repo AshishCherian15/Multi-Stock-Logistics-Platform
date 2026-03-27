@@ -1,0 +1,199 @@
+{% extends 'base_guest.html' %}
+{% load static %}
+
+{% block title %}Marketplace - MultiStock{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --zaffre: #0014A8;
+        --zaffre-dark: #000E75;
+    }
+
+    .product-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 2px 12px rgba(0, 20, 168, 0.1);
+        transition: all 0.3s;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 20, 168, 0.2);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+</style>
+
+<div class="container-fluid p-4 mt-5">
+    <div class="alert alert-warning text-center mb-4">
+        <i class="fas fa-lock me-2"></i>
+        <strong>Login Required:</strong> Please <a href="/auth/login-selection/" class="alert-link">login</a> to purchase products, add to cart, or add to wishlist.
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-store me-2"></i>Product Marketplace</h2>
+        <div>
+            <a href="/auth/login-selection/" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Search products..." id="searchInput">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="sortBy">
+                <option value="">Sort By</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="name">Name: A-Z</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                <i class="fas fa-times me-1"></i>Clear
+            </button>
+        </div>
+    </div>
+
+    <div class="row" id="productGrid">
+        {% for product in products %}
+        <div class="col-md-3 mb-4 product-item" data-name="{{ product.goods_desc|lower }}" data-category="{{ product.goods_class|lower }}" data-price="{{ product.goods_price }}">
+            <div class="card product-card">
+                <div class="position-relative">
+                    {% if product.stock_image %}
+                    <img src="{{ product.stock_image }}" class="product-image" alt="{{ product.goods_desc }}" onerror="this.src='/static/images/no-image.svg'; this.onerror=null;">
+                    {% else %}
+                    <div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center">
+                        <i class="fas fa-box fa-3x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    {% if product.stock_available > 0 %}
+                    <span class="badge bg-success position-absolute top-0 end-0 m-2">In Stock</span>
+                    {% else %}
+                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">Out of Stock</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">{{ product.goods_desc }}</h6>
+                    <p class="text-muted small">{{ product.goods_class }}</p>
+                    <h5 class="text-primary">₹{{ product.goods_price }}</h5>
+                    <small class="text-muted">Code: {{ product.goods_code }}</small>
+                    {% if product.stock_available > 0 %}
+                    <p class="text-success small mb-0"><i class="fas fa-check-circle me-1"></i>{{ product.stock_available }} available</p>
+                    {% else %}
+                    <p class="text-danger small mb-0"><i class="fas fa-times-circle me-1"></i>Out of stock</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="/auth/login-selection/" class="btn btn-primary w-100">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login to Purchase
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No products available</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj %}
+    <div class="d-flex justify-content-center my-4">
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput')?.addEventListener('input', function (e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('.product-item');
+
+        items.forEach(item => {
+            const name = item.dataset.name;
+            if (name.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+
+    // Category filter
+    document.getElementById('categoryFilter')?.addEventListener('change', function (e) {
+        const category = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('.product-item');
+
+        items.forEach(item => {
+            const itemCategory = item.dataset.category;
+            if (!category || itemCategory === category) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+
+    // Sort functionality
+    document.getElementById('sortBy')?.addEventListener('change', function (e) {
+        const sortBy = e.target.value;
+        const grid = document.getElementById('productGrid');
+        const items = Array.from(document.querySelectorAll('.product-item'));
+
+        items.sort((a, b) => {
+            if (sortBy === 'name') {
+                return a.dataset.name.localeCompare(b.dataset.name);
+            } else if (sortBy === 'price-low') {
+                return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+            } else if (sortBy === 'price-high') {
+                return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+            }
+            return 0;
+        });
+
+        items.forEach(item => grid.appendChild(item));
+    });
+
+    function clearFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('categoryFilter').value = '';
+        document.getElementById('sortBy').value = '';
+        document.querySelectorAll('.product-item').forEach(item => item.style.display = 'block');
+    }
+</script>
+{% endblock %}

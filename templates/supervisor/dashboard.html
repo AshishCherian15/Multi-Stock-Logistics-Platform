@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Supervisor Dashboard - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-user-tie me-2"></i>Supervisor Dashboard</h2>
+            <p class="text-muted mb-0">Welcome back, {{ request.user.get_full_name|default:request.user.username }}</p>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt me-2"></i>Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Primary Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Team Members</h6>
+                            <h3 class="mb-0">{{ team_members }}</h3>
+                            <small class="text-success"><i class="fas fa-check-circle"></i> {{ active_team }}
+                                active</small>
+                        </div>
+                        <div class="text-primary" style="font-size: 2.5rem;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Orders Today</h6>
+                            <h3 class="mb-0">{{ orders_today }}</h3>
+                            <small class="text-info"><i class="fas fa-calendar-week"></i> {{ orders_week }} this
+                                week</small>
+                        </div>
+                        <div class="text-success" style="font-size: 2.5rem;">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Pending Orders</h6>
+                            <h3 class="mb-0">{{ pending_orders }}</h3>
+                            <small class="text-warning"><i class="fas fa-clock"></i> Needs processing</small>
+                        </div>
+                        <div class="text-warning" style="font-size: 2.5rem;">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Alerts</h6>
+                            <h3 class="mb-0">{{ total_alerts }}</h3>
+                            <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Requires
+                                attention</small>
+                        </div>
+                        <div class="text-danger" style="font-size: 2.5rem;">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-cog text-info mb-2" style="font-size: 2rem;"></i>
+                    <h4 class="mb-0">{{ processing_orders }}</h4>
+                    <small class="text-muted">Processing</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-exclamation-triangle text-warning mb-2" style="font-size: 2rem;"></i>
+                    <h4 class="mb-0">{{ low_stock }}</h4>
+                    <small class="text-muted">Low Stock</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-ban text-danger mb-2" style="font-size: 2rem;"></i>
+                    <h4 class="mb-0">{{ out_of_stock }}</h4>
+                    <small class="text-muted">Out of Stock</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-key text-primary mb-2" style="font-size: 2rem;"></i>
+                    <h4 class="mb-0">{{ active_rentals }}</h4>
+                    <small class="text-muted">Active Rentals</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-warehouse text-success mb-2" style="font-size: 2rem;"></i>
+                    <h4 class="mb-0">{{ active_storage }}</h4>
+                    <small class="text-muted">Storage Units</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-clock text-warning mb-2" style="font-size: 2rem;"></i>
+                    <h4 class="mb-0">{{ pending_rentals }}</h4>
+                    <small class="text-muted">Pending</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-2">
+                            <a href="{% url 'supervisor_panel:team' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-users d-block mb-2" style="font-size: 2rem;"></i>
+                                Manage Team
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'supervisor_panel:orders' %}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-shopping-cart d-block mb-2" style="font-size: 2rem;"></i>
+                                Monitor Orders
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'supervisor_panel:inventory' %}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-box d-block mb-2" style="font-size: 2rem;"></i>
+                                Check Inventory
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'supervisor_panel:bookings' %}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-calendar-check d-block mb-2" style="font-size: 2rem;"></i>
+                                View Bookings
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'supervisor_panel:reports' %}" class="btn btn-outline-dark w-100">
+                                <i class="fas fa-chart-line d-block mb-2" style="font-size: 2rem;"></i>
+                                Reports
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="/dashboard/" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-home d-block mb-2" style="font-size: 2rem;"></i>
+                                Main Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-shopping-bag me-2"></i>Recent Orders</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td><a href="{% url 'supervisor_panel:order_detail' order.id %}">#{{
+                                            order.order_number }}</a></td>
+                                    <td>{{ order.customer_user.username }}</td>
+                                    <td>₹{{ order.grand_total }}</td>
+                                    <td>
+                                        <span
+                                            class="badge bg-{% if order.status == 'completed' %}success{% elif order.status == 'pending' %}warning{% else %}info{% endif %}">
+                                            {{ order.status|title }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No recent orders</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-user-friends me-2"></i>Team Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Member</th>
+                                    <th>Email</th>
+                                    <th>Last Login</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in recent_team %}
+                                <tr>
+                                    <td><a href="{% url 'supervisor_panel:team_detail' member.id %}">{{ member.username
+                                            }}</a></td>
+                                    <td>{{ member.email }}</td>
+                                    <td>{{ member.last_login|date:"M d, H:i"|default:"Never" }}</td>
+                                    <td>
+                                        <span
+                                            class="badge bg-{% if member.is_active %}success{% else %}danger{% endif %}">
+                                            {{ member.is_active|yesno:"Active,Inactive" }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No team members</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}

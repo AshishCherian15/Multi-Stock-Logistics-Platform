@@ -1,0 +1,26 @@
+<!-- Badge Display Component -->
+{% load static %}
+
+<span class="marketplace-badge badge-{{ badge.badge_type }}" 
+      style="background-color: {{ badge.color }}; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px;">
+    <i class="{{ badge.icon }}"></i>
+    <span>{{ badge.display_name }}</span>
+</span>
+
+<style>
+.marketplace-badge {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.badge-platform {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+}
+
+.badge-supplier {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
+    color: #333 !important;
+}
+</style>

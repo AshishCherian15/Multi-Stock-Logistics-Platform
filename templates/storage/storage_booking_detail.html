@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Storage Booking Details - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a href="{% url 'customers:mine' %}?tab=storage" class="btn btn-outline-secondary mb-3">
+                <i class="fas fa-arrow-left me-2"></i>Back to My Storage
+            </a>
+            <h2 class="mb-0">
+                <i class="fas fa-warehouse me-2"></i>
+                Storage Booking Details
+            </h2>
+            <p class="text-muted">Booking ID: #{{ booking.id }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-box me-2"></i>Storage Unit Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-hashtag me-2"></i>Unit Number:</strong>
+                            <p class="mb-0 fs-4 text-primary">{{ unit.unit_number }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-tag me-2"></i>Type:</strong>
+                            <p class="mb-0">{{ unit.get_type_display }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-ruler-combined me-2"></i>Size:</strong>
+                            <p class="mb-0">{{ unit.size_sqft }} sq ft</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-map-marker-alt me-2"></i>Location:</strong>
+                            <p class="mb-0">{{ unit.location }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-building me-2"></i>Floor:</strong>
+                            <p class="mb-0">Floor {{ unit.floor }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-map-signs me-2"></i>Zone:</strong>
+                            <p class="mb-0">{{ unit.zone }}</p>
+                        </div>
+                        {% if unit.is_climate_controlled %}
+                        <div class="col-12">
+                            <span class="badge bg-info">
+                                <i class="fas fa-snowflake me-1"></i>Climate Controlled
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Rental Period</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-play-circle me-2"></i>Start Date:</strong>
+                            <p class="mb-0">{{ booking.start_date|date:"F d, Y" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-stop-circle me-2"></i>End Date:</strong>
+                            <p class="mb-0">{{ booking.end_date|date:"F d, Y" }}</p>
+                        </div>
+                    </div>
+                    {% if booking.notes %}
+                    <div class="mt-3">
+                        <strong><i class="fas fa-sticky-note me-2"></i>Notes:</strong>
+                        <p class="mb-0">{{ booking.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Status</h5>
+                </div>
+                <div class="card-body text-center">
+                    <span
+                        class="badge bg-{% if booking.status == 'active' %}success{% elif booking.status == 'expired' %}danger{% elif booking.status == 'cancelled' %}secondary{% else %}dark{% endif %} p-3 fs-5">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-key me-2"></i>Access Code</h5>
+                </div>
+                <div class="card-body text-center">
+                    <h2 class="text-primary mb-0 font-monospace">{{ booking.access_code }}</h2>
+                    <p class="text-muted small mt-2 mb-0">Keep this code secure</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Payment Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Monthly Rate:</span>
+                        <strong>₹{{ unit.price_per_month|floatformat:2 }}</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total Amount:</strong>
+                        <strong class="text-primary">₹{{ booking.total_amount|floatformat:2 }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Booking Info</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">
+                        <strong>Booked On:</strong><br>
+                        {{ booking.created_at|date:"F d, Y g:i A" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    .badge {
+        border-radius: 8px;
+    }
+
+    .font-monospace {
+        font-family: 'Courier New', monospace;
+        letter-spacing: 0.2em;
+    }
+</style>
+{% endblock %}

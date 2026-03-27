@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}POS Sales - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="fas fa-receipt me-2"></i>Sales History</h2>
+            <p class="text-muted mb-0">View all POS transactions</p>
+        </div>
+        <a href="{% url 'pos:interface' %}" class="btn btn-primary">
+            <i class="fas fa-cash-register me-2"></i>Back to POS
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Sale #</th>
+                            <th>Date</th>
+                            <th>Cashier</th>
+                            <th>Items</th>
+                            <th>Payment</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                        <tr>
+                            <td><strong>{{ sale.sale_number }}</strong></td>
+                            <td>{{ sale.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>{{ sale.cashier.get_full_name|default:sale.cashier.username }}</td>
+                            <td>{{ sale.items.count }} item(s)</td>
+                            <td><span class="badge bg-info">{{ sale.payment_method|upper }}</span></td>
+                            <td><strong>₹{{ sale.total_amount }}</strong></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No sales recorded</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

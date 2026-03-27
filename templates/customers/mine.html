@@ -1,0 +1,484 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Services - Customer Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="min-height: calc(100vh - 65px); display: flex; flex-direction: column;">
+    <h2 class="mb-4"><i class="fas fa-boxes me-2"></i>My Services</h2>
+
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#rentals"><i class="fas fa-truck me-2"></i>My Rentals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#storage"><i class="fas fa-warehouse me-2"></i>My Storage</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#lockers"><i class="fas fa-lock me-2"></i>My Lockers</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- My Rentals Tab -->
+        <div class="tab-pane fade show active" id="rentals">
+            <div class="row">
+                {% for rental in rentals %}
+                <div class="col-md-6 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                {% if rental.image %}
+                                <img src="{{ rental.image.url }}" class="img-fluid rounded-start"
+                                    style="height:100%;object-fit:cover" alt="{{ rental.equipment_name }}">
+                                {% else %}
+                                <div
+                                    style="height:200px;background:#f8f9fa;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-truck fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h5>{{ rental.equipment_name }}</h5>
+                                            <p class="text-muted mb-2">{{ rental.equipment_type }}</p>
+                                            <small><strong>Rental Period:</strong> {{ rental.start_date|date:"M d" }} -
+                                                {{ rental.end_date|date:"M d, Y" }}</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-{{ rental.status_color }} mb-2">{{ rental.status|title
+                                                }}</span>
+                                            <h5 class="text-primary">₹{{ rental.total_cost }}</h5>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Booking ID: {{ rental.booking_id }}</small>
+                                        <div class="d-flex gap-2">
+                                            {% if rental.status == 'active' %}
+                                            <button class="btn btn-sm btn-warning" onclick="extendRental({{ rental.id }}, '{{ rental.equipment_name }}', '{{ rental.end_date|date:"Y-m-d" }}', {{ rental.item.daily_rate }})">
+                                                <i class="fas fa-clock me-1"></i>Extend
+                                            </button>
+                                            {% endif %}
+                                            <a href="/rentals/booking/{{ rental.id }}/detail/"
+                                                class="btn btn-sm btn-outline-primary">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-truck fa-3x text-muted mb-3"></i>
+                            <h5>No Active Rentals</h5>
+                            <p class="text-muted">You don't have any equipment rentals at the moment.</p>
+                            <a href="{% url 'customers:marketplace' %}" class="btn btn-primary mt-3">
+                                <i class="fas fa-search me-2"></i>Browse Equipment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- My Storage Tab -->
+        <div class="tab-pane fade" id="storage">
+            <div class="row">
+                {% for unit in storage_units %}
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div
+                            style="height:180px;background:#f8f9fa;display:flex;align-items:center;justify-content:center">
+                            <i class="fas fa-warehouse fa-3x text-muted"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5>Unit {{ unit.unit_number }}</h5>
+                                <span class="badge bg-{{ unit.status_color }}">{{ unit.status|title }}</span>
+                            </div>
+                            <p class="text-muted mb-2"><i class="fas fa-ruler-combined me-2"></i>{{ unit.size }}</p>
+                            <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ unit.location }}</p>
+                            <h5 class="text-primary mb-3">₹{{ unit.monthly_rate }}/month</h5>
+                            <small class="text-muted">Rented since: {{ unit.rental_start|date:"M d, Y" }}</small>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <div class="d-flex gap-2">
+                                {% if unit.status == 'active' %}
+                                <button class="btn btn-sm btn-warning flex-grow-1" onclick="extendStorage({{ unit.id }}, '{{ unit.unit_number }}', '{{ unit.rental_start|date:"Y-m-d" }}', {{ unit.monthly_rate }})">
+                                    <i class="fas fa-clock me-1"></i>Extend
+                                </button>
+                                {% endif %}
+                                <a href="/storage/booking/{{ unit.id }}/detail/"
+                                    class="btn btn-sm btn-outline-primary flex-grow-1">Manage Unit</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-warehouse fa-3x text-muted mb-3"></i>
+                            <h5>No Storage Units</h5>
+                            <p class="text-muted">You don't have any storage units rented.</p>
+                            <a href="{% url 'customers:marketplace' %}" class="btn btn-primary mt-3">
+                                <i class="fas fa-search me-2"></i>Find Storage
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- My Lockers Tab -->
+        <div class="tab-pane fade" id="lockers">
+            <div class="row">
+                {% for locker in lockers %}
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div
+                            style="height:180px;background:#f8f9fa;display:flex;align-items:center;justify-content:center">
+                            <i class="fas fa-lock fa-3x text-muted"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5>Locker #{{ locker.locker_number }}</h5>
+                                <span class="badge bg-{{ locker.status_color }}">{{ locker.status|title }}</span>
+                            </div>
+                            <p class="text-muted mb-2"><i class="fas fa-box me-2"></i>{{ locker.size }}</p>
+                            <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ locker.location }}
+                            </p>
+                            <h5 class="text-warning mb-3">₹{{ locker.rate }}/{{ locker.rate_type }}</h5>
+                            <small class="text-muted">Booked: {{ locker.booking_start|date:"M d, Y" }}</small>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <div class="d-flex gap-2 flex-wrap">
+                                {% if locker.status == 'active' %}
+                                <button class="btn btn-sm btn-warning" onclick="extendLocker({{ locker.id }}, '{{ locker.locker_number }}', '{{ locker.booking_start|date:"Y-m-d" }}', {{ locker.rate }})">
+                                    <i class="fas fa-clock me-1"></i>Extend
+                                </button>
+                                {% endif %}
+                                <a href="/lockers/booking/{{ locker.id }}/detail/"
+                                    class="btn btn-sm btn-outline-warning">Details</a>
+                                <button class="btn btn-sm btn-success" onclick="openLocker({{ locker.id }})">Open
+                                    Locker</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-lock fa-3x text-muted mb-3"></i>
+                            <h5>No Locker Bookings</h5>
+                            <p class="text-muted">You haven't booked any lockers yet.</p>
+                            <a href="{% url 'customers:marketplace' %}" class="btn btn-primary mt-3">
+                                <i class="fas fa-search me-2"></i>Book a Locker
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    function openLocker(lockerId) {
+        fetch(`/lockers/api/${lockerId}/open/`, { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
+            .then(r => r.json())
+            .then(d => alert(d.message || 'Locker opened'));
+    }
+
+    function extendRental(bookingId, itemName, endDate, dailyRate) {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Extend Rental: ${itemName}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Penalty Warning:</strong> Late returns after ${endDate} will incur ₹500/day penalty fees.
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Extend by (days)</label>
+                            <input type="number" class="form-control" id="extensionDays" value="1" min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Additional Cost</label>
+                            <h4 class="text-primary" id="extensionCost">₹${dailyRate}</h4>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Agreement:</strong> By extending, you agree to return the equipment on the new end date. Late returns will be charged ₹500/day penalty.
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="agreeExtension" required>
+                            <label class="form-check-label" for="agreeExtension">
+                                I understand the extension terms and penalty fees
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="confirmRentalExtension(${bookingId}, ${dailyRate})">Extend & Pay</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+
+        document.getElementById('extensionDays').addEventListener('input', function() {
+            const days = parseInt(this.value) || 1;
+            document.getElementById('extensionCost').textContent = `₹${(dailyRate * days).toFixed(2)}`;
+        });
+
+        modal.addEventListener('hidden.bs.modal', () => modal.remove());
+    }
+
+    function confirmRentalExtension(bookingId, dailyRate) {
+        if (!document.getElementById('agreeExtension').checked) {
+            alert('Please agree to the extension terms');
+            return;
+        }
+
+        const days = parseInt(document.getElementById('extensionDays').value) || 1;
+        const additionalCost = dailyRate * days;
+
+        if (confirm(`Extend rental for ${days} day(s) for ₹${additionalCost.toFixed(2)}?`)) {
+            // Call extension API (needs to be created)
+            fetch(`/rentals/api/booking/${bookingId}/extend/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    extension_days: days
+                })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    alert('Extension successful! Redirecting to payment...');
+                    window.location.href = `/payments/pay/${d.booking_id}/`;
+                } else {
+                    alert('Extension failed: ' + (d.error || 'Unknown error'));
+                }
+            })
+            .catch(e => {
+                alert('Error processing extension');
+            });
+        }
+    }
+
+    function extendStorage(bookingId, unitNumber, startDate, monthlyRate) {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Extend Storage Unit ${unitNumber}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Penalty Warning:</strong> Late returns will incur ₹500/month penalty fees.
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Extend by (months)</label>
+                            <input type="number" class="form-control" id="extensionMonths" value="1" min="1" max="12">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Additional Cost</label>
+                            <h4 class="text-primary" id="extensionCost">₹${monthlyRate}</h4>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Agreement:</strong> By extending, you agree to vacate the unit on the new end date. Late returns will be charged ₹500/month penalty.
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="agreeExtension" required>
+                            <label class="form-check-label" for="agreeExtension">
+                                I understand the extension terms and penalty fees
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="confirmStorageExtension(${bookingId}, ${monthlyRate})">Extend & Pay</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+
+        document.getElementById('extensionMonths').addEventListener('input', function() {
+            const months = parseInt(this.value) || 1;
+            document.getElementById('extensionCost').textContent = `₹${(monthlyRate * months).toFixed(2)}`;
+        });
+
+        modal.addEventListener('hidden.bs.modal', () => modal.remove());
+    }
+
+    function confirmStorageExtension(bookingId, monthlyRate) {
+        if (!document.getElementById('agreeExtension').checked) {
+            alert('Please agree to the extension terms');
+            return;
+        }
+
+        const months = parseInt(document.getElementById('extensionMonths').value) || 1;
+        const additionalCost = monthlyRate * months;
+
+        if (confirm(`Extend storage for ${months} month(s) for ₹${additionalCost.toFixed(2)}?`)) {
+            fetch(`/storage/api/booking/${bookingId}/extend/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    extension_months: months
+                })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    alert('Extension successful! Redirecting to payment...');
+                    window.location.href = `/payments/pay/${d.booking_id}/`;
+                } else {
+                    alert('Extension failed: ' + (d.error || 'Unknown error'));
+                }
+            })
+            .catch(e => {
+                alert('Error processing extension');
+            });
+        }
+    }
+
+    function extendLocker(bookingId, lockerNumber, startDate, rate) {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Extend Locker ${lockerNumber}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Penalty Warning:</strong> Late returns will incur ₹200/day penalty fees.
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Extend by (days)</label>
+                            <input type="number" class="form-control" id="extensionDays" value="1" min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Additional Cost</label>
+                            <h4 class="text-primary" id="extensionCost">₹${rate}</h4>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Agreement:</strong> By extending, you agree to vacate the locker on the new end date. Late returns will be charged ₹200/day penalty.
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="agreeExtension" required>
+                            <label class="form-check-label" for="agreeExtension">
+                                I understand the extension terms and penalty fees
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="confirmLockerExtension(${bookingId}, ${rate})">Extend & Pay</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+
+        document.getElementById('extensionDays').addEventListener('input', function() {
+            const days = parseInt(this.value) || 1;
+            document.getElementById('extensionCost').textContent = `₹${(rate * days).toFixed(2)}`;
+        });
+
+        modal.addEventListener('hidden.bs.modal', () => modal.remove());
+    }
+
+    function confirmLockerExtension(bookingId, rate) {
+        if (!document.getElementById('agreeExtension').checked) {
+            alert('Please agree to the extension terms');
+            return;
+        }
+
+        const days = parseInt(document.getElementById('extensionDays').value) || 1;
+        const additionalCost = rate * days;
+
+        if (confirm(`Extend locker for ${days} day(s) for ₹${additionalCost.toFixed(2)}?`)) {
+            fetch(`/lockers/api/booking/${bookingId}/extend/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    extension_count: days
+                })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    alert('Extension successful! Redirecting to payment...');
+                    window.location.href = `/payments/pay/${d.booking_id}/`;
+                } else {
+                    alert('Extension failed: ' + (d.error || 'Unknown error'));
+                }
+            })
+            .catch(e => {
+                alert('Error processing extension');
+            });
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,629 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Business Reports</h1>
+        <div class="d-flex gap-2">
+            <input type="date" class="form-control" id="quickStartDate" style="width:150px">
+            <input type="date" class="form-control" id="quickEndDate" style="width:150px">
+            <select class="form-select" id="quickReportType" style="width:150px">
+                <option value="inventory">Inventory</option>
+                <option value="sales">Sales</option>
+                <option value="financial">Financial</option>
+            </select>
+            <button class="btn btn-primary" onclick="generateReport()">
+                <i class="fas fa-file-export me-2"></i>Generate Report
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="reportTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button">
+                <i class="fas fa-boxes me-2"></i>Inventory Report
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales" type="button">
+                <i class="fas fa-chart-pie me-2"></i>Sales Report
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="financial-tab" data-bs-toggle="tab" data-bs-target="#financial" type="button">
+                <i class="fas fa-chart-bar me-2"></i>Financial
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button">
+                <i class="fas fa-download me-2"></i>Export Reports
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="reportTabContent">
+        <!-- Inventory Report Tab -->
+        <div class="tab-pane fade show active" id="inventory" role="tabpanel">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-cubes fa-2x text-primary mb-2"></i>
+                            <h4>{{ total_products }}</h4>
+                            <p class="text-muted">Total Products</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                            <h4>{{ low_stock }}</h4>
+                            <p class="text-muted">Low Stock</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-rupee-sign fa-2x text-success mb-2"></i>
+                            <h4>₹{{ total_value|floatformat:0 }}</h4>
+                            <p class="text-muted">Total Value</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-warehouse fa-2x text-info mb-2"></i>
+                            <h4>{{ warehouses }}</h4>
+                            <p class="text-muted">Warehouses</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Inventory Summary</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="exportInventoryTable()"><i class="fas fa-download me-1"></i>Export Table</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="inventoryTable">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable(0)" style="cursor:pointer">Product <i class="fas fa-sort"></i></th>
+                                    <th onclick="sortTable(1)" style="cursor:pointer">SKU <i class="fas fa-sort"></i></th>
+                                    <th onclick="sortTable(2)" style="cursor:pointer">Category <i class="fas fa-sort"></i></th>
+                                    <th onclick="sortTable(3)" style="cursor:pointer">Stock <i class="fas fa-sort"></i></th>
+                                    <th onclick="sortTable(4)" style="cursor:pointer">Value <i class="fas fa-sort"></i></th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <tr><td colspan="7" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sales Report Tab -->
+        <div class="tab-pane fade" id="sales" role="tabpanel">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-rupee-sign fa-2x text-success mb-2"></i>
+                            <h4>₹{{ total_revenue|floatformat:0 }}</h4>
+                            <p class="text-muted">Total Revenue</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-shopping-cart fa-2x text-primary mb-2"></i>
+                            <h4>{{ total_orders }}</h4>
+                            <p class="text-muted">Orders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                            <h4>₹{{ avg_order|floatformat:0 }}</h4>
+                            <p class="text-muted">Avg Order</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-percentage fa-2x text-warning mb-2"></i>
+                            <h4>{{ growth }}%</h4>
+                            <p class="text-muted">Growth</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Sales Trend</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesChart" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Top Products</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>iPhone 15 Pro</span>
+                                    <strong>₹12.4L</strong>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>MacBook Pro M3</span>
+                                    <strong>₹8.9L</strong>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" style="width: 65%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Financial Report Tab -->
+        <div class="tab-pane fade" id="financial" role="tabpanel">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-rupee-sign fa-2x text-success mb-2"></i>
+                            <h4>₹{{ net_profit|floatformat:0 }}</h4>
+                            <p class="text-muted">Net Profit</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-arrow-up fa-2x text-info mb-2"></i>
+                            <h4>₹{{ total_income|floatformat:0 }}</h4>
+                            <p class="text-muted">Total Income</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-arrow-down fa-2x text-warning mb-2"></i>
+                            <h4>₹{{ total_expenses|floatformat:0 }}</h4>
+                            <p class="text-muted">Total Expenses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-percentage fa-2x text-primary mb-2"></i>
+                            <h4>{{ profit_margin|floatformat:1 }}%</h4>
+                            <p class="text-muted">Profit Margin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Monthly P&L</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Month</th>
+                                            <th>Revenue</th>
+                                            <th>Expenses</th>
+                                            <th>Profit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>October</td>
+                                            <td>₹4.2L</td>
+                                            <td>₹2.8L</td>
+                                            <td class="text-success">₹1.4L</td>
+                                        </tr>
+                                        <tr>
+                                            <td>November</td>
+                                            <td>₹4.8L</td>
+                                            <td>₹3.1L</td>
+                                            <td class="text-success">₹1.7L</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Expense Breakdown</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>Inventory</span>
+                                    <strong>₹15.2L (57%)</strong>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: 57%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>Operations</span>
+                                    <strong>₹6.8L (25%)</strong>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" style="width: 25%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>Marketing</span>
+                                    <strong>₹2.9L (11%)</strong>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-info" style="width: 11%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>Other</span>
+                                    <strong>₹1.8L (7%)</strong>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" style="width: 7%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Export Reports Tab -->
+        <div class="tab-pane fade" id="export" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Export Options</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Report Type</label>
+                                <select class="form-select" id="reportType">
+                                    <option value="inventory">Inventory Report</option>
+                                    <option value="sales">Sales Report</option>
+                                    <option value="financial">Financial Report</option>
+                                    <option value="customer">Customer Report</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Date Range</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="date" class="form-control" id="startDate">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="date" class="form-control" id="endDate">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Format</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="format" id="excel" value="excel" checked>
+                                    <label class="btn btn-outline-success" for="excel">Excel</label>
+                                    
+                                    <input type="radio" class="btn-check" name="format" id="csv" value="csv">
+                                    <label class="btn btn-outline-info" for="csv">CSV</label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary w-100" onclick="exportReport()">
+                                <i class="fas fa-download me-2"></i>Export Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Exports</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Sales Report - Nov 2025</strong>
+                                        <br><small class="text-muted">Generated 2h ago</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary">Download</button>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Inventory Report - Oct 2025</strong>
+                                        <br><small class="text-muted">Generated 1d ago</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary">Download</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="modal" id="generateReportModal" tabindex="-1">
+    <div class="modal-dialog" style="margin-top:75px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate New Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportForm">
+                    <div class="mb-3">
+                        <label class="form-label">Report Type *</label>
+                        <select class="form-select" id="newReportType" required>
+                            <option value="">Select report type</option>
+                            <option value="inventory">Inventory Report</option>
+                            <option value="sales">Sales Report</option>
+                            <option value="financial">Financial Report</option>
+                            <option value="customer">Customer Report</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Report Name *</label>
+                        <input type="text" class="form-control" id="reportName" placeholder="e.g., Monthly Sales Report" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date Range</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="date" class="form-control" id="newStartDate">
+                            </div>
+                            <div class="col-6">
+                                <input type="date" class="form-control" id="newEndDate">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Format *</label>
+                        <select class="form-select" id="newFormat" required>
+                            <option value="excel">Excel</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeReportModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="generateBtn" onclick="submitReport()">Generate Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Sales Chart
+document.addEventListener('DOMContentLoaded', function() {
+    loadInventoryTable();
+    
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+            datasets: [{
+                label: 'Sales (₹ Lakhs)',
+                data: [180, 210, 240, 220, 290, 310, 340, 320, 380, 350, 410],
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+    
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('newEndDate').value = today;
+    document.getElementById('quickEndDate').value = today;
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    document.getElementById('newStartDate').value = lastMonth.toISOString().split('T')[0];
+    document.getElementById('quickStartDate').value = lastMonth.toISOString().split('T')[0];
+});
+function downloadChart(id){const c=document.getElementById(id);const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=id+'.png';a.click()}
+
+let inventoryData=[];
+function loadInventoryTable(){
+    fetch('/reports/api/inventory/')
+    .then(r=>r.json())
+    .then(data=>{
+        inventoryData=data.data;
+        const tbody=document.getElementById('inventoryTableBody');
+        if(data.data.length===0){
+            tbody.innerHTML='<tr><td colspan="7" class="text-center">No data</td></tr>';
+            return;
+        }
+        tbody.innerHTML=data.data.slice(0,10).map(p=>`
+            <tr>
+                <td>${p.name}</td>
+                <td>${p.sku}</td>
+                <td>${p.category}</td>
+                <td>${p.stock}</td>
+                <td>₹${p.value.toLocaleString('en-IN')}</td>
+                <td><span class="badge bg-${p.status==='In Stock'?'success':p.status==='Low Stock'?'warning':'danger'}">${p.status}</span></td>
+                <td><button class="btn btn-sm btn-outline-primary" onclick="viewProduct('${p.sku}')" title="View"><i class="fas fa-eye"></i></button> <button class="btn btn-sm btn-outline-warning" onclick="editProduct('${p.sku}')" title="Edit"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.sku}')" title="Delete"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+    });
+}
+function sortTable(c){const t=document.getElementById('inventoryTable');const r=Array.from(t.rows).slice(1);r.sort((a,b)=>a.cells[c].textContent.localeCompare(b.cells[c].textContent));r.forEach(x=>t.tBodies[0].appendChild(x))}
+function exportInventoryTable(){const csv='Product,SKU,Category,Stock,Value,Status\n'+inventoryData.slice(0,10).map(p=>`"${p.name}","${p.sku}","${p.category}",${p.stock},${p.value},"${p.status}"`).join('\n');const b=new Blob([csv],{type:'text/csv'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='inventory.csv';a.click()}
+function toggleComparison(t){showToast(t==='mom'?'Month-over-Month':'Year-over-Year','info')}
+function viewProduct(sku){const p=inventoryData.find(x=>x.sku===sku);if(!p)return;const m=`<div class="modal" style="display:block;background:rgba(0,0,0,0.5);position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999" onclick="this.remove()"><div class="modal-dialog" style="margin-top:75px" onclick="event.stopPropagation()"><div class="modal-content"><div class="modal-header bg-primary text-white"><h5><i class="fas fa-box me-2"></i>Product Details</h5><button class="btn-close btn-close-white" onclick="this.closest('.modal').remove()"></button></div><div class="modal-body"><table class="table"><tr><th>Product</th><td>${p.name}</td></tr><tr><th>SKU</th><td>${p.sku}</td></tr><tr><th>Category</th><td>${p.category}</td></tr><tr><th>Stock</th><td>${p.stock}</td></tr><tr><th>Value</th><td>₹${p.value.toLocaleString('en-IN')}</td></tr><tr><th>Status</th><td><span class="badge bg-${p.status==='In Stock'?'success':'warning'}">${p.status}</span></td></tr></table></div></div></div></div>`;document.body.insertAdjacentHTML('beforeend',m)}
+function editProduct(sku){const p=inventoryData.find(x=>x.sku===sku);if(!p)return;const m=`<div class="modal" style="display:block;background:rgba(0,0,0,0.5);position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999" onclick="this.remove()"><div class="modal-dialog" style="margin-top:75px" onclick="event.stopPropagation()"><div class="modal-content"><div class="modal-header bg-warning text-white"><h5><i class="fas fa-edit me-2"></i>Edit Product</h5><button class="btn-close btn-close-white" onclick="this.closest('.modal').remove()"></button></div><div class="modal-body"><form id="editForm"><div class="mb-3"><label>Product Name</label><input type="text" class="form-control" id="editName" value="${p.name}"></div><div class="mb-3"><label>Stock</label><input type="number" class="form-control" id="editStock" value="${p.stock}"></div><div class="mb-3"><label>Category</label><input type="text" class="form-control" id="editCategory" value="${p.category}"></div></form></div><div class="modal-footer"><button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button><button class="btn btn-warning" onclick="saveEdit('${p.sku}')">Save Changes</button></div></div></div></div>`;document.body.insertAdjacentHTML('beforeend',m)}
+function saveEdit(sku){const name=document.getElementById('editName').value;const stock=document.getElementById('editStock').value;const category=document.getElementById('editCategory').value;fetch('/products/api/update/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify({sku:sku,name:name,stock:stock,category:category})}).then(r=>r.json()).then(d=>{document.querySelector('.modal').remove();showToast('Product updated','success');loadInventoryTable()}).catch(()=>showToast('Update failed','error'))}
+function deleteProduct(sku){if(!confirm('Delete product '+sku+'?'))return;fetch('/products/api/delete/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify({sku:sku})}).then(r=>r.json()).then(d=>{showToast('Product deleted','success');loadInventoryTable()}).catch(()=>showToast('Delete failed','error'))}
+
+function generateReport() {
+    const modal = new bootstrap.Modal(document.getElementById('generateReportModal'), {backdrop: false});
+    modal.show();
+}
+
+function submitReport() {
+    const btn = document.getElementById('generateBtn');
+    if (btn.disabled) return;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+    
+    const form = document.getElementById('reportForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        btn.disabled = false;
+        btn.innerHTML = 'Generate Report';
+        return;
+    }
+    
+    const data = {
+        reportType: document.getElementById('newReportType').value,
+        reportName: document.getElementById('reportName').value,
+        startDate: document.getElementById('newStartDate').value,
+        endDate: document.getElementById('newEndDate').value,
+        format: document.getElementById('newFormat').value
+    };
+    
+    fetch('/reports/api/generate/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            closeReportModal();
+            showToast('Report generated successfully!', 'success');
+            if (d.download_url) window.location.href = d.download_url;
+        } else {
+            showToast(d.message || 'Error', 'error');
+            btn.disabled = false;
+            btn.innerHTML = 'Generate Report';
+        }
+    })
+    .catch(() => {
+        showToast('Error generating report', 'error');
+        btn.disabled = false;
+        btn.innerHTML = 'Generate Report';
+    });
+}
+
+function closeReportModal() {
+    const modalEl = document.getElementById('generateReportModal');
+    const instance = bootstrap.Modal.getInstance(modalEl);
+    if (instance) {
+        instance.hide();
+        instance.dispose();
+    }
+    modalEl.style.display = 'none';
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+}
+
+function exportReport() {
+    const reportType = document.getElementById('reportType').value;
+    const format = document.querySelector('input[name="format"]:checked').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    if (!reportType) {
+        showToast('Please select a report type', 'error');
+        return;
+    }
+    
+    const url = `/reports/export/?type=${reportType}&format=${format}&start=${startDate}&end=${endDate}`;
+    window.location.href = url;
+    showToast('Downloading report...', 'success');
+}
+
+function showToast(msg, type) {
+    const colors = { success: '#10b981', error: '#ef4444', info: '#0014A8' };
+    const t = document.createElement('div');
+    t.style.cssText = `position:fixed;top:20px;right:20px;background:${colors[type]};color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999`;
+    t.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

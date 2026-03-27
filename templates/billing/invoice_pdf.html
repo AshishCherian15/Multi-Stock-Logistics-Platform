@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Roboto',sans-serif;font-size:12px;color:#333}
+.invoice{width:210mm;min-height:297mm;padding:20mm;margin:0 auto;background:#fff}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:2px solid #1A73E8}
+.logo{font-size:26px;font-weight:700;color:#1A73E8;letter-spacing:1px}
+.invoice-label{font-size:28px;font-weight:700;color:#1A73E8;text-align:right;text-transform:uppercase}
+.invoice-meta{text-align:right;font-size:12px;margin-top:8px;line-height:1.8}
+.billing-section{background:#F5F5F5;padding:10px 15px;margin:12px 0;border-radius:4px}
+.billing-section h3{font-size:16px;font-weight:600;color:#1A73E8;margin-bottom:8px}
+.billing-section p{line-height:1.6;margin:3px 0;font-size:13px}
+.items-table{width:100%;border-collapse:collapse;margin:12px 0}
+.items-table thead{background:#1A73E8;color:#fff}
+.items-table th{padding:10px;text-align:left;font-weight:600;font-size:12px;text-transform:uppercase}
+.items-table th:nth-child(3),.items-table th:nth-child(4),.items-table th:nth-child(5){text-align:right}
+.items-table td{padding:10px;border-bottom:1px solid #DDDDDD;font-size:12px}
+.items-table td:nth-child(3),.items-table td:nth-child(4),.items-table td:nth-child(5){text-align:right}
+.items-table tbody tr:nth-child(even){background:#F5F5F5}
+.summary{width:280px;margin-left:auto;margin-top:12px}
+.summary table{width:100%;border-collapse:collapse}
+.summary td{padding:6px 10px;font-size:13px;border-bottom:1px solid #DDDDDD}
+.summary td:last-child{text-align:right;font-weight:600}
+.summary .total-row{background:#1A73E8;color:#fff;font-weight:700;font-size:15px}
+.payment-box{margin:12px 0;padding:12px;background:#F5F5F5;border-left:4px solid #1A73E8}
+.payment-box h4{font-size:16px;font-weight:600;color:#1A73E8;margin-bottom:8px}
+.payment-box p{font-size:12px;line-height:1.6;font-style:italic;color:#666}
+.terms-section{margin:12px 0;padding:10px;background:#FAFAFA;border-radius:4px}
+.terms-section h4{font-size:14px;font-weight:600;color:#333;margin-bottom:6px}
+.terms-section p{font-size:10px;line-height:1.6;color:#666}
+.thank-you{text-align:center;margin:20px 0;font-size:16px;font-weight:600;color:#1A73E8}
+.signature-block{text-align:right;margin-top:30px}
+.signature-line{display:inline-block;border-top:2px solid #333;padding-top:6px;min-width:180px;text-align:center}
+.signature-line strong{display:block;font-size:14px;color:#333}
+.signature-line small{display:block;font-size:11px;color:#666;margin-top:2px}
+.footer{margin-top:20px;padding-top:12px;border-top:2px solid #1A73E8;text-align:center;font-size:10px;color:#666;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="invoice">
+    <div class="header">
+        <div class="logo">MULTISTOCK</div>
+        <div>
+            <div class="invoice-label">INVOICE</div>
+            <div class="invoice-meta">
+                <strong>{{ invoice.invoice_number }}</strong><br>
+                Date: {{ invoice.invoice_date|date:"M d, Y" }}<br>
+                Due: {{ invoice.due_date|date:"M d, Y" }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="billing-section">
+        <h3>BILLING TO</h3>
+        <p><strong>{{ invoice.customer_name }}</strong></p>
+        <p>Email: {{ invoice.customer_email }}</p>
+        <p>Phone: {{ invoice.customer_phone }}</p>
+        <p>Address: {{ invoice.customer_address }}</p>
+    </div>
+    
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width:8%">SL</th>
+                <th style="width:50%">ITEM DESCRIPTION</th>
+                <th style="width:12%">QTY</th>
+                <th style="width:15%">PRICE</th>
+                <th style="width:15%">AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.price }}</td>
+                <td>₹{{ item.amount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="summary">
+        <table>
+            <tr><td>Subtotal</td><td>₹{{ invoice.subtotal }}</td></tr>
+            <tr><td>Tax ({{ invoice.tax_rate }}%)</td><td>₹{{ invoice.tax_amount }}</td></tr>
+            {% if invoice.discount_amount > 0 %}
+            <tr><td>Discount</td><td>-₹{{ invoice.discount_amount }}</td></tr>
+            {% endif %}
+            <tr class="total-row"><td>TOTAL AMOUNT DUE</td><td>₹{{ invoice.grand_total }}</td></tr>
+        </table>
+    </div>
+    
+    {% if invoice.payment_method %}
+    <div class="payment-box">
+        <h4>PAYMENT METHOD</h4>
+        <p><strong>Bank:</strong> {{ invoice.bank_name|default:"MultiStock Bank" }}</p>
+        <p><strong>Account Name:</strong> MultiStock Enterprises</p>
+        <p><strong>Account Number:</strong> {{ invoice.account_number|default:"XXXX-XXXX-XXXX" }}</p>
+        {% if invoice.swift_code %}<p><strong>SWIFT:</strong> {{ invoice.swift_code }}</p>{% endif %}
+    </div>
+    {% endif %}
+    
+    <div class="terms-section">
+        <h4>TERMS & CONDITIONS</h4>
+        <p>{{ invoice.terms_conditions|default:"Payment is due within 30 days. Late payments may incur additional charges. Please include invoice number with payment. All prices are in INR. For any queries, contact our billing department." }}</p>
+    </div>
+    
+    <div class="thank-you">Thank you for your Business!</div>
+    
+    <div class="signature-block">
+        <div class="signature-line">
+            <strong>{{ invoice.created_by.get_full_name|default:"JOHN SMITH"|upper }}</strong>
+            <small>Account Manager</small>
+        </div>
+    </div>
+    
+    <div class="footer">
+        MultiStock Enterprises | +91-1800-123-4567 | billing@multistock.com | www.multistock.com | Mumbai, India
+    </div>
+</div>
+</body>
+</html>

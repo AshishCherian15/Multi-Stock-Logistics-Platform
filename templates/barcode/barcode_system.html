@@ -1,0 +1,590 @@
+{% extends 'base.html' %}
+
+{% block title %}Barcode System - MultiStock{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1><i class="fas fa-barcode me-2"></i>Barcode System</h1>
+        <p class="lead">Scan and generate barcodes for inventory management</p>
+    </div>
+</div>
+
+<!-- Tab Navigation -->
+<ul class="nav nav-tabs mt-4" id="barcodeTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="scanner-tab" data-bs-toggle="tab" data-bs-target="#scanner" type="button"
+            role="tab">
+            <i class="fas fa-camera me-2"></i>Scanner
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="generator-tab" data-bs-toggle="tab" data-bs-target="#generator" type="button"
+            role="tab">
+            <i class="fas fa-print me-2"></i>Generator
+        </button>
+    </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content mt-3" id="barcodeTabContent">
+    <!-- Scanner Tab -->
+    <div class="tab-pane fade show active" id="scanner" role="tabpanel">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-camera me-2"></i>Live Scanner</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="scanner-container" class="text-center mb-3">
+                            <video id="video" width="100%" height="400"
+                                style="border: 2px solid #dee2e6; border-radius: 8px; display: none;"></video>
+                            <canvas id="canvas" style="display: none;"></canvas>
+                            <div id="scanner-placeholder"
+                                style="height: 400px; background: #f8f9fa; border: 2px dashed #dee2e6; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                                <div>
+                                    <i class="fas fa-camera fa-4x text-muted mb-3"></i>
+                                    <p class="text-muted">Click Start Camera to begin scanning</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-success me-2" id="startBtn" onclick="startCamera()">
+                                <i class="fas fa-camera me-2"></i>Start Camera
+                            </button>
+                            <button class="btn btn-danger me-2" id="stopBtn" onclick="stopCamera()" disabled>
+                                <i class="fas fa-stop me-2"></i>Stop Camera
+                            </button>
+                            <button class="btn btn-info" id="switchBtn" onclick="switchCamera()" disabled>
+                                <i class="fas fa-sync me-2"></i>Switch Camera
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-search me-2"></i>Scan Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Scanned Barcode</label>
+                            <input type="text" class="form-control" id="scannedCode"
+                                placeholder="Barcode will appear here" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Manual Entry</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="manualCode"
+                                    placeholder="Enter barcode manually">
+                                <button class="btn btn-primary" onclick="searchProduct()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="productInfo"></div>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5><i class="fas fa-history me-2"></i>Recent Scans</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentScans">
+                            <p class="text-muted">No recent scans</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-cogs me-2"></i>Scanner Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="autoSearch" checked>
+                                    <label class="form-check-label" for="autoSearch">Auto-search on scan</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="playSound" checked>
+                                    <label class="form-check-label" for="playSound">Play sound on scan</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="continuousMode" checked>
+                                    <label class="form-check-label" for="continuousMode">Continuous scanning</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="scanFormat">
+                                    <option value="all">All Formats</option>
+                                    <option value="ean13">EAN-13</option>
+                                    <option value="code128">Code 128</option>
+                                    <option value="qr">QR Code</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generator Tab -->
+    <div class="tab-pane fade" id="generator" role="tabpanel">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-cogs me-2"></i>Barcode Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="barcodeForm">
+                            <div class="mb-3">
+                                <label class="form-label">1. Select Warehouse</label>
+                                <select class="form-select" name="warehouse" required>
+                                    <option value="">Choose Warehouse</option>
+                                    <option value="wh1">Warehouse A</option>
+                                    <option value="wh2">Warehouse B</option>
+                                    <option value="wh3">Warehouse C</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">2. Select Product</label>
+                                <select class="form-select" name="product" required>
+                                    <option value="">Choose Product</option>
+                                    <option value="prod1">iPhone 13 Pro - IPHONE13PRO</option>
+                                    <option value="prod2">MacBook Air M2 - MACBOOKAIR</option>
+                                    <option value="prod3">Samsung Galaxy S23 - GALAXYS23</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">3. Set Quantity</label>
+                                <input type="number" class="form-control" name="quantity" value="1" min="1" max="100"
+                                    required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">4. Choose Paper Size</label>
+                                <select class="form-select" name="paper_size" required>
+                                    <option value="a4">A4 (210 x 297 mm)</option>
+                                    <option value="letter">Letter (8.5 x 11 in)</option>
+                                    <option value="label">Label Sheet (Avery 5160)</option>
+                                </select>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-primary" onclick="updatePreview()">
+                                    <i class="fas fa-sync me-2"></i>5. Update Preview
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="printBarcodes()">
+                                    <i class="fas fa-print me-2"></i>6. Print Barcodes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-eye me-2"></i>Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="barcodePreview" class="text-center">
+                            <p class="text-muted">Select product and settings to see preview</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5><i class="fas fa-info-circle me-2"></i>Instructions</h5>
+                    </div>
+                    <div class="card-body">
+                        <ol>
+                            <li>Select the warehouse where products are stored</li>
+                            <li>Choose the product you want to generate barcodes for</li>
+                            <li>Set the number of barcode labels needed</li>
+                            <li>Choose appropriate paper size for your printer</li>
+                            <li>Click "Update Preview" to see how labels will look</li>
+                            <li>Click "Print" to generate and print the barcodes</li>
+                        </ol>
+
+                        <div class="alert alert-info mt-3">
+                            <strong>Tip:</strong> Use Label Sheet format for adhesive labels, A4/Letter for regular
+                            paper cutting.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include QuaggaJS for barcode scanning -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+
+<script>
+    let stream = null;
+    let currentCamera = 0;
+    let cameras = [];
+    let recentScans = [];
+    let isScanning = false;
+
+    // Initialize camera detection
+    async function detectCameras() {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            cameras = devices.filter(device => device.kind === 'videoinput');
+            // Camera detection complete
+        } catch (error) {
+            console.error('Error detecting cameras:', error);
+        }
+    }
+
+    // Start camera and barcode scanning
+    async function startCamera() {
+        try {
+            await detectCameras();
+
+            const video = document.getElementById('video');
+            const placeholder = document.getElementById('scanner-placeholder');
+
+            // Get camera stream
+            const constraints = {
+                video: {
+                    deviceId: cameras.length > 0 ? cameras[currentCamera].deviceId : undefined,
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
+            };
+
+            stream = await navigator.mediaDevices.getUserMedia(constraints);
+            video.srcObject = stream;
+            video.play();
+
+            // Show video, hide placeholder
+            video.style.display = 'block';
+            placeholder.style.display = 'none';
+
+            // Update button states
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('switchBtn').disabled = cameras.length <= 1;
+
+            // Initialize QuaggaJS for barcode detection
+            initializeQuagga();
+
+        } catch (error) {
+            console.error('Error starting camera:', error);
+            alert('Unable to access camera. Please check permissions.');
+        }
+    }
+
+    // Stop camera
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+
+        // Stop Quagga
+        if (isScanning) {
+            Quagga.stop();
+            isScanning = false;
+        }
+
+        const video = document.getElementById('video');
+        const placeholder = document.getElementById('scanner-placeholder');
+
+        video.style.display = 'none';
+        placeholder.style.display = 'flex';
+
+        // Update button states
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = true;
+        document.getElementById('switchBtn').disabled = true;
+    }
+
+    // Switch camera
+    async function switchCamera() {
+        if (cameras.length <= 1) return;
+
+        currentCamera = (currentCamera + 1) % cameras.length;
+        stopCamera();
+        await startCamera();
+    }
+
+    // Initialize QuaggaJS barcode scanner
+    function initializeQuagga() {
+        const video = document.getElementById('video');
+
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: video,
+                constraints: {
+                    width: 640,
+                    height: 480,
+                    facingMode: "environment"
+                }
+            },
+            decoder: {
+                readers: [
+                    "code_128_reader",
+                    "ean_reader",
+                    "ean_8_reader",
+                    "code_39_reader",
+                    "code_39_vin_reader",
+                    "codabar_reader",
+                    "upc_reader",
+                    "upc_e_reader",
+                    "i2of5_reader"
+                ]
+            },
+            locate: true,
+            locator: {
+                patchSize: "medium",
+                halfSample: true
+            }
+        }, function (err) {
+            if (err) {
+                console.error('QuaggaJS initialization error:', err);
+                return;
+            }
+            // QuaggaJS initialized successfully
+            Quagga.start();
+            isScanning = true;
+        });
+
+        // Listen for barcode detection
+        Quagga.onDetected(function (result) {
+            const code = result.codeResult.code;
+
+            // Update scanned code input
+            document.getElementById('scannedCode').value = code;
+
+            // Play sound if enabled
+            if (document.getElementById('playSound').checked) {
+                playBeepSound();
+            }
+
+            // Auto-search if enabled
+            if (document.getElementById('autoSearch').checked) {
+                searchProduct();
+            }
+
+            // Add to recent scans
+            addToRecentScans(code);
+
+            // Stop continuous scanning if disabled
+            if (!document.getElementById('continuousMode').checked) {
+                setTimeout(() => {
+                    stopCamera();
+                }, 1000);
+            }
+        });
+    }
+
+    // Play beep sound
+    function playBeepSound() {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = 800;
+        oscillator.type = 'square';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+    }
+
+    // Search for product
+    function searchProduct() {
+        const code = document.getElementById('manualCode').value || document.getElementById('scannedCode').value;
+        if (!code) {
+            alert('Please enter or scan a barcode first');
+            return;
+        }
+
+        // Simulate product search
+        const productInfo = document.getElementById('productInfo');
+        productInfo.innerHTML = `
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Product Found</h6>
+                <p class="card-text">
+                    <strong>Code:</strong> ${code}<br>
+                    <strong>Name:</strong> Sample Product<br>
+                    <strong>Price:</strong> $29.99<br>
+                    <strong>Stock:</strong> 45 units
+                </p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-sm">View Details</button>
+                    <button class="btn btn-success btn-sm">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    `;
+    }
+
+    // Add to recent scans
+    function addToRecentScans(code) {
+        recentScans.unshift({
+            code: code,
+            time: new Date().toLocaleTimeString()
+        });
+
+        if (recentScans.length > 5) {
+            recentScans = recentScans.slice(0, 5);
+        }
+
+        updateRecentScansDisplay();
+    }
+
+    // Update recent scans display
+    function updateRecentScansDisplay() {
+        const container = document.getElementById('recentScans');
+        if (recentScans.length === 0) {
+            container.innerHTML = '<p class="text-muted">No recent scans</p>';
+            return;
+        }
+
+        container.innerHTML = recentScans.map(scan => `
+        <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+            <div>
+                <strong>${scan.code}</strong><br>
+                <small class="text-muted">${scan.time}</small>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" onclick="searchSpecificProduct('${scan.code}')">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    `).join('');
+    }
+
+    // Search specific product from recent scans
+    function searchSpecificProduct(code) {
+        document.getElementById('manualCode').value = code;
+        searchProduct();
+    }
+
+    // Barcode Generator Functions
+    function updatePreview() {
+        const form = document.getElementById('barcodeForm');
+        const formData = new FormData(form);
+
+        const product = form.product.options[form.product.selectedIndex].text;
+        const quantity = formData.get('quantity');
+        const paperSize = form.paper_size.options[form.paper_size.selectedIndex].text;
+
+        if (!formData.get('product')) {
+            alert('Please select a product first');
+            return;
+        }
+
+        const preview = document.getElementById('barcodePreview');
+        preview.innerHTML = `
+        <div class="border p-3 mb-3">
+            <h6>${product}</h6>
+            <div style="font-family: 'Courier New', monospace; font-size: 24px; letter-spacing: 2px; border: 1px solid #000; padding: 10px; margin: 10px 0;">
+                ||||| |||| | |||| |||||
+            </div>
+            <small>Sample Barcode</small>
+        </div>
+        <p><strong>Quantity:</strong> ${quantity} labels</p>
+        <p><strong>Paper Size:</strong> ${paperSize}</p>
+        <div class="alert alert-success">
+            Preview updated! Ready to print.
+        </div>
+    `;
+    }
+
+    function printBarcodes() {
+        const form = document.getElementById('barcodeForm');
+        const formData = new FormData(form);
+
+        if (!formData.get('product') || !formData.get('warehouse')) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        const quantity = formData.get('quantity');
+        const product = form.product.options[form.product.selectedIndex].text;
+
+        // Create print window
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+        <html>
+        <head>
+            <title>Barcode Labels</title>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                .barcode-label { 
+                    display: inline-block; 
+                    margin: 10px; 
+                    padding: 15px; 
+                    border: 1px solid #000; 
+                    text-align: center;
+                    width: 200px;
+                }
+                .barcode { 
+                    font-family: 'Courier New', monospace; 
+                    font-size: 20px; 
+                    letter-spacing: 1px; 
+                    margin: 10px 0;
+                }
+                @media print {
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="no-print">
+                <button onclick="window.print()">Print Labels</button>
+                <button onclick="window.close()">Close</button>
+            </div>
+            ${Array.from({ length: quantity }, (_, i) => `
+                <div class="barcode-label">
+                    <div><strong>${product.split(' - ')[0]}</strong></div>
+                    <div class="barcode">||||| |||| | |||| |||||</div>
+                    <div><small>${product.split(' - ')[1] || 'BARCODE'}</small></div>
+                </div>
+            `).join('')}
+        </body>
+        </html>
+    `);
+
+        printWindow.document.close();
+        alert(`${quantity} barcode labels generated successfully!`);
+    }
+
+    // Clean up when page unloads
+    window.addEventListener('beforeunload', function () {
+        stopCamera();
+    });
+</script>
+{% endblock %}

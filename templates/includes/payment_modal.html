@@ -1,0 +1,384 @@
+<!-- Payment Modal with Bill Preview and Coupon -->
+<div class="modal" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg" style="margin-top: 75px;">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-receipt me-2"></i>Bill Preview & Payment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Bill Preview -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Order Summary</h6>
+                        <div id="billItems"></div>
+                        
+                        <hr>
+                        
+                        <!-- Delivery Address -->
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-3">Delivery Address</h6>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <input type="text" id="deliveryName" class="form-control form-control-sm" placeholder="Full Name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="tel" id="deliveryContact" class="form-control form-control-sm" placeholder="Contact Number" required>
+                                </div>
+                                <div class="col-12">
+                                    <input type="text" id="deliveryStreet" class="form-control form-control-sm" placeholder="Street Address" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" id="deliveryCity" class="form-control form-control-sm" placeholder="City" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" id="deliveryState" class="form-control form-control-sm" placeholder="State" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" id="deliveryPIN" class="form-control form-control-sm" placeholder="PIN Code" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Coupon Section -->
+                        <div class="mb-3">
+                            <label class="form-label">Have a coupon code?</label>
+                            <div class="input-group">
+                                <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code">
+                                <button class="btn btn-outline-primary" type="button" onclick="applyCoupon()">Apply</button>
+                            </div>
+                            <small id="couponMessage" class="form-text"></small>
+                        </div>
+                        
+                        <!-- Totals -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <strong id="billSubtotal">₹0.00</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2" id="discountRow" style="display: none !important;">
+                            <span class="text-success">Discount (<span id="appliedCouponCode"></span>):</span>
+                            <strong class="text-success" id="billDiscount">-₹0.00</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tax (18%):</span>
+                            <strong id="billTax">₹0.00</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <h5>Total Amount:</h5>
+                            <h5 class="text-primary" id="billTotal">₹0.00</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Method -->
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">Select Payment Method</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-check payment-option">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCard" value="card" checked>
+                                    <label class="form-check-label w-100" for="paymentCard">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-credit-card fa-2x text-primary me-3"></i>
+                                            <div>
+                                                <strong>Credit/Debit Card</strong>
+                                                <br><small class="text-muted">Visa, Mastercard, Rupay</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check payment-option">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentUPI" value="upi">
+                                    <label class="form-check-label w-100" for="paymentUPI">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-mobile-alt fa-2x text-success me-3"></i>
+                                            <div>
+                                                <strong>UPI</strong>
+                                                <br><small class="text-muted">GPay, PhonePe, Paytm</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check payment-option">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentNetbanking" value="netbanking">
+                                    <label class="form-check-label w-100" for="paymentNetbanking">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-university fa-2x text-info me-3"></i>
+                                            <div>
+                                                <strong>Net Banking</strong>
+                                                <br><small class="text-muted">All major banks</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check payment-option">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentWallet" value="wallet">
+                                    <label class="form-check-label w-100" for="paymentWallet">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-wallet fa-2x text-warning me-3"></i>
+                                            <div>
+                                                <strong>Wallet</strong>
+                                                <br><small class="text-muted">Paytm, Amazon Pay</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check payment-option">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCOD" value="cod">
+                                    <label class="form-check-label w-100" for="paymentCOD">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-hand-holding-usd fa-2x text-secondary me-3"></i>
+                                            <div>
+                                                <strong>Cash on Delivery</strong>
+                                                <br><small class="text-muted">Pay when you receive</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="proceedPayment()">
+                    <i class="fas fa-lock me-2"></i>Proceed to Pay <span id="payAmount">₹0.00</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-option {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.payment-option:hover {
+    border-color: #0d6efd;
+    background-color: #f8f9fa;
+}
+.payment-option input:checked ~ label {
+    border-color: #0d6efd;
+}
+</style>
+
+<script>
+let paymentData = {
+    subtotal: 0,
+    discount: 0,
+    tax: 0,
+    total: 0,
+    couponCode: '',
+    serviceType: 'all',
+    items: []
+};
+
+function showPaymentModal(data) {
+    paymentData = {...data};
+    paymentData.discount = 0;
+    paymentData.couponCode = '';
+    
+    // Display items
+    let itemsHTML = '';
+    if (data.items && data.items.length > 0) {
+        data.items.forEach(item => {
+            itemsHTML += `
+                <div class="d-flex justify-content-between mb-2">
+                    <span>${item.name} ${item.quantity ? `x ${item.quantity}` : ''}</span>
+                    <span>₹${item.price.toFixed(2)}</span>
+                </div>
+            `;
+        });
+    }
+    document.getElementById('billItems').innerHTML = itemsHTML;
+    
+    // Reset coupon
+    document.getElementById('couponCode').value = '';
+    document.getElementById('couponMessage').textContent = '';
+    document.getElementById('couponMessage').className = 'form-text';
+    document.getElementById('discountRow').style.display = 'none';
+    
+    updateBillTotals();
+    
+    const modal = new bootstrap.Modal(document.getElementById('paymentModal'), {backdrop: false});
+    modal.show();
+}
+
+function updateBillTotals() {
+    const subtotal = paymentData.subtotal;
+    const discount = paymentData.discount;
+    const afterDiscount = subtotal - discount;
+    const tax = afterDiscount * 0.18;
+    const total = afterDiscount + tax;
+    
+    document.getElementById('billSubtotal').textContent = `₹${subtotal.toFixed(2)}`;
+    document.getElementById('billDiscount').textContent = `-₹${discount.toFixed(2)}`;
+    document.getElementById('billTax').textContent = `₹${tax.toFixed(2)}`;
+    document.getElementById('billTotal').textContent = `₹${total.toFixed(2)}`;
+    document.getElementById('payAmount').textContent = `₹${total.toFixed(2)}`;
+    
+    paymentData.tax = tax;
+    paymentData.total = total;
+}
+
+async function applyCoupon() {
+    const code = document.getElementById('couponCode').value.trim().toUpperCase();
+    const messageEl = document.getElementById('couponMessage');
+    
+    if (!code) {
+        messageEl.textContent = 'Please enter a coupon code';
+        messageEl.className = 'form-text text-danger';
+        return;
+    }
+    
+    try {
+        const response = await fetch('/coupons/api/validate/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                code: code,
+                amount: paymentData.subtotal,
+                service_type: paymentData.serviceType
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.valid) {
+            paymentData.discount = data.discount;
+            paymentData.couponCode = data.code;
+            document.getElementById('appliedCouponCode').textContent = data.code;
+            document.getElementById('discountRow').style.display = 'flex';
+            messageEl.textContent = data.message;
+            messageEl.className = 'form-text text-success';
+            updateBillTotals();
+        } else {
+            messageEl.textContent = data.message;
+            messageEl.className = 'form-text text-danger';
+            paymentData.discount = 0;
+            paymentData.couponCode = '';
+            document.getElementById('discountRow').style.display = 'none';
+            updateBillTotals();
+        }
+    } catch (error) {
+        messageEl.textContent = 'Error validating coupon';
+        messageEl.className = 'form-text text-danger';
+    }
+}
+
+async function proceedPayment() {
+    // Validate address fields
+    const name = document.getElementById('deliveryName').value.trim();
+    const contact = document.getElementById('deliveryContact').value.trim();
+    const street = document.getElementById('deliveryStreet').value.trim();
+    const city = document.getElementById('deliveryCity').value.trim();
+    const state = document.getElementById('deliveryState').value.trim();
+    const pin = document.getElementById('deliveryPIN').value.trim();
+    
+    if (!name || !contact || !street || !city || !state || !pin) {
+        alert('Please fill in all delivery address fields');
+        return;
+    }
+    
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    
+    paymentData.deliveryAddress = {name, contact, street, city, state, pin};
+    
+    // Apply coupon usage if used
+    if (paymentData.couponCode) {
+        try {
+            await fetch('/coupons/api/apply/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ code: paymentData.couponCode })
+            });
+        } catch (error) {
+            console.error('Error applying coupon:', error);
+        }
+    }
+    
+    // Simulate payment processing
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+    
+    setTimeout(async () => {
+        // Create invoice and receipt in billing system
+        try {
+            await createInvoiceAndReceipt({
+                ...paymentData,
+                paymentMethod: paymentMethod
+            });
+        } catch (error) {
+            console.error('Error creating invoice:', error);
+        }
+        
+        // Call the page-specific payment handler
+        if (typeof handlePaymentSuccess === 'function') {
+            handlePaymentSuccess({
+                ...paymentData,
+                paymentMethod: paymentMethod
+            });
+        }
+        
+        bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+        
+        // Show success message based on payment method
+        if (paymentMethod === 'cod') {
+            alert(`Order placed successfully!\n\nTotal Amount: ₹${paymentData.total.toFixed(2)}\nPayment Method: Cash on Delivery\n\nPlease keep the exact amount ready when the delivery arrives.`);
+        } else {
+            alert(`Payment of ₹${paymentData.total.toFixed(2)} successful via ${paymentMethod}!\n\nYour order will be delivered soon.`);
+        }
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-lock me-2"></i>Proceed to Pay <span id="payAmount">₹0.00</span>';
+    }, 2000);
+}
+
+async function createInvoiceAndReceipt(data) {
+    const invoiceData = {
+        invoice_type: data.serviceType || 'marketplace',
+        items: data.items || [],
+        subtotal: data.subtotal,
+        discount: data.discount,
+        tax: data.tax,
+        total: data.total,
+        payment_method: data.paymentMethod,
+        coupon_code: data.couponCode || ''
+    };
+    
+    const response = await fetch('/billing/api/create-from-payment/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify(invoiceData)
+    });
+    
+    return await response.json();
+}
+</script>

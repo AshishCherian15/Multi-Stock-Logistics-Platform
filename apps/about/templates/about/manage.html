@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% block title %}Manage About - MultiStock{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-edit me-2"></i>Manage About Page</h2>
+        <a href="{% url 'about:about_page' %}" class="btn btn-secondary"><i class="fas fa-eye me-2"></i>View Page</a>
+    </div>
+
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#sections">Sections</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#team">Team</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#gallery">Gallery</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="sections">
+            <button class="btn btn-primary mb-3" onclick="toggleModal('addSectionModal')"><i class="fas fa-plus me-2"></i>Add Section</button>
+            <div class="row">
+                {% for section in sections %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>{{ section.title }}</h5>
+                            <p>{{ section.content|truncatewords:20 }}</p>
+                            <small class="text-muted">Order: {{ section.order }}</small>
+                            <div class="mt-2">
+                                <a href="{% url 'about:delete_section' section.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if sections.has_other_pages %}
+            <nav>
+                <ul class="pagination">
+                    {% if sections.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?s_page={{ sections.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ sections.number }} of {{ sections.paginator.num_pages }}</span></li>
+                    {% if sections.has_next %}
+                    <li class="page-item"><a class="page-link" href="?s_page={{ sections.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+        <div class="tab-pane fade" id="team">
+            <button class="btn btn-primary mb-3" onclick="toggleModal('addTeamModal')"><i class="fas fa-plus me-2"></i>Add Member</button>
+            <div class="row">
+                {% for member in team %}
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            {% if member.photo %}
+                            <img src="{{ member.photo.url }}" class="rounded-circle mb-2" width="80" height="80">
+                            {% endif %}
+                            <h6>{{ member.name }}</h6>
+                            <small>{{ member.position }}</small>
+                            <div class="mt-2">
+                                <a href="{% url 'about:delete_team' member.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if team.has_other_pages %}
+            <nav>
+                <ul class="pagination">
+                    {% if team.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?t_page={{ team.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ team.number }} of {{ team.paginator.num_pages }}</span></li>
+                    {% if team.has_next %}
+                    <li class="page-item"><a class="page-link" href="?t_page={{ team.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+        <div class="tab-pane fade" id="gallery">
+            <button class="btn btn-primary mb-3" onclick="toggleModal('addGalleryModal')"><i class="fas fa-plus me-2"></i>Add Image</button>
+            <div class="row">
+                {% for img in gallery %}
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <img src="{{ img.image.url }}" class="card-img-top">
+                        <div class="card-body text-center">
+                            <small>{{ img.title }}</small>
+                            <div class="mt-2">
+                                <a href="{% url 'about:delete_gallery' img.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if gallery.has_other_pages %}
+            <nav>
+                <ul class="pagination">
+                    {% if gallery.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?g_page={{ gallery.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ gallery.number }} of {{ gallery.paginator.num_pages }}</span></li>
+                    {% if gallery.has_next %}
+                    <li class="page-item"><a class="page-link" href="?g_page={{ gallery.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Section Modal -->
+<div class="modal" id="addSectionModal" data-bs-backdrop="false" style="display:none;">
+    <div class="modal-dialog" style="margin-top:75px;position:relative;z-index:1040;">
+        <form method="post" action="{% url 'about:create_section' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Section</h5>
+                    <button type="button" class="btn-close" onclick="toggleModal('addSectionModal')"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Content</label>
+                        <textarea class="form-control" name="content" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label>Image</label>
+                        <input type="file" class="form-control" name="image">
+                    </div>
+                    <div class="mb-3">
+                        <label>Order</label>
+                        <input type="number" class="form-control" name="order" value="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal('addSectionModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Team Modal -->
+<div class="modal" id="addTeamModal" data-bs-backdrop="false" style="display:none;">
+    <div class="modal-dialog" style="margin-top:75px;position:relative;z-index:1040;">
+        <form method="post" action="{% url 'about:create_team' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Team Member</h5>
+                    <button type="button" class="btn-close" onclick="toggleModal('addTeamModal')"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Position</label>
+                        <input type="text" class="form-control" name="position" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Bio</label>
+                        <textarea class="form-control" name="bio" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label>Photo</label>
+                        <input type="file" class="form-control" name="photo">
+                    </div>
+                    <div class="mb-3">
+                        <label>Order</label>
+                        <input type="number" class="form-control" name="order" value="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal('addTeamModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Gallery Modal -->
+<div class="modal" id="addGalleryModal" data-bs-backdrop="false" style="display:none;">
+    <div class="modal-dialog" style="margin-top:75px;position:relative;z-index:1040;">
+        <form method="post" action="{% url 'about:create_gallery' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Gallery Image</h5>
+                    <button type="button" class="btn-close" onclick="toggleModal('addGalleryModal')"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Image</label>
+                        <input type="file" class="form-control" name="image" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Order</label>
+                        <input type="number" class="form-control" name="order" value="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal('addGalleryModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,138 @@
+<style>
+.customer-sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: 65px;
+    z-index: 1000;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.customer-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.customer-sidebar::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+}
+
+.customer-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+}
+
+.customer-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.customer-sidebar.closed {
+    left: -250px;
+}
+
+.customer-sidebar .nav-item {
+    display: block;
+    padding: 12px 20px;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.customer-sidebar .nav-item:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-left-color: #0d6efd;
+    padding-left: 25px;
+}
+
+.customer-sidebar .nav-item.active {
+    background: linear-gradient(90deg, rgba(13,110,253,0.2) 0%, transparent 100%);
+    color: #fff;
+    border-left-color: #0d6efd;
+    font-weight: 600;
+}
+
+.customer-sidebar .nav-item i {
+    width: 20px;
+    margin-right: 12px;
+    text-align: center;
+}
+
+.customer-sidebar .sidebar-header {
+    padding: 20px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 10px;
+}
+
+.customer-sidebar .nav-section {
+    padding: 8px 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 15px;
+}
+</style>
+
+<div class="customer-sidebar">
+    <div class="sidebar-header">
+        <i class="fas fa-user-circle me-2"></i>Customer Portal
+    </div>
+    
+    <div class="sidebar-content">
+        <a href="/dashboard/" class="nav-item {% if request.path == '/dashboard/' %}active{% endif %}">
+            <i class="fas fa-home"></i><span>Dashboard</span>
+        </a>
+        
+        <div class="nav-section">Shopping</div>
+        <a href="{% url 'customers:marketplace' %}" class="nav-item {% if 'marketplace' in request.path %}active{% endif %}">
+            <i class="fas fa-store"></i><span>Marketplace</span>
+        </a>
+        <a href="/cart/" class="nav-item {% if '/cart/' in request.path %}active{% endif %}">
+            <i class="fas fa-shopping-cart"></i><span>Cart</span>
+        </a>
+        <a href="/wishlist/" class="nav-item {% if '/wishlist/' in request.path %}active{% endif %}">
+            <i class="fas fa-heart"></i><span>Wishlist</span>
+        </a>
+        <a href="{% url 'customers:my_orders' %}" class="nav-item {% if 'my-orders' in request.path %}active{% endif %}">
+            <i class="fas fa-shopping-bag"></i><span>My Orders</span>
+        </a>
+        
+        <div class="nav-section">Services</div>
+        <a href="/rentals/" class="nav-item {% if '/rentals/' in request.path %}active{% endif %}">
+            <i class="fas fa-truck"></i><span>Rentals</span>
+        </a>
+        <a href="/storage/" class="nav-item {% if '/storage/' in request.path %}active{% endif %}">
+            <i class="fas fa-warehouse"></i><span>Storage Units</span>
+        </a>
+        <a href="/lockers/" class="nav-item {% if '/lockers/' in request.path %}active{% endif %}">
+            <i class="fas fa-lock"></i><span>Lockers</span>
+        </a>
+        <a href="{% url 'customers:mine' %}" class="nav-item {% if 'mine' in request.path %}active{% endif %}">
+            <i class="fas fa-user-check"></i><span>Mine</span>
+        </a>
+        
+        <div class="nav-section">Account</div>
+        <a href="{% url 'customers:my_profile' %}" class="nav-item {% if 'my-profile' in request.path %}active{% endif %}">
+            <i class="fas fa-user"></i><span>My Profile</span>
+        </a>
+        <a href="/about/" class="nav-item {% if 'about' in request.path %}active{% endif %}">
+            <i class="fas fa-info-circle"></i><span>About Us</span>
+        </a>
+        <a href="/auth/logout/" class="nav-item" style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.1);padding-top:20px">
+            <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+        </a>
+    </div>
+</div>

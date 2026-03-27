@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Notification Preferences{% endblock %}
+{% block content %}
+<style>
+.pref-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:30px;margin-bottom:20px}
+.pref-item{padding:20px;border:1px solid rgba(0,20,168,0.1);border-radius:8px;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center}
+.switch{position:relative;display:inline-block;width:60px;height:34px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;transition:.4s;border-radius:34px}
+.slider:before{position:absolute;content:"";height:26px;width:26px;left:4px;bottom:4px;background:#fff;transition:.4s;border-radius:50%}
+input:checked+.slider{background:#0014A8}
+input:checked+.slider:before{transform:translateX(26px)}
+.btn-save{background:linear-gradient(135deg,#0014A8,#000E75);color:#fff;padding:12px 40px;border-radius:10px;font-weight:600;border:none}
+</style>
+
+<div class="container" style="padding:30px;max-width:900px">
+    <div class="mb-4">
+        <a href="{% url 'notification_center' %}" style="color:#0014A8;text-decoration:none"><i class="fas fa-arrow-left me-2"></i>Back</a>
+        <h2 style="color:#0014A8;font-weight:700;margin-top:15px"><i class="fas fa-cog me-2"></i>Notification Preferences</h2>
+        <p style="color:#666">Manage how you receive notifications</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="pref-card">
+            <h4 style="color:#0014A8;margin-bottom:20px">Delivery Methods</h4>
+            
+            <div class="pref-item">
+                <div>
+                    <strong style="color:#0014A8">Email Notifications</strong>
+                    <p style="margin:5px 0 0 0;color:#666;font-size:14px">Receive notifications via email</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" name="email_enabled" {% if preferences.email_enabled %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="pref-item">
+                <div>
+                    <strong style="color:#0014A8">Push Notifications</strong>
+                    <p style="margin:5px 0 0 0;color:#666;font-size:14px">Receive in-app notifications</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" name="push_enabled" {% if preferences.push_enabled %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="pref-card">
+            <h4 style="color:#0014A8;margin-bottom:20px">Notification Types</h4>
+            
+            <div class="pref-item">
+                <div>
+                    <strong style="color:#0014A8">Stock Alerts</strong>
+                    <p style="margin:5px 0 0 0;color:#666;font-size:14px">Low stock and inventory alerts</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" name="stock_alerts" {% if preferences.stock_alerts %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="pref-item">
+                <div>
+                    <strong style="color:#0014A8">Order Updates</strong>
+                    <p style="margin:5px 0 0 0;color:#666;font-size:14px">Order status and shipping updates</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" name="order_updates" {% if preferences.order_updates %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="pref-item">
+                <div>
+                    <strong style="color:#0014A8">Message Notifications</strong>
+                    <p style="margin:5px 0 0 0;color:#666;font-size:14px">New messages and chat updates</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" name="message_notifications" {% if preferences.message_notifications %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="pref-item">
+                <div>
+                    <strong style="color:#0014A8">System Notifications</strong>
+                    <p style="margin:5px 0 0 0;color:#666;font-size:14px">System updates and announcements</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" name="system_notifications" {% if preferences.system_notifications %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-save"><i class="fas fa-save me-2"></i>Save Preferences</button>
+    </form>
+</div>
+{% endblock %}

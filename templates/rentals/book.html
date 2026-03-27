@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ item.name }} - Rentals{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Book Rental</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>{{ item.name }}</strong> - {{ item.description|truncatewords:20 }}
+                    </div>
+                    
+                    <form method="post" id="bookingForm">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Start Date & Time</label>
+                                <input type="datetime-local" name="start_date" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">End Date & Time</label>
+                                <input type="datetime-local" name="end_date" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Rental Duration</label>
+                            <select name="duration_type" class="form-select" id="durationType" required>
+                                {% if item.hourly_rate > 0 %}<option value="hourly">Hourly - ${{ item.hourly_rate }}/hour</option>{% endif %}
+                                {% if item.daily_rate > 0 %}<option value="daily">Daily - ${{ item.daily_rate }}/day</option>{% endif %}
+                                {% if item.weekly_rate > 0 %}<option value="weekly">Weekly - ${{ item.weekly_rate }}/week</option>{% endif %}
+                                {% if item.monthly_rate > 0 %}<option value="monthly">Monthly - ${{ item.monthly_rate }}/month</option>{% endif %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Delivery Option</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="delivery_option" value="pickup" id="pickup" checked>
+                                <label class="form-check-label" for="pickup">
+                                    <i class="fas fa-store me-2"></i>Pickup from Location
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="delivery_option" value="delivery" id="delivery">
+                                <label class="form-check-label" for="delivery">
+                                    <i class="fas fa-truck me-2"></i>Delivery to Address
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3" id="deliveryAddressDiv" style="display: none;">
+                            <label class="form-label">Delivery Address</label>
+                            <textarea name="delivery_address" class="form-control" rows="3" placeholder="Enter full delivery address"></textarea>
+                        </div>
+                        
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h5>Estimated Total: <span id="totalAmount" class="text-primary">$0.00</span></h5>
+                                <small class="text-muted">Final amount will be calculated based on actual rental duration</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i>Confirm Booking
+                            </button>
+                            <a href="{% url 'rental_detail' item.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deliveryRadios = document.querySelectorAll('input[name="delivery_option"]');
+    const deliveryAddressDiv = document.getElementById('deliveryAddressDiv');
+    const durationType = document.getElementById('durationType');
+    const totalAmount = document.getElementById('totalAmount');
+    
+    deliveryRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            deliveryAddressDiv.style.display = this.value === 'delivery' ? 'block' : 'none';
+        });
+    });
+    
+    durationType.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex].text;
+        const price = selectedOption.match(/\$[\d.]+/)[0];
+        totalAmount.textContent = price;
+    });
+    
+    // Set initial price
+    if (durationType.options.length > 0) {
+        const selectedOption = durationType.options[durationType.selectedIndex].text;
+        const price = selectedOption.match(/\$[\d.]+/)[0];
+        totalAmount.textContent = price;
+    }
+});
+</script>
+{% endblock %}

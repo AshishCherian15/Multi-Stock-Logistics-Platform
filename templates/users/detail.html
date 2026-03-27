@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}User Details{% endblock %}
+{% block content %}
+<style>
+.profile-card{background:linear-gradient(135deg,#0014A8,#000E75);color:#fff;border-radius:12px;padding:40px;margin-bottom:30px}
+.profile-avatar{width:120px;height:120px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#0014A8;font-size:48px;font-weight:700;margin:0 auto 20px}
+.info-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:30px;margin-bottom:20px}
+.info-row{display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid rgba(0,20,168,0.1)}
+.info-row:last-child{border-bottom:none}
+.info-label{color:#666;font-weight:600}
+.info-value{color:#0014A8;font-weight:700}
+.activity-item{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:8px;padding:15px;margin-bottom:10px;transition:all .3s}
+.activity-item:hover{box-shadow:0 4px 12px rgba(0,20,168,0.1)}
+.action-btn{padding:10px 20px;border-radius:8px;font-weight:600;border:none;transition:all .3s}
+.btn-edit{background:linear-gradient(135deg,#17a2b8,#138496);color:#fff}
+.btn-delete{background:linear-gradient(135deg,#dc3545,#c82333);color:#fff}
+.btn-activity{background:linear-gradient(135deg,#28a745,#218838);color:#fff}
+</style>
+
+<div class="container-fluid" style="padding:30px">
+    <div class="mb-4">
+        <a href="{% url 'user_list' %}" style="color:#0014A8;text-decoration:none"><i class="fas fa-arrow-left me-2"></i>Back to Users</a>
+    </div>
+
+    <div class="profile-card text-center">
+        <div class="profile-avatar">{{ user_obj.username|slice:":1"|upper }}</div>
+        <h2 style="margin:0 0 10px 0">{{ user_obj.username }}</h2>
+        <p style="margin:0;opacity:0.9">{{ user_obj.email }}</p>
+        <div class="mt-3">
+            <span style="background:rgba(255,255,255,0.2);padding:8px 16px;border-radius:20px;font-size:14px;font-weight:600">{{ user_obj.profile.get_role_display }}</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="info-card">
+                <h4 style="color:#0014A8;margin-bottom:20px"><i class="fas fa-info-circle me-2"></i>User Information</h4>
+                <div class="info-row">
+                    <span class="info-label">User ID</span>
+                    <span class="info-value">#{{ user_obj.id }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">{{ user_obj.username }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ user_obj.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Role</span>
+                    <span class="info-value">{{ user_obj.profile.get_role_display }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="info-value" style="color:{% if user_obj.profile.is_active %}#28a745{% else %}#dc3545{% endif %}">{% if user_obj.profile.is_active %}Active{% else %}Inactive{% endif %}</span>
+                </div>
+                {% if user_obj.profile.phone %}
+                <div class="info-row">
+                    <span class="info-label">Phone</span>
+                    <span class="info-value">{{ user_obj.profile.phone }}</span>
+                </div>
+                {% endif %}
+                {% if user_obj.profile.department %}
+                <div class="info-row">
+                    <span class="info-label">Department</span>
+                    <span class="info-value">{{ user_obj.profile.department }}</span>
+                </div>
+                {% endif %}
+                <div class="info-row">
+                    <span class="info-label">Joined</span>
+                    <span class="info-value">{{ user_obj.date_joined|date:"M d, Y" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="info-card">
+                <h4 style="color:#0014A8;margin-bottom:20px"><i class="fas fa-history me-2"></i>Recent Activity</h4>
+                {% for activity in activities %}
+                <div class="activity-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong style="color:#0014A8">{{ activity.action }}</strong>
+                            <p style="margin:5px 0 0 0;color:#666;font-size:13px">{{ activity.module }}</p>
+                        </div>
+                        <small style="color:#999">{{ activity.timestamp|timesince }} ago</small>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:#999;text-align:center;padding:20px">No recent activity</p>
+                {% endfor %}
+                <a href="{% url 'user_activity' user_obj.id %}" style="color:#0014A8;text-decoration:none;display:block;text-align:center;margin-top:15px">View All Activity <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-3 mt-4">
+        <a href="{% url 'edit_user' user_obj.id %}" class="action-btn btn-edit"><i class="fas fa-edit me-2"></i>Edit User</a>
+        <a href="{% url 'user_activity' user_obj.id %}" class="action-btn btn-activity"><i class="fas fa-history me-2"></i>View Activity</a>
+        <a href="{% url 'delete_user' user_obj.id %}" class="action-btn btn-delete" onclick="return confirm('Delete this user?')"><i class="fas fa-trash me-2"></i>Delete User</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,545 @@
+﻿{% extends 'base.html' %}
+{% block title %}Team Management{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-users-cog me-2"></i>Team Management</h2>
+        <div class="btn-group">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#inviteUserModal">
+                <i class="fas fa-user-plus me-2"></i>Invite User
+            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-download me-2"></i>Export
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/team/export/?format=excel"><i class="fas fa-file-excel me-2"></i>Excel (.xlsx)</a></li>
+                    <li><a class="dropdown-item" href="/team/export/?format=csv"><i class="fas fa-file-csv me-2"></i>CSV (.csv)</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h5>Total Team</h5>
+                    <h3>{{ team_users|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-check fa-2x mb-2"></i>
+                    <h5>Active Users</h5>
+                    <h3>{{ team_users|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h5>Online Now</h5>
+                    <h3>-</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-plus fa-2x mb-2"></i>
+                    <h5>New This Month</h5>
+                    <h3>-</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Management -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="accordion" id="roleAccordion">
+                {% if role_groups.superadmin %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#superadminCollapse">
+                            <i class="fas fa-crown me-2 text-danger"></i>SuperAdmins ({{ role_groups.superadmin|length }})
+                        </button>
+                    </h2>
+                    <div id="superadminCollapse" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Department</th>
+
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in role_groups.superadmin %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                {% if user.profile.avatar_url %}
+                                                <div class="avatar-wrapper" onclick="openAvatarModal('{{ user.profile.avatar_url }}', '{{ user.username|slice:":2"|upper }}')" style="cursor:pointer;" role="button" tabindex="0">
+                                                    <img src="{{ user.profile.avatar_url }}" 
+                                                         alt="{{ user.username }}'s avatar" 
+                                                         class="rounded-circle" 
+                                                         style="width:40px;height:40px;object-fit:cover;border:2px solid #0014A8;"
+                                                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                                                    <div class="avatar-initials rounded-circle" 
+                                                         style="width:40px;height:40px;background:#0014A8;color:white;display:none;align-items:center;justify-content:center;font-weight:bold;font-size:16px;border:2px solid #0014A8;">
+                                                        {{ user.username|slice:":2"|upper }}
+                                                    </div>
+                                                </div>
+                                                {% else %}
+                                                <div class="avatar-wrapper" onclick="openAvatarModal('', '{{ user.username|slice:":2"|upper }}')" style="cursor:pointer;" role="button" tabindex="0">
+                                                    <div class="avatar-initials rounded-circle" 
+                                                         style="width:40px;height:40px;background:#0014A8;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;border:2px solid #0014A8;">
+                                                        {{ user.username|slice:":2"|upper }}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                                                <br><small class="text-muted">{{ user.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if user.is_superuser %}
+                                        <span class="badge bg-danger">SuperAdmin</span>
+                                        <br><small class="text-muted">Full Access</small>
+                                        {% elif user.role and user.role.role == 'admin' %}
+                                        <span class="badge bg-warning">Admin</span>
+                                        <br><small class="text-muted">Management</small>
+                                        {% elif user.role and user.role.role == 'admin' %}
+                                        <span class="badge bg-info">Admin</span>
+                                        <br><small class="text-muted">Department</small>
+                                        {% elif user.role and user.role.role == 'supervisor' %}
+                                        <span class="badge bg-primary">Supervisor</span>
+                                        <br><small class="text-muted">Team Lead</small>
+                                        {% else %}
+                                        <span class="badge bg-success">Staff</span>
+                                        <br><small class="text-muted">Operations</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{% if user.role and user.role.scope %}{{ user.role.scope.department|default:"General" }}{% else %}General{% endif %}</td>
+
+                                    <td>
+                                        <span class="badge bg-{{ user.is_active|yesno:'success,danger' }}" id="status-{{ user.id }}">
+                                            {{ user.is_active|yesno:'Active,Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="viewUser({{ user.id }})" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" onclick="editUser({{ user.id }})" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            {% if not user.is_superuser and request.user.is_superuser %}
+                                            <button class="btn btn-outline-danger" onclick="deleteUser({{ user.id }})" title="Delete (SuperAdmin Only)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            {% endif %}
+                                            <button class="btn btn-outline-info" onclick="messageUser({{ user.id }})" title="Message">
+                                                <i class="fas fa-comment"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie me-2"></i>Team Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="roleChart" height="200"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Activity Overview</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="activityChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invite User Modal -->
+<div class="modal fade" id="inviteUserModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invite Team Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="inviteForm">
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" name="role" required>
+                            <option value="">Select Role</option>
+                            <option value="staff">Staff</option>
+                            <option value="manager">Manager</option>
+                            <option value="admin">Admin</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" name="department">
+                            <option value="">Select Department</option>
+                            <option value="operations">Operations</option>
+                            <option value="sales">Sales</option>
+                            <option value="management">Management</option>
+                            <option value="support">Support</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="sendInvite()">Send Invite</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+function viewUser(id) {
+    fetch(`/api/users/${id}/`)
+        .then(r => r.json())
+        .then(data => {
+            const content = `
+                <div class="modal fade" id="viewUserModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg" style="margin-top: 80px;">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title"><i class="fas fa-user me-2"></i>User Details</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="text-center mb-4">
+                                    <div class="rounded-circle mx-auto" style="width:80px;height:80px;background:#0014A8;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:32px;">
+                                        ${data.username.substring(0, 2).toUpperCase()}
+                                    </div>
+                                    <h4 class="mt-3">${data.first_name} ${data.last_name}</h4>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong><i class="fas fa-user me-2"></i>Username:</strong> ${data.username}</p>
+                                        <p><strong><i class="fas fa-envelope me-2"></i>Email:</strong> ${data.email}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong><i class="fas fa-shield-alt me-2"></i>Role:</strong> ${data.role || 'Staff'}</p>
+                                        <p><strong><i class="fas fa-calendar me-2"></i>Joined:</strong> ${new Date(data.date_joined).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', content);
+            const modal = new bootstrap.Modal(document.getElementById('viewUserModal'));
+            modal.show();
+            document.getElementById('viewUserModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            });
+        })
+        .catch(err => showToast('Error loading user details', 'error'));
+}
+
+function editUser(id) {
+    fetch(`/api/users/${id}/`)
+        .then(r => r.json())
+        .then(data => {
+            const content = `
+                <div class="modal fade" id="editUserModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-warning text-white">
+                                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit User</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editUserForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">First Name</label>
+                                        <input type="text" class="form-control" name="first_name" value="${data.first_name}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" name="last_name" value="${data.last_name}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" name="email" value="${data.email}" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-warning" onclick="saveUserEdit(${id})">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', content);
+            const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            modal.show();
+            document.getElementById('editUserModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+            });
+        })
+        .catch(err => showToast('Error loading user', 'error'));
+}
+
+function saveUserEdit(id) {
+    const form = document.getElementById('editUserForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    fetch(`/api/users/${id}/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(() => {
+        showToast('User updated successfully', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+        setTimeout(() => location.reload(), 1000);
+    })
+    .catch(err => showToast('Error updating user', 'error'));
+}
+
+function deleteUser(id) {
+    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+    
+    fetch(`/api/users/${id}/`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(r => r.json())
+    .then(() => {
+        showToast('User deleted successfully', 'success');
+        setTimeout(() => location.reload(), 1000);
+    })
+    .catch(err => showToast('Error deleting user', 'error'));
+}
+
+function messageUser(id) {
+    window.location.href = `/messages/user/${id}/`;
+}
+
+function toggleUserStatus(userId, currentStatus) {
+    const action = currentStatus ? 'deactivate' : 'activate';
+    if (confirm(`Are you sure you want to ${action} this user?`)) {
+        fetch(`/team/api/user/${userId}/toggle-status/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ active: !currentStatus })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const statusBadge = document.getElementById(`status-${userId}`);
+                const toggleBtn = document.getElementById(`toggle-${userId}`);
+                
+                if (data.is_active) {
+                    statusBadge.className = 'badge bg-success';
+                    statusBadge.textContent = 'Active';
+                    toggleBtn.className = 'btn btn-outline-danger btn-sm';
+                    toggleBtn.innerHTML = '<i class="fas fa-ban"></i>';
+                    toggleBtn.title = 'Deactivate';
+                } else {
+                    statusBadge.className = 'badge bg-danger';
+                    statusBadge.textContent = 'Inactive';
+                    toggleBtn.className = 'btn btn-outline-success btn-sm';
+                    toggleBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    toggleBtn.title = 'Activate';
+                }
+                
+                toggleBtn.setAttribute('onclick', `toggleUserStatus(${userId}, ${data.is_active})`);
+                showToast(`User ${data.is_active ? 'activated' : 'deactivated'} successfully`, 'success');
+            } else {
+                showToast(data.error || 'Failed to update user status', 'error');
+            }
+        })
+        .catch(err => showToast('Error updating user status', 'error'));
+    }
+}
+
+function sendInvite() {
+    const form = document.getElementById('inviteForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    fetch('/team/api/invite/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Invitation sent successfully', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('inviteUserModal')).hide();
+            form.reset();
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast(data.error || 'Failed to send invitation', 'error');
+        }
+    })
+    .catch(err => showToast('Error sending invitation', 'error'));
+}
+
+function importUsers() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv,.xlsx';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/team/api/import/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(`Imported ${data.count} users successfully`, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error || 'Import failed', 'error');
+                }
+            })
+            .catch(err => showToast('Error importing users', 'error'));
+        }
+    };
+    input.click();
+}
+
+function getCookie(name) {
+    let value = `; ${document.cookie}`;
+    let parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+}
+
+function showToast(msg, type = 'success') {
+    const colors = { success: '#10b981', error: '#ef4444', info: '#0014A8' };
+    const t = document.createElement('div');
+    t.style.cssText = `position:fixed;top:20px;right:20px;background:${colors[type]};color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+
+// Initialize Charts
+document.addEventListener('DOMContentLoaded', function() {
+    // Role Distribution Chart
+    const roleCtx = document.getElementById('roleChart');
+    new Chart(roleCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['SuperAdmin', 'Admin', 'admin', 'Supervisor', 'Staff'],
+            datasets: [{
+                data: [{{ role_groups.superadmin|length|default:0 }}, {{ role_groups.admin|length|default:0 }}, {{ role_groups.admin|length|default:0 }}, {{ role_groups.supervisor|length|default:0 }}, {{ role_groups.staff|length|default:0 }}],
+                backgroundColor: ['#dc3545', '#ffc107', '#17a2b8', '#007bff', '#28a745']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+    
+    // Activity Chart
+    const activityCtx = document.getElementById('activityChart');
+    new Chart(activityCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Active Users',
+                data: [12, 15, 18, 14, 16, 8, 5],
+                backgroundColor: '#0014A8'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+

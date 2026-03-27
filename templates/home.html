@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Welcome to MultiStock WMS{% endblock %}
+{% block content %}
+<style>
+.hero{background:linear-gradient(135deg,#0014A8 0%,#000E75 100%);color:#fff;padding:80px 0;text-align:center}
+.hero h1{font-size:3rem;font-weight:700;margin-bottom:20px}
+.hero p{font-size:1.25rem;margin-bottom:30px;opacity:0.9}
+.feature-card{background:#fff;border-radius:15px;padding:30px;margin:20px 0;box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:transform 0.3s}
+.feature-card:hover{transform:translateY(-5px)}
+.feature-card i{font-size:3rem;color:#0014A8;margin-bottom:20px}
+.cta-section{background:#f8f9fa;padding:60px 0;text-align:center}
+.cta-section h2{font-size:2.5rem;margin-bottom:20px}
+</style>
+
+<div class="hero">
+    <div class="container">
+        <h1>Welcome to MultiStock WMS</h1>
+        <p>Your Complete Warehouse Management Solution</p>
+        <div class="mt-4">
+            {% if user.is_authenticated %}
+                <a href="/dashboard/" class="btn btn-light btn-lg me-3"><i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard</a>
+            {% else %}
+                <a href="/auth/team-login/" class="btn btn-light btn-lg me-3"><i class="fas fa-sign-in-alt me-2"></i>Team Login</a>
+                <a href="/auth/customer-login/" class="btn btn-outline-light btn-lg"><i class="fas fa-user me-2"></i>Customer Login</a>
+            {% endif %}
+            <a href="/marketplace/" class="btn btn-success btn-lg ms-3"><i class="fas fa-store me-2"></i>Browse Marketplace</a>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="feature-card text-center">
+                <i class="fas fa-store"></i>
+                <h3>Global Marketplace</h3>
+                <p>Connect with verified sellers worldwide and discover products from multiple suppliers.</p>
+                <a href="/marketplace/" class="btn btn-outline-primary">Explore Marketplace</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card text-center">
+                <i class="fas fa-comments"></i>
+                <h3>Community Forums</h3>
+                <p>Join discussions, share insights, and connect with other businesses in the community.</p>
+                <a href="/forums/" class="btn btn-outline-primary">Join Forums</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card text-center">
+                <i class="fas fa-gavel"></i>
+                <h3>Live Auctions</h3>
+                <p>Participate in live auctions and bid on exclusive products from trusted sellers.</p>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="feature-card text-center">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Enterprise Security</h3>
+                <p>Advanced security features with role-based access, audit logs, and data encryption.</p>
+                <a href="/about/" class="btn btn-outline-primary">Learn More</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card text-center">
+                <i class="fas fa-user-shield"></i>
+                <h3>Business Solutions</h3>
+                <p>Scalable solutions designed for businesses of all sizes with dedicated support.</p>
+                <a href="/contact/" class="btn btn-outline-primary">Contact Us</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card text-center">
+                <i class="fas fa-headset"></i>
+                <h3>24/7 Support</h3>
+                <p>Get help anytime with our dedicated support team ready to assist you.</p>
+                <a href="/help/" class="btn btn-outline-primary">Get Help</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-section">
+    <div class="container">
+        <h2>Ready to Get Started?</h2>
+        <p class="lead">Join thousands of businesses managing their inventory with MultiStock WMS</p>
+        {% if not user.is_authenticated %}
+        <a href="/auth/register/" class="btn btn-primary btn-lg me-3"><i class="fas fa-user-plus me-2"></i>Create Free Account</a>
+        <a href="/contact/" class="btn btn-outline-primary btn-lg"><i class="fas fa-envelope me-2"></i>Contact Sales</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

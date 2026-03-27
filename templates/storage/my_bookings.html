@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}My Storage Bookings - MultiStock{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">My Storage Bookings</h1>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Unit</th>
+                    <th>Location</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Access Code</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.unit.unit_number }}</td>
+                    <td>{{ booking.unit.location }}</td>
+                    <td>{{ booking.start_date|date:"M d, Y" }}</td>
+                    <td>{{ booking.end_date|date:"M d, Y" }}</td>
+                    <td><code>{{ booking.access_code }}</code></td>
+                    <td><span class="badge bg-{{ booking.status == 'active' and 'success' or 'secondary' }}">{{ booking.status|title }}</span></td>
+                    <td>${{ booking.total_amount }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">No bookings found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

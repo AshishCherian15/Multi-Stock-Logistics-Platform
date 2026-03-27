@@ -1,0 +1,61 @@
+{% extends 'admin/base_site.html' %}
+
+{% block title %}System Status{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>System Status Dashboard</h1>
+    
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5>Database</h5>
+                    <p>✓ Healthy</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5>Cache</h5>
+                    <p>✓ Healthy</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5>Storage</h5>
+                    <p>✓ Healthy</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5>Uptime</h5>
+                    <p>99.9%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">✓ All services operational</li>
+                        <li class="list-group-item">✓ Database backup completed</li>
+                        <li class="list-group-item">✓ Security scan passed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

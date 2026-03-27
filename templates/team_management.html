@@ -1,0 +1,602 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Team Management{% endblock %}
+
+{% block content %}
+<style>
+.side-panel {
+    position: fixed;
+    top: 60px;
+    right: -500px;
+    width: 500px;
+    height: calc(100vh - 60px);
+    background: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+.side-panel.show {
+    right: 0;
+}
+.side-panel-header {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.side-panel-body {
+    padding: 20px;
+}
+.side-panel-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+</style>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-users-cog me-2"></i>Team Management</h2>
+            <p class="text-muted mb-0">Manage your team members</p>
+        </div>
+        <div>
+            <button class="btn btn-success me-2" onclick="openCreatePanel()">
+                <i class="fas fa-user-plus me-2"></i>Add User
+            </button>
+            <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="members-tab" data-bs-toggle="tab" data-bs-target="#members" type="button" role="tab">
+                <i class="fas fa-users me-2"></i>Team Members
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                <i class="fas fa-user-plus me-2"></i>Team Users
+                <span class="badge bg-warning ms-2">{{ pending_count }}</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Team Members Tab -->
+        <div class="tab-pane show active" id="members" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <form method="get" class="d-flex">
+                                <input type="text" name="search" class="form-control" placeholder="Search by name, email, username..." value="{{ request.GET.search }}">
+                                <button type="submit" class="btn btn-primary ms-2"><i class="fas fa-search"></i></button>
+                            </form>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="status" onchange="this.form.submit()">
+                                <option value="">All Status</option>
+                                <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+                                <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="role" onchange="this.form.submit()">
+                                <option value="">All Roles</option>
+                                <option value="superadmin" {% if request.GET.role == 'superadmin' %}selected{% endif %}>SuperAdmin</option>
+                                <option value="admin" {% if request.GET.role == 'admin' %}selected{% endif %}>Admin</option>
+                                <option value="subadmin" {% if request.GET.role == 'subadmin' %}selected{% endif %}>SubAdmin</option>
+                                <option value="staff" {% if request.GET.role == 'staff' %}selected{% endif %}>Staff</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="?page=1" class="btn btn-outline-secondary w-100"><i class="fas fa-redo me-2"></i>Reset</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if page_obj %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in page_obj %}
+                                <tr>
+                                    <td><strong>{{ user.username }}</strong></td>
+                                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td><span class="badge bg-info">{{ user.user_role|title }}</span></td>
+                                    <td>
+                                        {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-success" onclick="viewUser({{ user.id }}, '{{ user.username }}', '{{ user.first_name }}', '{{ user.last_name }}', '{{ user.email }}', '{{ user.user_role }}')" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" onclick="editUser({{ user.id }}, '{{ user.username }}', '{{ user.first_name }}', '{{ user.last_name }}', '{{ user.email }}')" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" onclick="changeRole({{ user.id }}, '{{ user.user_role }}')" title="Change Role">
+                                                <i class="fas fa-user-tag"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" onclick="toggleStatus({{ user.id }})" title="Toggle Status">
+                                                <i class="fas fa-toggle-on"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" onclick="deleteUserConfirm({{ user.id }}, '{{ user.username }}')" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}">Previous</a>
+                            </li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}">Last</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                    <div class="text-muted small mt-3">
+                        Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ total_count }} members (25 per page)
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <p class="text-muted">No team members found</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Users Tab (Access Requests) -->
+        <div class="tab-pane" id="users" role="tabpanel">
+            <div class="row">
+                <!-- Vertical Tabs for Access Requests -->
+                <div class="col-md-3">
+                    <div class="nav flex-column nav-pills">
+                        <button class="nav-link active" id="all-requests-tab" data-bs-toggle="pill" data-bs-target="#all-requests" type="button">
+                            <i class="fas fa-list me-2"></i>All Requests
+                            <span class="badge bg-warning float-end">{{ pending_count }}</span>
+                        </button>
+                        <button class="nav-link" id="active-requests-tab" data-bs-toggle="pill" data-bs-target="#active-requests" type="button">
+                            <i class="fas fa-check-circle me-2"></i>Active Users
+                        </button>
+                        <button class="nav-link" id="inactive-requests-tab" data-bs-toggle="pill" data-bs-target="#inactive-requests" type="button">
+                            <i class="fas fa-times-circle me-2"></i>Inactive Users
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vertical Tab Content -->
+                <div class="col-md-9">
+                    <div class="tab-content">
+                        <!-- All Requests -->
+                        <div class="tab-pane show active" id="all-requests">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Pending Access Requests</h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if pending_requests %}
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <th>Email</th>
+                                                    <th>Requested Role</th>
+                                                    <th>Reason</th>
+                                                    <th>Requested</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for req in pending_requests %}
+                                                <tr>
+                                                    <td><strong>{{ req.user.username }}</strong></td>
+                                                    <td>{{ req.user.email }}</td>
+                                                    <td><span class="badge bg-warning">{{ req.requested_role|title }}</span></td>
+                                                    <td>{{ req.reason|truncatewords:10 }}</td>
+                                                    <td>{{ req.requested_at|date:"M d, Y H:i" }}</td>
+                                                    <td>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-success" onclick="approveRequest({{ req.id }})">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger" onclick="rejectRequest({{ req.id }})">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-inbox fa-3x mb-3 text-muted"></i>
+                                        <p class="text-muted">No pending access requests</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Users -->
+                        <div class="tab-pane" id="active-requests">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Active Users</h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if active_users %}
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <th>Email</th>
+                                                    <th>Role</th>
+                                                    <th>Joined</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for user in active_users %}
+                                                <tr>
+                                                    <td><strong>{{ user.username }}</strong></td>
+                                                    <td>{{ user.email }}</td>
+                                                    <td><span class="badge bg-info">{{ user.user_role|title }}</span></td>
+                                                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center py-5">
+                                        <p class="text-muted">No active users</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Inactive Users -->
+                        <div class="tab-pane" id="inactive-requests">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="fas fa-times-circle me-2"></i>Inactive Users</h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if inactive_users %}
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <th>Email</th>
+                                                    <th>Role</th>
+                                                    <th>Joined</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for user in inactive_users %}
+                                                <tr>
+                                                    <td><strong>{{ user.username }}</strong></td>
+                                                    <td>{{ user.email }}</td>
+                                                    <td><span class="badge bg-info">{{ user.user_role|title }}</span></td>
+                                                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center py-5">
+                                        <p class="text-muted">No inactive users</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Side Panel -->
+<div class="side-panel" id="sidePanel">
+    <div class="side-panel-header">
+        <h5 class="mb-0" id="panelTitle">User Details</h5>
+        <button class="side-panel-close" onclick="closePanel()">&times;</button>
+    </div>
+    <div class="side-panel-body" id="panelBody"></div>
+</div>
+
+<script>
+function closePanel() {
+    document.getElementById('sidePanel').classList.remove('show');
+}
+
+function viewUser(userId, username, firstName, lastName, email, role) {
+    const html = `
+        <div class="text-center mb-4">
+            <div class="mb-3">
+                <i class="fas fa-user-circle fa-5x text-primary"></i>
+            </div>
+            <h4>${username}</h4>
+        </div>
+        <div class="mb-3">
+            <p><strong>First Name:</strong> ${firstName || 'N/A'}</p>
+            <p><strong>Last Name:</strong> ${lastName || 'N/A'}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Role:</strong> <span class="badge bg-info">${role.toUpperCase()}</span></p>
+        </div>
+    `;
+    document.getElementById('panelTitle').textContent = 'User Details';
+    document.getElementById('panelBody').innerHTML = html;
+    document.getElementById('sidePanel').classList.add('show');
+}
+
+function editUser(userId, username, firstName, lastName, email) {
+    const html = `
+        <form id="editForm">
+            <input type="hidden" id="editUserId" value="${userId}">
+            <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-control" id="editFirstName" value="${firstName}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="editLastName" value="${lastName}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="editEmail" value="${email}">
+            </div>
+            <button type="button" class="btn btn-primary w-100" onclick="updateUser()">Save Changes</button>
+        </form>
+    `;
+    document.getElementById('panelTitle').textContent = 'Edit User';
+    document.getElementById('panelBody').innerHTML = html;
+    document.getElementById('sidePanel').classList.add('show');
+}
+
+function updateUser() {
+    const userId = document.getElementById('editUserId').value;
+    const data = {
+        first_name: document.getElementById('editFirstName').value,
+        last_name: document.getElementById('editLastName').value,
+        email: document.getElementById('editEmail').value
+    };
+    fetch(`/team/api/user/${userId}/update/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            alert('User updated successfully');
+            location.reload();
+        } else {
+            alert('Error: ' + d.error);
+        }
+    });
+}
+
+function openCreatePanel() {
+    const html = `
+        <form id="createForm">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-control" id="first_name">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="last_name">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Role</label>
+                <select class="form-select" id="role">
+                    <option value="staff">Staff</option>
+                    <option value="subadmin">SubAdmin</option>
+                    <option value="admin">Admin</option>
+                    <option value="superadmin">SuperAdmin</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-success w-100" onclick="createUser()">Create User</button>
+        </form>
+    `;
+    document.getElementById('panelTitle').textContent = 'Add New User';
+    document.getElementById('panelBody').innerHTML = html;
+    document.getElementById('sidePanel').classList.add('show');
+}
+
+function createUser() {
+    const data = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value,
+        password: document.getElementById('password').value,
+        role: document.getElementById('role').value
+    };
+    fetch('/team/api/user/create/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            alert('User created successfully');
+            location.reload();
+        } else {
+            alert('Error: ' + d.error);
+        }
+    });
+}
+
+function changeRole(userId, currentRole) {
+    const html = `
+        <form id="roleForm">
+            <input type="hidden" id="roleUserId" value="${userId}">
+            <div class="mb-3">
+                <label class="form-label">New Role</label>
+                <select class="form-select" id="newRole" value="${currentRole}">
+                    <option value="staff" ${currentRole === 'staff' ? 'selected' : ''}>Staff</option>
+                    <option value="subadmin" ${currentRole === 'subadmin' ? 'selected' : ''}>SubAdmin</option>
+                    <option value="admin" ${currentRole === 'admin' ? 'selected' : ''}>Admin</option>
+                    <option value="superadmin" ${currentRole === 'superadmin' ? 'selected' : ''}>SuperAdmin</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary w-100" onclick="updateRole()">Change Role</button>
+        </form>
+    `;
+    document.getElementById('panelTitle').textContent = 'Change User Role';
+    document.getElementById('panelBody').innerHTML = html;
+    document.getElementById('sidePanel').classList.add('show');
+}
+
+function updateRole() {
+    const userId = document.getElementById('roleUserId').value;
+    const data = {role: document.getElementById('newRole').value};
+    fetch(`/team/api/user/${userId}/change-role/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            alert('Role updated successfully');
+            location.reload();
+        } else {
+            alert('Error: ' + d.error);
+        }
+    });
+}
+
+function deleteUserConfirm(userId, username) {
+    if (confirm(`Are you sure you want to delete user "${username}"?`)) {
+        fetch(`/team/api/user/${userId}/delete/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'}
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                alert('User deleted successfully');
+                location.reload();
+            } else {
+                alert('Error: ' + d.error);
+            }
+        });
+    }
+}
+
+function toggleStatus(userId) {
+    fetch(`/team/api/user/${userId}/toggle-status/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'}
+    })
+    .then(r => r.json())
+    .then(d => { if (d.success) location.reload(); else alert('Error: ' + d.error); });
+}
+
+function approveRequest(requestId) {
+    if (confirm('Approve this access request?')) {
+        fetch(`/team/api/request/${requestId}/approve/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'}
+        })
+        .then(r => r.json())
+        .then(d => { if (d.success) location.reload(); else alert('Error: ' + d.error); });
+    }
+}
+
+function rejectRequest(requestId) {
+    if (confirm('Reject this access request?')) {
+        fetch(`/team/api/request/${requestId}/reject/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'}
+        })
+        .then(r => r.json())
+        .then(d => { if (d.success) location.reload(); else alert('Error: ' + d.error); });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Payment History{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+  <h2 class="fw-bold mb-4"><i class="fas fa-history me-2 text-primary"></i>Payment History</h2>
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-dark"><tr><th>ID</th><th>Type</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for tx in transactions %}
+        <tr>
+          <td><code>{{ tx.id }}</code></td>
+          <td><span class="badge bg-info text-dark">{{ tx.type }}</span></td>
+          <td>₹{{ tx.amount }}</td>
+          <td>{% if tx.status == 'paid' or tx.status == 'active' %}<span class="badge bg-success">Paid</span>{% elif tx.status == 'pending' %}<span class="badge bg-warning text-dark">Pending</span>{% elif tx.status == 'refunded' %}<span class="badge bg-secondary">Refunded</span>{% elif tx.status == 'cancelled' %}<span class="badge bg-danger">Cancelled</span>{% else %}<span class="badge bg-secondary">{{ tx.status }}</span>{% endif %}</td>
+          <td>{{ tx.date|date:"M d, Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center py-4 text-muted">No transactions yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist - MultiStock{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-0">
+                <i class="fas fa-heart me-2 text-danger"></i>
+                My Wishlist
+            </h2>
+            <p class="text-muted">{{ total_items }} item{{ total_items|pluralize}} saved</p>
+        </div>
+    </div>
+
+    {% if items %}
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-6 col-lg-4 col-xl-3 mb-4" id="wishlist-item-{{ item.id }}">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="position-relative">
+                    {% if item.image_url %}
+                    <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.product_name }}"
+                        style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-box fa-4x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                        onclick="removeFromWishlist({{ item.id }})" title="Remove from wishlist">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ item.product_name }}</h5>
+                    {% if item.description %}
+                    <p class="card-text text-muted small flex-grow-1">{{ item.description|truncatewords:15 }}</p>
+                    {% endif %}
+                    {% if item.seller %}
+                    <p class="text-muted small mb-2">
+                        <i class="fas fa-store me-1"></i>{{ item.seller }}
+                    </p>
+                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <h4 class="text-primary mb-0">₹{{ item.price|floatformat:2 }}</h4>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm"
+                            onclick="moveToCart({{ item.id }}, '{{ item.product_name }}', {{ item.price }}, '{{ item.seller }}', '{{ item.image_url }}', {{ item.product.id|default:'null' }})">
+                            <i class="fas fa-shopping-cart me-2"></i>Move to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'customers:marketplace' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                </a>
+                <button class="btn btn-outline-danger" onclick="clearWishlist()">
+                    <i class="fas fa-trash-alt me-2"></i>Clear Wishlist
+                </button>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm text-center py-5">
+                <div class="card-body">
+                    <i class="fas fa-heart fa-5x text-muted mb-4"></i>
+                    <h3>Your wishlist is empty</h3>
+                    <p class="text-muted mb-4">Save items you love for later!</p>
+                    <a href="{% url 'customers:marketplace' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i>Browse Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function removeFromWishlist(itemId) {
+        if (!confirm('Remove this item from wishlist?')) return;
+
+        fetch(`/wishlist/api/remove/${itemId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`wishlist-item-${itemId}`).remove();
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function moveToCart(itemId, title, price, seller, image, productId) {
+        // Add to cart
+        fetch('/cart/api/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                title: title,
+                price: price,
+                quantity: 1,
+                seller: seller,
+                image: image
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove from wishlist
+                    return fetch(`/wishlist/api/remove/${itemId}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    });
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Item moved to cart!');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error moving item to cart');
+            });
+    }
+
+    function clearWishlist() {
+        if (!confirm('Clear all items from wishlist?')) return;
+
+        fetch('/wishlist/api/clear/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+
+<style>
+    .hover-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-radius: 10px;
+        border: none;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .card-img-top {
+        border-radius: 10px 10px 0 0;
+    }
+
+    .card-footer {
+        border-radius: 0 0 10px 10px;
+    }
+</style>
+{% endblock %}

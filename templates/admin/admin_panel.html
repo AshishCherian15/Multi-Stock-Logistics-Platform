@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Panel - MultiStock{% endblock %}
+
+{% block content %}
+<style>
+.admin-card{transition:all .3s;border:none;border-radius:16px;overflow:hidden;cursor:pointer;background:#fff}
+.admin-card:hover{transform:translateY(-10px);box-shadow:0 16px 32px rgba(0,20,168,.2)!important}
+.admin-card .icon-wrapper{width:90px;height:90px;margin:0 auto 24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(0,20,168,.12),rgba(0,20,168,.06));transition:all .3s}
+.admin-card:hover .icon-wrapper{transform:scale(1.1);background:linear-gradient(135deg,rgba(0,20,168,.2),rgba(0,20,168,.1))}
+.admin-card .icon-wrapper i{font-size:2.8rem}
+.admin-card .btn{border-radius:10px;padding:12px 28px;font-weight:600;transition:all .3s;letter-spacing:.5px}
+.admin-card .btn:hover{transform:scale(1.08);box-shadow:0 6px 16px rgba(0,0,0,.15)}
+.gradient-bg{background:linear-gradient(135deg,#0014A8,#0a2463)}
+.popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9998;display:none;animation:fadeIn .3s}
+.popup-window{position:fixed;top:80px;left:50%;transform:translateX(-50%);width:90%;max-width:900px;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);z-index:9999;display:none;animation:slideDown .4s;max-height:calc(100vh - 100px);overflow-y:auto}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-30px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.popup-header{padding:24px 32px;border-bottom:2px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center}
+.popup-body{padding:32px}
+.popup-close{width:36px;height:36px;border-radius:50%;border:none;background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.popup-close:hover{background:#e0e0e0;transform:rotate(90deg)}
+</style>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-cog me-2" style="color:#0014A8"></i>Admin Panel</h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card admin-card h-100 shadow-sm" onclick="window.open('/admin/','_blank')">
+                <div class="card-body text-center p-4">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-database" style="color:#0014A8"></i>
+                    </div>
+                    <h5 class="card-title mb-2 fw-bold">Django Admin</h5>
+                    <p class="text-muted small mb-3">Manage database models and records</p>
+                    <div class="btn btn-primary">Open Django Admin</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card admin-card h-100 shadow-sm" onclick="window.location.href='/permissions/'"
+                {% if user.role.role != 'superadmin' %}style="display:none;"{% endif %}>
+                <div class="card-body text-center p-4">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-lock" style="color:#0014A8"></i>
+                    </div>
+                    <h5 class="card-title mb-2 fw-bold">Permissions</h5>
+                    <p class="text-muted small mb-3">Control user roles and access levels</p>
+                    <div class="btn btn-primary">Manage Permissions</div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card admin-card h-100 shadow-sm" onclick="window.location.href='/audit/'">
+                <div class="card-body text-center p-4">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-search" style="color:#17a2b8"></i>
+                    </div>
+                    <h5 class="card-title mb-2 fw-bold">Audit Logs</h5>
+                    <p class="text-muted small mb-3">Track system activity and user actions</p>
+                    <div class="btn btn-info">View Logs</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card admin-card h-100 shadow-sm" onclick="window.location.href='/system-settings/status/'">
+                <div class="card-body text-center p-4">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-desktop" style="color:#28a745"></i>
+                    </div>
+                    <h5 class="card-title mb-2 fw-bold">System Status</h5>
+                    <p class="text-muted small mb-3">Monitor system health and performance</p>
+                    <div class="btn btn-success">View Status</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card admin-card h-100 shadow-sm" onclick="window.location.href='/admin/purge/'">
+                <div class="card-body text-center p-4">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-trash-alt" style="color:#dc3545"></i>
+                    </div>
+                    <h5 class="card-title mb-2 fw-bold">Data Purge</h5>
+                    <p class="text-muted small mb-3">Safely delete records from modules</p>
+                    <div class="btn btn-danger">Purge Data</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

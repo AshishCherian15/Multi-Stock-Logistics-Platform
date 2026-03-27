@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}User Activity{% endblock %}
+{% block content %}
+<style>
+.activity-card{background:#fff;border:1px solid rgba(0,20,168,0.1);border-radius:12px;padding:30px;margin-bottom:20px}
+.activity-item{background:linear-gradient(135deg,rgba(0,20,168,0.05),rgba(0,20,168,0.02));border:1px solid rgba(0,20,168,0.1);border-radius:8px;padding:20px;margin-bottom:15px;transition:all .3s}
+.activity-item:hover{transform:translateX(5px);box-shadow:0 4px 12px rgba(0,20,168,0.1)}
+.module-badge{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;background:linear-gradient(135deg,#0014A8,#000E75);color:#fff}
+.filter-btn{background:#fff;border:2px solid rgba(0,20,168,0.2);color:#0014A8;border-radius:8px;padding:10px 20px;transition:all .3s}
+.filter-btn:hover{background:#0014A8;color:#fff}
+</style>
+
+<div class="container-fluid" style="padding:30px">
+    <div class="mb-4">
+        <a href="{% url 'user_detail' user_obj.id %}" style="color:#0014A8;text-decoration:none"><i class="fas fa-arrow-left me-2"></i>Back to Profile</a>
+        <h2 style="color:#0014A8;font-weight:700;margin-top:15px"><i class="fas fa-history me-2"></i>Activity Log - {{ user_obj.username }}</h2>
+    </div>
+
+    <div class="activity-card">
+        <form method="get" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <select name="module" class="form-control">
+                        <option value="">All Modules</option>
+                        <option value="products">Products</option>
+                        <option value="orders">Orders</option>
+                        <option value="inventory">Inventory</option>
+                        <option value="users">Users</option>
+                        <option value="settings">Settings</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn filter-btn w-100"><i class="fas fa-filter me-2"></i>Filter</button>
+                </div>
+            </div>
+        </form>
+
+        {% for activity in activities %}
+        <div class="activity-item">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="module-badge">{{ activity.module }}</span>
+                        <small style="color:#999">{{ activity.timestamp|date:"M d, Y H:i" }}</small>
+                    </div>
+                    <p style="margin:0;color:#0014A8;font-weight:600">{{ activity.action }}</p>
+                    {% if activity.ip_address %}
+                    <small style="color:#666"><i class="fas fa-map-marker-alt me-1"></i>IP: {{ activity.ip_address }}</small>
+                    {% endif %}
+                </div>
+                <i class="fas fa-chevron-right" style="color:#0014A8"></i>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-5">
+            <i class="fas fa-history" style="font-size:64px;color:#ddd"></i>
+            <p style="color:#999;margin-top:20px">No activity found</p>
+        </div>
+        {% endfor %}
+
+        {% if activities.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if activities.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ activities.previous_page_number }}">Previous</a></li>
+                {% endif %}
+                {% for num in activities.paginator.page_range %}
+                <li class="page-item {% if activities.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endfor %}
+                {% if activities.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ activities.next_page_number }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

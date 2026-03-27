@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}New Topic - Forums{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Create New Topic in {{ category.name }}</h2>
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Content</label>
+                    <textarea name="content" class="form-control" rows="10" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Topic</button>
+                <a href="{% url 'forums:category_topics' category.id %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

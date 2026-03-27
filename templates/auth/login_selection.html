@@ -1,0 +1,662 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to MultiStock v2.0 - Enterprise Platform</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23007bff'><path d='M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6V377.4c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4V134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1v-188L288 246.6v188z'/></svg>">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0014A8;
+            --bg-secondary: #000E75;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --card-bg: rgba(30, 30, 46, 0.95);
+            --text-primary: #e9ecef;
+            --text-secondary: #adb5bd
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0
+        }
+
+        .floating-shape {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+            pointer-events: none
+        }
+
+        .shape1 {
+            width: 300px;
+            height: 300px;
+            background: #fff;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s
+        }
+
+        .shape2 {
+            width: 200px;
+            height: 200px;
+            background: #fff;
+            top: 60%;
+            right: 10%;
+            animation-delay: 5s
+        }
+
+        .shape3 {
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            bottom: 10%;
+            left: 15%;
+            animation-delay: 10s
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg)
+            }
+
+            25% {
+                transform: translate(30px, -30px) rotate(90deg)
+            }
+
+            50% {
+                transform: translate(-20px, -50px) rotate(180deg)
+            }
+
+            75% {
+                transform: translate(-30px, 20px) rotate(270deg)
+            }
+        }
+
+        .container-fluid {
+            position: relative;
+            z-index: 1
+        }
+
+        .header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .logo-section svg {
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2))
+        }
+
+        .logo-text {
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2)
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px)
+        }
+
+        .tagline {
+            text-align: center;
+            color: #fff;
+            font-size: 1rem;
+            padding: 1rem 2rem;
+            opacity: 0.9
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            color: #fff
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3)
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            opacity: 0.95
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+            line-height: 1.6
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto
+        }
+
+        .role-dropdown {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid rgba(0, 20, 168, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.3s
+        }
+
+        .role-dropdown:focus {
+            outline: none;
+            border-color: #0014A8;
+            box-shadow: 0 0 0 3px rgba(0, 20, 168, 0.2)
+        }
+
+        .role-select-wrapper {
+            margin-bottom: 1rem
+        }
+
+        .role-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s;
+            cursor: pointer;
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0
+        }
+
+        .role-card:nth-child(1) {
+            animation-delay: 0.1s
+        }
+
+        .role-card:nth-child(2) {
+            animation-delay: 0.2s
+        }
+
+        .role-card:nth-child(3) {
+            animation-delay: 0.3s
+        }
+
+        .role-card:nth-child(4) {
+            animation-delay: 0.4s
+        }
+
+        .role-card:nth-child(5) {
+            animation-delay: 0.5s
+        }
+
+        .role-card:nth-child(6) {
+            animation-delay: 0.6s
+        }
+
+        .role-card:nth-child(7) {
+            animation-delay: 0.7s
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+
+            from {
+                transform: translateY(30px)
+            }
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2)
+        }
+
+        .role-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0)
+            }
+
+            40% {
+                transform: translateY(-10px)
+            }
+
+            60% {
+                transform: translateY(-5px)
+            }
+        }
+
+        .role-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem
+        }
+
+        .role-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            line-height: 1.5
+        }
+
+        .role-access {
+            background: rgba(0, 20, 168, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem
+        }
+
+        .role-access h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem
+        }
+
+        .role-access ul {
+            list-style: none;
+            padding: 0;
+            margin: 0
+        }
+
+        .role-access li {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            padding: 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem
+        }
+
+        .role-access li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: 700
+        }
+
+        .role-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #0014A8, #000E75);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s
+        }
+
+        .role-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 20, 168, 0.4)
+        }
+
+        .social-login {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto
+        }
+
+        .social-login h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.3rem
+        }
+
+        .social-btns {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap
+        }
+
+        .social-btn {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2)
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap
+        }
+
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s
+        }
+
+        .footer-links a:hover {
+            opacity: 1
+        }
+
+        .platform-tagline {
+            text-align: center;
+            padding: 3rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+        }
+
+        .tagline-content {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px)
+        }
+
+        .tagline-main {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2)
+        }
+
+        .tagline-sub {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin: 0
+        }
+
+        @media(max-width:1200px) {
+            .roles-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        @media(max-width:768px) {
+            .hero h1 {
+                font-size: 2rem
+            }
+
+            .roles-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem
+            }
+
+            .role-card {
+                padding: 1.5rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="floating-shape shape1"></div>
+    <div class="floating-shape shape2"></div>
+    <div class="floating-shape shape3"></div>
+
+    <div class="container-fluid">
+        <header class="header">
+            <div class="logo-section">
+                <svg width="48" height="48" viewBox="0 0 512 512" fill="#fff">
+                    <path
+                        d="M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6V377.4c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4V134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1v-188L288 246.6v188z" />
+                </svg>
+                <span class="logo-text">MultiStock</span>
+            </div>
+            <div class="header-controls">
+                <button class="theme-btn" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+            </div>
+        </header>
+
+
+
+        <section class="hero">
+            <h1>Welcome to MultiStock</h1>
+            <h2>Choose your login path. Your experience is customized based on your access level.</h2>
+            <p>MultiStock uses a secure RBAC system to personalize dashboards and workflows for every user.</p>
+        </section>
+
+        <div class="roles-grid">
+            <div class="role-card">
+                <div class="role-icon" id="teamIcon">👥</div>
+                <h3 class="role-title">Team Login</h3>
+                <p class="role-desc" id="teamDesc">Access for staff, managers, and administrators.</p>
+                <div class="role-select-wrapper">
+                    <label
+                        style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin-bottom:0.5rem;display:block">Select
+                        Your Role:</label>
+                    <select id="roleSelect" class="role-dropdown" onchange="updateRolePreview()" required>
+                        <option value="" disabled selected>-- Select your role --</option>
+                        <option value="owner">👑 Owner (SuperAdmin)</option>
+                        <option value="partner">🤝 Admin (Partner/Manager)</option>
+                        <option value="subadmin">🟡 SubAdmin (Supervisor/SeniorStaff)</option>
+                        <option value="employee">👤 Employee (Staff)</option>
+                    </select>
+                </div>
+                <div class="role-access" id="teamAccess">
+                    <h4>Access Includes:</h4>
+                    <ul id="accessList">
+                        <li style="color:#6b7280;font-style:italic">Select a role to view access permissions</li>
+                    </ul>
+                </div>
+                <button class="role-btn" id="continueBtn" onclick="continueToLogin()" disabled
+                    style="opacity:0.5;cursor:not-allowed">Continue as <span id="roleText">Team Member</span> <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <div class="role-card" onclick="window.location.href='{% url 'auth:customer_login' %}'">
+                <div class="role-icon">🛒</div>
+                <h3 class="role-title">Customer Login</h3>
+                <p class="role-desc">For customers exploring rentals, storage units, lockers, marketplace & auctions.
+                </p>
+                <div class="role-access">
+                    <h4>Access Includes:</h4>
+                    <ul>
+                        <li>Browse & order products</li>
+                        <li>Rental bookings</li>
+                        <li>Storage unit reservations</li>
+                        <li>Auction participation</li>
+                        <li>Subscription plans & coupons</li>
+                    </ul>
+                </div>
+                <button class="role-btn">Continue as Customer <i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <div class="role-card" onclick="window.location.href='{% url 'auth:register' %}'">
+                <div class="role-icon">✨</div>
+                <h3 class="role-title">New User</h3>
+                <p class="role-desc">Create a new account to get started with MultiStock.</p>
+                <div class="role-access">
+                    <h4>Registration Includes:</h4>
+                    <ul>
+                        <li>Role selection options</li>
+                        <li>Secure onboarding flow</li>
+                        <li>Email verification</li>
+                        <li>Instant account activation</li>
+                        <li>Quick setup process</li>
+                    </ul>
+                </div>
+                <button class="role-btn" style="background:linear-gradient(135deg,#10b981,#059669)">Create New Account
+                    <i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <div class="role-card" onclick="guestAccess()">
+                <div class="role-icon">🌍</div>
+                <h3 class="role-title">Browse as Guest</h3>
+                <p class="role-desc">Explore our platform without creating an account.</p>
+                <div class="role-access">
+                    <h4>Guest Access Includes:</h4>
+                    <ul>
+                        <li>Browse marketplace & products</li>
+                        <li>View live auctions</li>
+                        <li>Read community forums</li>
+                        <li>Access analytics dashboard</li>
+                        <li>View inventory catalog</li>
+                    </ul>
+                </div>
+                <button class="role-btn" style="background:linear-gradient(135deg,#10b981,#059669)"
+                    onclick="event.stopPropagation(); guestAccess();">Continue as Guest <i
+                        class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <section class="social-login">
+            <h3>Or continue with</h3>
+            <div class="social-btns">
+                <button class="social-btn"><i class="fab fa-google" style="color:#DB4437"></i> Google</button>
+                <button class="social-btn"><i class="fab fa-microsoft" style="color:#00A4EF"></i> Microsoft</button>
+                <button class="social-btn"><i class="fab fa-linkedin" style="color:#0077B5"></i> LinkedIn</button>
+            </div>
+        </section>
+
+        <!-- Tagline Section -->
+        <section class="platform-tagline">
+            <div class="tagline-content">
+                <h3 class="tagline-main">Logistics Made Simple</h3>
+                <p class="tagline-sub">Powering modern inventory, rentals, storage, and warehouse operations for 10,000+
+                    businesses.</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="/terms/">Terms of Service</a>
+                <a href="/privacy/">Privacy Policy</a>
+                <a href="/help/">Help & Support</a>
+                <a href="/contact/">Contact</a>
+            </div>
+            <p>MultiStock v2.0 © 2025 - Enterprise Inventory & Marketplace Platform</p>
+        </footer>
+    </div>
+
+    <script>
+        const roleData = { owner: { icon: '👑', desc: 'Full control over the entire MultiStock ecosystem.', access: ['System settings & configurations', 'Automation workflows', 'All warehouses & suppliers', 'User roles & permissions', 'Advanced analytics & reports'] }, partner: { icon: '🤝', desc: 'Manages operations, procurement, orders, suppliers, finances, and departments with expanded permissions.', access: ['Inventory management', 'Order controls & approvals', 'Workflow management', 'Financial reporting', 'Supplier relationships', 'Product management', 'Rental operations', 'Storage unit controls', 'Marketplace operations', 'Department analytics'] }, subadmin: { icon: '🟡', desc: 'Handles daily warehouse and rental operations.', access: ['Rental management', 'Locker operations', 'Order processing', 'Task tracking', 'Team coordination'] }, employee: { icon: '👤', desc: 'Executes assigned tasks with guided workflows.', access: ['Check-ins & checkouts', 'Barcode scanning', 'Storage logs', 'Task assignments', 'Basic reporting'] } }
+        function updateRolePreview() { const role = document.getElementById('roleSelect').value; const btn = document.getElementById('continueBtn'); if (!role) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; document.getElementById('roleText').textContent = 'Team Member'; return } const data = roleData[role]; document.getElementById('teamIcon').textContent = data.icon; document.getElementById('teamDesc').textContent = data.desc; document.getElementById('accessList').innerHTML = data.access.map(item => `<li>${item}</li>`).join(''); document.getElementById('roleText').textContent = role.charAt(0).toUpperCase() + role.slice(1); btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer' } function continueToLogin() { const role = document.getElementById('roleSelect').value; if (!role) { alert('Please select a role before continuing'); return } localStorage.setItem('selectedRole', role); window.location.href = '{% url "auth:team_login" %}' }
+        function guestAccess() { window.location.href = '/guest/'; }
+        function toggleTheme() { const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('theme', theme); document.getElementById('themeIcon').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon' }
+        const translations = { en: { welcome: 'Welcome to MultiStock', subtitle: 'Choose your login path. Your experience is customized based on your access level.', description: 'MultiStock uses a secure RBAC system to personalize dashboards and workflows for every user.', tagline: 'Powering modern inventory, rentals, storage, and warehouse operations for 10,000+ businesses.', teamLogin: 'Team Login', customerLogin: 'Customer Login', newUser: 'New User', selectRole: 'Select Your Role:', accessIncludes: 'Access Includes:', continueAs: 'Continue as', createAccount: 'Create New Account', orContinue: 'Or continue with', footer: 'MultiStock v2.0 © 2025 - Enterprise Inventory & Marketplace Platform' }, hi: { welcome: 'मल्टीस्टॉक में आपका स्वागत है', subtitle: 'अपना लॉगिन पथ चुनें। आपका अनुभव आपके पहुंच स्तर के आधार पर अनुकूलित है।', description: 'मल्टीस्टॉक प्रत्येक उपयोगकर्ता के लिए डैशबोर्ड और वर्कफ्लो को व्यक्तिगत बनाने के लिए एक सुरक्षित RBAC प्रणाली का उपयोग करता है।', tagline: '10,000+ व्यवसायों के लिए आधुनिक इन्वेंट्री, किराए, स्टोरेज और गोदाम संचालन को शक्ति प्रदान करना।', teamLogin: 'टीम लॉगिन', customerLogin: 'ग्राहक लॉगिन', newUser: 'नया उपयोगकर्ता', selectRole: 'अपनी भूमिका चुनें:', accessIncludes: 'पहुंच में शामिल:', continueAs: 'जारी रखें', createAccount: 'नया खाता बनाएं', orContinue: 'या इसके साथ जारी रखें', footer: 'मल्टीस्टॉक v2.0 © 2025 - एंटरप्राइज इन्वेंट्री और मार्केटप्लेस प्लेटफॉर्म' }, kn: { welcome: 'ಮಲ್ಟಿಸ್ಟಾಕ್‌ಗೆ ಸ್ವಾಗತ', subtitle: 'ನಿಮ್ಮ ಲಾಗಿನ್ ಪಥವನ್ನು ಆಯ್ಕೆಮಾಡಿ. ನಿಮ್ಮ ಅನುಭವವನ್ನು ನಿಮ್ಮ ಪ್ರವೇಶ ಸ್ಥಾಯಿಯ ಆಧಾರದ ಮೇಲೆ ಅನುಕೂಲಿಸಲಾಗಿದೆ.', description: 'ಮಲ್ಟಿಸ್ಟಾಕ್ ಪ್ರತಿಯೊಬ್ಬ ಬೃಹತ್ತರಗೆ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗಳನ್ನು ಮತ್ತು ಕಾರ್ಯಪ್ರವಾಹಗಳನ್ನು ವೈಯಕ್ತಿಗತಗೊಳಿಸಲು ಸುರಕ್ಷಿತ RBAC ವ್ಯವಸ್ಥೆಯನ್ನು ಬೆಳಸುತ್ತದೆ.', tagline: '10,000+ ವ್ಯವಸಾಯಗಳಿಗೆ ಆಧುನಿಕ ಇನ್ವೆಂಟರಿ, ಭಾಡಿಗೆ, ಸಂಗ್ರಹಣೆ ಮತ್ತು ಗೋದಾಮಿನ ಕಾರ್ಯಗಳನ್ನು ಶಕ್ತಿಯುತಗೊಳಿಸುತ್ತಿದೆ.', teamLogin: 'ಟೀಮ್ ಲಾಗಿನ್', customerLogin: 'ಗ್ರಾಹಕ ಲಾಗಿನ್', newUser: 'ಹೊಸ ಬೆಳಕೆದಾರ', selectRole: 'ನಿಮ್ಮ ಪಾತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ:', accessIncludes: 'ಪ್ರವೇಶವು ಒಳಗೊಂಡಿದೆ:', continueAs: 'ಮುಂದುವರಿಸಿ', createAccount: 'ಹೊಸ ಖಾತೆ ಸೃಷ್ಟಿಸಿ', orContinue: 'ಅಥವಾ ಇದರಿಂದ ಮುಂದುವರಿಸಿ', footer: 'ಮಲ್ಟಿಸ್ಟಾಕ್ v2.0 © 2025 - ಎಂಟರ್ಪ್ರೈಸ್ ಇನ್ವೆಂಟರಿ ಮತ್ತು ಮಾರ್ಕೆಟ್ಪ್ಲೇಸ್ ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್' }, es: { welcome: 'Bienvenido a MultiStock', subtitle: 'Elija su ruta de inicio de sesión. Su experiencia se personaliza según su nivel de acceso.', description: 'MultiStock utiliza un sistema RBAC seguro para personalizar paneles y flujos de trabajo para cada usuario.', tagline: 'Impulsando operaciones modernas de inventario, alquileres, almacenamiento y almacén para más de 10,000 empresas.', teamLogin: 'Inicio de Equipo', customerLogin: 'Inicio de Cliente', newUser: 'Nuevo Usuario', selectRole: 'Seleccione su Rol:', accessIncludes: 'El Acceso Incluye:', continueAs: 'Continuar como', createAccount: 'Crear Nueva Cuenta', orContinue: 'O continuar con', footer: 'MultiStock v2.0 © 2025 - Plataforma Empresarial de Inventario y Mercado' }, fr: { welcome: 'Bienvenue sur MultiStock', subtitle: 'Choisissez votre chemin de connexion. Votre expérience est personnalisée en fonction de votre niveau d\'accès.', description: 'MultiStock utilise un système RBAC sécurisé pour personnaliser les tableaux de bord et les flux de travail pour chaque utilisateur.', tagline: 'Alimenter les opérations modernes d\'inventaire, de location, de stockage et d\'entrepôt pour plus de 10 000 entreprises.', teamLogin: 'Connexion d\'Equipe', customerLogin: 'Connexion Client', newUser: 'Nouvel Utilisateur', selectRole: 'Sélectionnez votre Rôle:', accessIncludes: 'L\'Accès Comprend:', continueAs: 'Continuer en tant que', createAccount: 'Créer un Nouveau Compte', orContinue: 'Ou continuer avec', footer: 'MultiStock v2.0 © 2025 - Plateforme d\'Inventaire et de Marché d\'Entreprise' } };
+        function changeLanguage(lang) { localStorage.setItem('language', lang); const t = translations[lang] || translations.en; document.querySelector('.hero h1').textContent = t.welcome; document.querySelector('.hero h2').textContent = t.subtitle; document.querySelector('.hero p').textContent = t.description; document.querySelector('.tagline').textContent = t.tagline; document.querySelectorAll('.role-title')[0].textContent = t.teamLogin; document.querySelectorAll('.role-title')[1].textContent = t.customerLogin; document.querySelectorAll('.role-title')[2].textContent = t.newUser; document.querySelector('label[style]').textContent = t.selectRole; document.querySelectorAll('.role-access h4').forEach(el => el.textContent = t.accessIncludes); document.getElementById('roleText').textContent = t.continueAs.split(' ')[2] || 'Owner'; document.querySelector('.social-login h3').textContent = t.orContinue; document.querySelector('.footer p').textContent = t.footer }
+        document.addEventListener('DOMContentLoaded', () => { const savedTheme = localStorage.getItem('theme') || 'light'; document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; const savedLang = localStorage.getItem('language') || 'en'; document.querySelector('.lang-btn').value = savedLang; changeLanguage(savedLang) })
+    </script>
+</body>
+
+</html>

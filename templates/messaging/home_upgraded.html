@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}Messages{% endblock %}
+{% block content %}
+<style>
+:root{--zaffre:#0014A8;--zaffre-dark:#000E75}
+.messaging-container{display:flex;height:calc(100vh - 100px);background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.1)}
+.conversations-sidebar{width:380px;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;background:#fafafa}
+.sidebar-header{padding:20px;border-bottom:1px solid #e0e0e0;background:#fff}
+.sidebar-header h3{margin:0;font-size:24px;font-weight:700;color:var(--zaffre)}
+.search-box{margin-top:15px;position:relative}
+.search-box input{width:100%;padding:10px 40px 10px 15px;border:1px solid #e0e0e0;border-radius:25px;font-size:14px}
+.search-box i{position:absolute;right:15px;top:50%;transform:translateY(-50%);color:#999}
+.conversations-list{flex:1;overflow-y:auto;padding:10px 0}
+.conversation-item{display:flex;align-items:center;padding:12px 20px;cursor:pointer;transition:background .2s;position:relative}
+.conversation-item:hover{background:#f0f0f0}
+.conversation-item.active{background:#e3f2fd}
+.conversation-item.unread{background:#fff;font-weight:600}
+.conversation-item.pinned{background:#fff8e1}
+.avatar-wrapper{position:relative;margin-right:15px}
+.avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #fff}
+.status-dot{position:absolute;bottom:2px;right:2px;width:14px;height:14px;border-radius:50%;border:2px solid #fff}
+.status-dot.online{background:#44b700}
+.status-dot.away{background:#ffc107}
+.status-dot.offline{background:#999}
+.conversation-info{flex:1;min-width:0}
+.conversation-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.username{font-size:15px;font-weight:600;color:#000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.timestamp{font-size:12px;color:#999}
+.last-message{display:flex;justify-content:space-between;align-items:center}
+.message-preview{font-size:14px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.unread-badge{background:var(--zaffre);color:#fff;border-radius:12px;padding:2px 8px;font-size:11px;font-weight:700;min-width:20px;text-align:center}
+.pin-icon{color:#ffc107;font-size:12px;margin-right:5px}
+.fab{position:fixed;bottom:30px;right:30px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--zaffre),var(--zaffre-dark));color:#fff;border:none;box-shadow:0 4px 12px rgba(0,20,168,0.4);cursor:pointer;font-size:24px;transition:transform .2s}
+.fab:hover{transform:scale(1.1)}
+.empty-state{text-align:center;padding:60px 20px;color:#999}
+.empty-state i{font-size:64px;margin-bottom:20px;opacity:0.3}
+@media(max-width:768px){.conversations-sidebar{width:100%}}
+</style>
+
+<div class="messaging-container">
+    <div class="conversations-sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-comment-dots me-2"></i>Messages</h3>
+            <div class="search-box">
+                <input type="text" id="searchConversations" placeholder="Search conversations...">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+        
+        <div class="conversations-list" id="conversationsList">
+            {% for item in conversations %}
+            <div class="conversation-item {% if item.unread > 0 %}unread{% endif %} {% if item.is_pinned %}pinned{% endif %}" 
+                 data-id="{{ item.conversation.id }}" 
+                 onclick="window.location.href='{% url 'messaging:chat' item.conversation.id %}'">
+                <div class="avatar-wrapper">
+                    {% if item.conversation.is_group %}
+                        <img src="{% if item.conversation.avatar %}{{ item.conversation.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ item.conversation.name|urlencode }}&background=0014A8&color=fff{% endif %}" class="avatar">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ item.other_user.get_full_name|default:item.other_user.username|urlencode }}&background=0014A8&color=fff" class="avatar">
+                        {% if item.other_user.messaging_status.is_online %}
+                        <span class="status-dot online"></span>
+                        {% else %}
+                        <span class="status-dot offline"></span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="conversation-info">
+                    <div class="conversation-header">
+                        <span class="username">
+                            {% if item.is_pinned %}<i class="fas fa-thumbtack pin-icon"></i>{% endif %}
+                            {% if item.conversation.is_group %}
+                                {{ item.conversation.name }}
+                            {% else %}
+                                {{ item.other_user.get_full_name|default:item.other_user.username }}
+                            {% endif %}
+                        </span>
+                        <span class="timestamp">
+                            {% if item.last_message %}
+                                {{ item.last_message.timestamp|timesince|truncatewords:1 }} ago
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="last-message">
+                        <span class="message-preview">
+                            {% if item.last_message %}
+                                {% if item.last_message.sender == request.user %}You: {% endif %}
+                                {{ item.last_message.content|truncatewords:8 }}
+                            {% else %}
+                                No messages yet
+                            {% endif %}
+                        </span>
+                        {% if item.unread > 0 %}
+                        <span class="unread-badge">{{ item.unread }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-comments"></i>
+                <p>No conversations yet</p>
+                <p><small>Start a new chat to begin messaging</small></p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<button class="fab" onclick="window.location.href='{% url 'messaging:users' %}'">
+    <i class="fas fa-edit"></i>
+</button>
+
+<script>
+// Search conversations
+document.getElementById('searchConversations')?.addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    document.querySelectorAll('.conversation-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? 'flex' : 'none';
+    });
+});
+
+// Update unread badge in sidebar
+function updateUnreadBadge() {
+    fetch('/messages/api/unread-count/')
+        .then(r => r.json())
+        .then(data => {
+            const badge = document.getElementById('unread-badge');
+            if (badge) {
+                if (data.unread_count > 0) {
+                    badge.textContent = data.unread_count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+}
+
+// Update every 30 seconds
+setInterval(updateUnreadBadge, 30000);
+updateUnreadBadge();
+
+// Update online status
+function updateOnlineStatus() {
+    fetch('/messages/api/status/update/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+        body: JSON.stringify({is_online: true})
+    });
+}
+
+updateOnlineStatus();
+setInterval(updateOnlineStatus, 60000);
+
+// Set offline on page unload
+window.addEventListener('beforeunload', () => {
+    navigator.sendBeacon('/messages/api/status/update/', JSON.stringify({is_online: false}));
+});
+</script>
+{% endblock %}

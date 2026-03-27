@@ -1,0 +1,404 @@
+{% extends 'base_guest.html' %}
+
+{% block title %}Guest Dashboard - MultiStock{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-hero {
+        text-align: center;
+        padding: 4rem 0 3rem;
+        color: #fff;
+        background: linear-gradient(135deg, #0014A8, #1e40af);
+        margin: -90px -15px 2rem;
+        padding-top: 130px;
+    }
+
+    .dashboard-hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        animation: fadeInDown 0.8s ease;
+    }
+
+    .dashboard-hero p {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        max-width: 700px;
+        margin: 0 auto 2rem;
+        animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Animated Stat Cards */
+    .stat-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        color: #fff;
+        display: block;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-15px) scale(1.05);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .stat-card:nth-child(1) {
+        animation: slideInLeft 0.6s ease 0.1s both;
+    }
+
+    .stat-card:nth-child(2) {
+        animation: slideInLeft 0.6s ease 0.2s both;
+    }
+
+    .stat-card:nth-child(3) {
+        animation: slideInLeft 0.6s ease 0.3s both;
+    }
+
+    .stat-card:nth-child(4) {
+        animation: slideInLeft 0.6s ease 0.4s both;
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px) scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+    }
+
+    .stat-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        transition: all 0.4s ease;
+        position: relative;
+    }
+
+    .stat-card:hover .stat-icon {
+        transform: rotateY(360deg) scale(1.1);
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .stat-number {
+        font-size: 3.5rem;
+        font-weight: 800;
+        display: block;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.8));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #fff;
+    }
+
+    .stat-description {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .stat-arrow {
+        position: absolute;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        font-size: 1.5rem;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover .stat-arrow {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    /* Info Banner */
+    .info-banner {
+        background: rgba(0, 20, 168, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 20, 168, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem 2rem;
+        margin: 2rem 0;
+        color: #fff;
+        animation: fadeIn 1s ease 0.5s both;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .info-banner i {
+        font-size: 2rem;
+        margin-right: 1rem;
+        color: #10b981;
+    }
+
+    .info-banner a {
+        color: #fbbf24;
+        font-weight: 600;
+        text-decoration: underline;
+    }
+
+    .info-banner a:hover {
+        color: #fcd34d;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        text-align: center;
+        margin: 4rem 0 2rem;
+        animation: fadeInUp 1s ease 0.8s both;
+    }
+
+    .cta-section h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-cta {
+        padding: 1rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: 2px solid transparent;
+    }
+
+    .btn-cta-primary {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-cta-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.6);
+        color: #fff;
+    }
+
+    .btn-cta-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-cta-secondary:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: #fff;
+        transform: translateY(-3px);
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .stat-cards-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="dashboard-hero">
+        <h1><i class="fas fa-rocket me-3"></i>Welcome to MultiStock</h1>
+        <p>Explore our enterprise inventory management platform. Browse products and join our
+            community!</p>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="info-banner d-flex align-items-center">
+        <i class="fas fa-info-circle"></i>
+        <div>
+            <strong>You're in Guest Mode!</strong> Explore with read-only access.
+            <a href="/auth/register/">Create a free account</a> or
+            <a href="/auth/login/">sign in</a> to unlock all features.
+        </div>
+    </div>
+
+    <!-- Animated Stat Cards -->
+    <div class="stat-cards-grid">
+        <a href="/marketplace/" class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-store"></i>
+            </div>
+            <span class="stat-number">{{ stats.marketplace|default:0 }}</span>
+            <div class="stat-label">Marketplace Items</div>
+            <div class="stat-description">Browse verified products from sellers worldwide</div>
+            <i class="fas fa-arrow-right stat-arrow"></i>
+        </a>
+
+        <a href="/forums/" class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-comments"></i>
+            </div>
+            <span class="stat-number">{{ stats.forums|default:0 }}</span>
+            <div class="stat-label">Forum Topics</div>
+            <div class="stat-description">Connect, discuss, and share knowledge</div>
+            <i class="fas fa-arrow-right stat-arrow"></i>
+        </a>
+
+        <a href="/guest/about/" class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <span class="stat-number"><i class="fas fa-star"></i></span>
+            <div class="stat-label">About MultiStock</div>
+            <div class="stat-description">Learn about our platform and features</div>
+            <i class="fas fa-arrow-right stat-arrow"></i>
+        </a>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="cta-section">
+        <h2><i class="fas fa-rocket me-2"></i>Ready to Get Started?</h2>
+        <p>Join thousands of businesses using MultiStock for their inventory management needs. Create your free account
+            today!</p>
+        <div class="cta-buttons">
+            <a href="/auth/register/" class="btn-cta btn-cta-primary">
+                <i class="fas fa-user-plus"></i> Create Free Account
+            </a>
+            <a href="/auth/login/" class="btn-cta btn-cta-secondary">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add pulse effect to stat numbers
+    document.querySelectorAll('.stat-number').forEach((el, index) => {
+        setTimeout(() => {
+            el.style.animation = 'pulse 2s infinite';
+        }, index * 200);
+    });
+
+    // Define pulse animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

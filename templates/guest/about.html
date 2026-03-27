@@ -1,0 +1,432 @@
+{% extends 'base_guest.html' %}
+
+{% block title %}About MultiStock - Guest Access{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        text-align: center;
+        padding: 3rem 0 2rem;
+        color: #fff;
+        background: linear-gradient(135deg, #0014A8, #1e40af);
+        margin: -90px -15px 2rem;
+        padding-top: 130px;
+    }
+
+    .page-header h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        animation: fadeInDown 0.6s ease;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 700px;
+        margin: 0 auto;
+        animation: fadeInUp 0.6s ease 0.2s both;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .feature-section {
+        margin: 4rem 0;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.4s ease;
+        animation: fadeIn 0.6s ease both;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: #fff;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: rotate(360deg) scale(1.1);
+    }
+
+    .feature-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.75rem;
+    }
+
+    .feature-description {
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+    }
+
+    .stats-section {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        margin: 4rem 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        color: #fff;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        display: block;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #10b981, #0014A8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .tech-section {
+        margin: 4rem 0;
+    }
+
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .tech-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .tech-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-5px);
+    }
+
+    .tech-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .faq-section {
+        margin: 4rem 0;
+    }
+
+    .faq-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .faq-question {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .faq-answer {
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+        display: none;
+    }
+
+    .faq-item.active .faq-answer {
+        display: block;
+    }
+
+    .faq-item.active .faq-toggle {
+        transform: rotate(180deg);
+    }
+
+    .faq-toggle {
+        transition: transform 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-info-circle me-3"></i>About MultiStock</h1>
+        <p>Enterprise-grade inventory management and marketplace platform for modern businesses</p>
+    </div>
+
+    <!-- Features Section -->
+    <div class="feature-section">
+        <h2 style="color: #fff; text-align: center; margin-bottom: 2rem;">
+            <i class="fas fa-star me-2"></i>Platform Features
+        </h2>
+        <div class="features-grid">
+            <div class="feature-card" style="animation-delay: 0.1s;">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="feature-title">Enterprise Security</div>
+                <div class="feature-description">Bank-level encryption and security protocols to protect your data</div>
+            </div>
+
+            <div class="feature-card" style="animation-delay: 0.2s;">
+                <div class="feature-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="feature-title">Global Reach</div>
+                <div class="feature-description">Connect with suppliers and buyers from around the world</div>
+            </div>
+
+            <div class="feature-card" style="animation-delay: 0.3s;">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="feature-title">24/7 Operations</div>
+                <div class="feature-description">Round-the-clock platform availability and support</div>
+            </div>
+
+            <div class="feature-card" style="animation-delay: 0.4s;">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="feature-title">Real-Time Analytics</div>
+                <div class="feature-description">Comprehensive insights and reporting dashboards</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Statistics -->
+    <div class="stats-section">
+        <h2 style="color: #fff; text-align: center; margin-bottom: 1rem;">
+            <i class="fas fa-trophy me-2"></i>Platform Statistics
+        </h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.users|default:"0" }}</span>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.products|default:"0" }}</span>
+                <div class="stat-label">Products Listed</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.transactions|default:"0" }}</span>
+                <div class="stat-label">Transactions</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.uptime|default:"99.9%" }}</span>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technology Stack -->
+    <div class="tech-section">
+        <h2 style="color: #fff; text-align: center; margin-bottom: 2rem;">
+            <i class="fas fa-code me-2"></i>Built with Modern Technology
+        </h2>
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fab fa-python"></i></div>
+                <div>Django 4.2</div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fas fa-code"></i></div>
+                <div>Django REST Framework</div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fas fa-database"></i></div>
+                <div>SQLite (dev)</div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fab fa-bootstrap"></i></div>
+                <div>Bootstrap</div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fas fa-icons"></i></div>
+                <div>Font Awesome</div>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fas fa-server"></i></div>
+                <div>Gunicorn / WSGI</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2 style="color: #fff; text-align: center; margin-bottom: 2rem;">
+            <i class="fas fa-question-circle me-2"></i>Frequently Asked Questions
+        </h2>
+
+        <div class="faq-item" onclick="this.classList.toggle('active')">
+            <div class="faq-question">
+                <span>What is MultiStock?</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                MultiStock is an enterprise-grade inventory management and marketplace platform designed for modern
+                businesses. We provide comprehensive tools for inventory tracking, supplier management, marketplace
+                listings.
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('active')">
+            <div class="faq-question">
+                <span>How do I create an account?</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                Simply click the "Register" button in the navigation bar or visit the registration page. Fill out the
+                required information and verify your email address to get started.
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('active')">
+            <div class="faq-question">
+                <span>What features are available in guest mode?</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                In guest mode, you can browse the marketplace and read forum discussions. To unlock
+                full features like bidding, posting, and inventory management, please create a free account.
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('active')">
+            <div class="faq-question">
+                <span>Is MultiStock free to use?</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                We offer a free tier with basic features. Premium plans with advanced features, analytics, and dedicated
+                support are available for businesses with growing needs.
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('active')">
+            <div class="faq-question">
+                <span>How secure is my data?</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                We use bank-level encryption (SSL/TLS), regular security audits, and follow industry best practices to
+                ensure your data is safe and secure. All transactions are encrypted end-to-end.
+            </div>
+        </div>
+    </div>
+
+    <!-- Final CTA -->
+    <div
+        style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; padding: 3rem 2rem; text-align: center; margin: 4rem 0 2rem;">
+        <h2 style="color: #fff; margin-bottom: 1rem;">
+            <i class="fas fa-rocket me-2"></i>Ready to Get Started?
+        </h2>
+        <p style="color: rgba(255,255,255,0.9); margin-bottom: 2rem; font-size: 1.1rem;">
+            Join thousands of businesses using MultiStock today!
+        </p>
+        <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+            <a href="/auth/register/"
+                style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 1rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); transition: all 0.3s ease;">
+                <i class="fas fa-user-plus me-2"></i>Create Free Account
+            </a>
+            <a href="/auth/login/"
+                style="background: rgba(255, 255, 255, 0.2); color: #fff; padding: 1rem 2.5rem; border-radius: 12px; text-decoration: none; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.3); transition: all 0.3s ease;">
+                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

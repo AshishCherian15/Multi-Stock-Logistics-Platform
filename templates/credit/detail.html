@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Credit Profile - {{ profile.customer.customer_name }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">{{ profile.customer.customer_name }}</h1>
+        <a href="{% url 'credit:dashboard' %}" class="btn btn-outline-primary"><i class="fas fa-arrow-left me-2"></i>Back to Credits</a>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Credit Information</h5>
+                    <p><strong>Credit Limit:</strong> ${{ profile.credit_limit|floatformat:2 }}</p>
+                    <p><strong>Available Credit:</strong> ${{ profile.available_credit|floatformat:2 }}</p>
+                    <p><strong>Used Credit:</strong> ${{ profile.used_credit|floatformat:2 }}</p>
+                    <p><strong>Overdue Amount:</strong> <span class="text-danger">${{ profile.overdue_amount|floatformat:2 }}</span></p>
+                    <p><strong>Payment Terms:</strong> {{ profile.payment_terms_days }} days</p>
+                    <p><strong>Risk Level:</strong> 
+                        {% if profile.risk_level == 'low' %}
+                        <span class="badge bg-success">{{ profile.get_risk_level_display }}</span>
+                        {% elif profile.risk_level == 'medium' %}
+                        <span class="badge bg-warning">{{ profile.get_risk_level_display }}</span>
+                        {% else %}
+                        <span class="badge bg-danger">{{ profile.get_risk_level_display }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Customer Details</h5>
+                    <p><strong>Contact:</strong> {{ profile.customer.customer_contact }}</p>
+                    <p><strong>City:</strong> {{ profile.customer.customer_city }}</p>
+                    <p><strong>Address:</strong> {{ profile.customer.customer_address }}</p>
+                    <p><strong>Manager:</strong> {{ profile.customer.customer_manager }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5>Recent Transactions</h5>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Reference</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for txn in transactions %}
+                        <tr>
+                            <td>{{ txn.created_at|date:"M d, Y" }}</td>
+                            <td><span class="badge bg-info">{{ txn.get_transaction_type_display }}</span></td>
+                            <td>${{ txn.amount|floatformat:2 }}</td>
+                            <td>{{ txn.reference }}</td>
+                            <td>{{ txn.description }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No transactions found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

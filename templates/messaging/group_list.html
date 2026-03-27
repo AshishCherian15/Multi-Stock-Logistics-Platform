@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Groups{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="padding: 30px;">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-users me-2"></i>Groups
+                        </h5>
+                        <div>
+                            <a href="{% url 'messaging:create_group_advanced' %}" class="btn btn-outline-light btn-sm me-2">
+                                <i class="fas fa-plus me-1"></i>Create Group
+                            </a>
+                            <a href="{% url 'messaging:home' %}" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Messages
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    {% if groups %}
+                    <div class="row">
+                        {% for group_data in groups %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100 {% if group_data.unread_count > 0 %}border-primary{% endif %}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title mb-0">
+                                            <i class="fas fa-users me-2 text-primary"></i>
+                                            {{ group_data.group.name }}
+                                        </h6>
+                                        {% if group_data.unread_count > 0 %}
+                                        <span class="badge bg-primary">{{ group_data.unread_count }}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <p class="card-text text-muted small mb-2">
+                                        {{ group_data.group.description|default:"No description"|truncatechars:80 }}
+                                    </p>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>{{ group_data.member_count }} members
+                                        </small>
+                                        <small class="text-muted">
+                                            {% if group_data.group.visibility == 'public' %}
+                                                <i class="fas fa-globe text-success"></i> Public
+                                            {% elif group_data.group.visibility == 'private' %}
+                                                <i class="fas fa-lock text-warning"></i> Private
+                                            {% else %}
+                                                <i class="fas fa-eye-slash text-danger"></i> Hidden
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    
+                                    {% if group_data.last_message %}
+                                    <div class="border-top pt-2 mb-2">
+                                        <small class="text-muted">
+                                            <strong>{{ group_data.last_message.sender.username }}:</strong>
+                                            {{ group_data.last_message.content|truncatechars:50 }}
+                                        </small>
+                                        <br>
+                                        <small class="text-muted">{{ group_data.last_message.timestamp|timesince }} ago</small>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            {% if group_data.is_admin %}
+                                            <span class="badge bg-success">Admin</span>
+                                            {% elif group_data.is_member %}
+                                            <span class="badge bg-primary">Member</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">Visible</span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="btn-group btn-group-sm">
+                                            {% if group_data.is_member %}
+                                            <a href="{% url 'messaging:chat' group_data.group.id %}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-comments"></i>
+                                            </a>
+                                            {% endif %}
+                                            
+                                            {% if group_data.is_admin %}
+                                            <a href="{% url 'messaging:group_settings' group_data.group.id %}" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-cog"></i>
+                                            </a>
+                                            {% endif %}
+                                            
+                                            {% if not group_data.is_member and user_is_team %}
+                                            <button class="btn btn-outline-success btn-sm" onclick="joinGroup({{ group_data.group.id }})">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-users" style="font-size: 64px; color: #ddd; margin-bottom: 20px;"></i>
+                        <h5 class="text-muted">No Groups Found</h5>
+                        <p class="text-muted">Create your first group to start collaborating with your team.</p>
+                        <a href="{% url 'messaging:create_group_advanced' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Create Group
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function joinGroup(groupId) {
+    if (confirm('Join this group?')) {
+        // Implementation for joining group
+        alert('Join group functionality to be implemented');
+    }
+}
+</script>
+{% endblock %}

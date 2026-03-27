@@ -1,0 +1,932 @@
+﻿{% extends 'base.html' %}
+{% block title %}Smart Locker System - MultiStock{% endblock %}
+{% block content %}
+<style>
+    :root {
+        --zaffre: #0014A8
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 20, 168, 0.1);
+        border-left: 4px solid #0014A8
+    }
+
+    .locker-card {
+        background: #fff;
+        border: 1px solid rgba(0, 20, 168, 0.1);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: all .3s;
+        cursor: pointer
+    }
+
+    .locker-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 20, 168, 0.15);
+        transform: translateY(-2px)
+    }
+
+    .locker-card.available {
+        border-left: 4px solid #28a745
+    }
+
+    .locker-card.occupied {
+        border-left: 4px solid #dc3545
+    }
+
+    .locker-card.maintenance {
+        border-left: 4px solid #ffc107
+    }
+
+    .btn-primary {
+        background: #0014A8;
+        border: none
+    }
+
+    .btn-primary:hover {
+        background: #000E75
+    }
+
+    .embedded-panel {
+        display: none;
+        background: #fff;
+        border: 2px solid #0014A8;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 20, 168, 0.2);
+        animation: slideDown 0.3s ease-out
+    }
+
+    .embedded-panel.active {
+        display: block
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px)
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+
+    .panel-header {
+        background: linear-gradient(135deg, #0014A8 0%, #000E75 100%);
+        color: #fff;
+        padding: 15px 20px;
+        border-radius: 6px 6px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center
+    }
+
+    .panel-body {
+        padding: 25px;
+        max-height: 70vh;
+        overflow-y: auto
+    }
+
+    .panel-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        background: #f8f9fa;
+        border-radius: 0 0 6px 6px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px
+    }
+
+    .close-panel-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: #fff;
+        border-radius: 4px;
+        padding: 5px 12px;
+        cursor: pointer;
+        transition: all 0.2s
+    }
+
+    .close-panel-btn:hover {
+        background: rgba(255, 255, 255, 0.3)
+    }
+</style>
+
+<div class="container-fluid p-4">
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h6 class="text-muted">Total Lockers</h6>
+                <h2>{{ total_lockers }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h6 class="text-muted">Available</h6>
+                <h2 class="text-success">{{ available }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h6 class="text-muted">Occupied</h6>
+                <h2 class="text-danger">{{ occupied }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h6 class="text-muted">Maintenance</h6>
+                <h2 class="text-warning">{{ maintenance }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0"><i class="fas fa-lock me-2"></i>Smart Locker System</h1>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="window.location.href='/lockers/my-bookings/'">
+                <i class="fas fa-calendar-check me-1"></i>My Bookings
+            </button>
+            {% if user_role != 'customer' %}
+            <button class="btn btn-success" onclick="window.location.href='/lockers/analytics/'">
+                <i class="fas fa-chart-bar me-1"></i>Analytics
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <select class="form-select" id="sizeFilter" onchange="filterLockers()">
+                        <option value="">All Sizes</option>
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">Extra Large</option>
+                        <option value="climate">Climate Controlled</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="statusFilter" onchange="filterLockers()">
+                        <option value="">All Status</option>
+                        <option value="available">Available</option>
+                        <option value="occupied">Occupied</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search locker number..."
+                        oninput="filterLockers()">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="perPageFilter" onchange="applyPagination()">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-secondary w-100" onclick="clearFilters()">
+                        <i class="fas fa-times me-1"></i>Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewLockerPanel" class="embedded-panel">
+        <div class="panel-header">
+            <h5><i class="fas fa-lock me-2"></i>Locker Details</h5>
+            <button class="close-panel-btn" onclick="closePanel('viewLockerPanel')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="panel-body">
+            <div id="viewLockerContent"></div>
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="btn btn-secondary" onclick="closePanel('viewLockerPanel')">
+                <i class="fas fa-times me-1"></i>Close
+            </button>
+        </div>
+    </div>
+
+    <div id="bookLockerPanel" class="embedded-panel" style="max-height:90vh;overflow-y:auto">
+        <div class="panel-header">
+            <h5><i class="fas fa-lock me-2"></i>Book Locker - Complete Details</h5>
+            <button class="close-panel-btn" onclick="closePanel('bookLockerPanel')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="panel-body" style="max-height:calc(90vh - 120px);overflow-y:auto">
+            <form id="bookLockerForm">
+                <input type="hidden" id="bookLockerId">
+                
+                <!-- Locker Details Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-info-circle me-2" style="color:#0014A8"></i>Locker Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Customer Name *</label>
+                                <input type="text" class="form-control" name="customer_name" value="{{ user.get_full_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Email *</label>
+                                <input type="email" class="form-control" name="customer_email" value="{{ user.email }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Phone *</label>
+                                <input type="tel" class="form-control" name="customer_phone" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Duration Type *</label>
+                                <select class="form-select" name="duration_type" id="durationType" required onchange="updateLockerTotal()">
+                                    <option value="hourly">Hourly</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Duration *</label>
+                                <input type="number" class="form-control" name="duration_count" id="durationCount" min="1" value="1" required onchange="updateLockerTotal()">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Start Date *</label>
+                                <input type="date" class="form-control" name="start_date" id="lockerStartDate" required onchange="updateLockerTotal()">
+                            </div>
+                            <div class="col-md-12 mb-0">
+                                <label class="form-label fw-bold">Items Description *</label>
+                                <textarea class="form-control" name="items_description" rows="3" placeholder="Describe the items you'll store..." required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Summary Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-calculator me-2" style="color:#0014A8"></i>Pricing Summary</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">Rate</small>
+                                <h6 class="text-success" id="lockerRateDisplay">₹0.00</h6>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">Duration</small>
+                                <h6 class="text-info"><span id="lockerDurationDisplay">1</span> <span id="lockerDurationUnit">months</span></h6>
+                            </div>
+                            <div class="col-md-4 mb-0">
+                                <small class="text-muted">Total Amount</small>
+                                <h5 class="text-primary fw-bold" id="lockerTotalDisplay">₹0.00</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms & Conditions Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-file-contract me-2" style="color:#0014A8"></i>Terms & Conditions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div style="max-height:150px;overflow-y:auto;padding:10px;background:#f9f9f9;border-radius:5px;margin-bottom:10px">
+                            <small>
+                                <p><strong>Locker Rental Agreement Terms:</strong></p>
+                                <ul style="margin-bottom:10px">
+                                    <li>You agree to use the locker only for lawful purposes</li>
+                                    <li>Prohibited items: Weapons, explosives, hazardous materials, perishables</li>
+                                    <li>Facility staff may inspect lockers for compliance</li>
+                                    <li>Payment must be made in full before locker access</li>
+                                    <li>Locker access via digital PIN/RFID card during booking hours</li>
+                                    <li>Lost/damaged access cards will be charged at ₹300 per replacement</li>
+                                    <li>Maximum item weight: 50 kg per locker</li>
+                                    <li>Termination: 24 hours notice required for early cancellation</li>
+                                    <li>All items must be removed by checkout date</li>
+                                </ul>
+                            </small>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="lockerAgreeTerms">
+                            <label class="form-check-label" for="lockerAgreeTerms">
+                                I agree to the Terms & Conditions
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Late Return Penalty Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#fff5e6,#ffe8cc);border-bottom:2px solid #ff6b35">
+                        <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2" style="color:#ff6b35"></i>Late Return Penalties</h6>
+                    </div>
+                    <div class="card-body">
+                        <div style="max-height:150px;overflow-y:auto;padding:10px;background:#fff9f0;border-left:4px solid #ff6b35;border-radius:5px;margin-bottom:10px">
+                            <small>
+                                <p><strong style="color:#d84315">⚠️ Late Return Structure:</strong></p>
+                                <ul style="margin-bottom:10px">
+                                    <li><strong>Up to 3 hours late:</strong> 25% penalty on daily rental</li>
+                                    <li><strong>4-24 hours late:</strong> 50% penalty on daily rental</li>
+                                    <li><strong>1-7 days late:</strong> 100% penalty per day + storage charge</li>
+                                    <li><strong>Beyond 7 days:</strong> Locker will be sealed and contents auctioned</li>
+                                    <li><strong>Notice:</strong> SMS/Email reminder sent 24 hours before checkout</li>
+                                    <li><strong>Legal Action:</strong> May be initiated for unclaimed items</li>
+                                </ul>
+                            </small>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="lockerAgreePenalty">
+                            <label class="form-check-label" for="lockerAgreePenalty">
+                                I understand and accept the late return penalty structure
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security & Liability Disclaimer Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-shield-alt me-2" style="color:#0014A8"></i>Security & Liability Disclaimer</h6>
+                    </div>
+                    <div class="card-body">
+                        <div style="max-height:150px;overflow-y:auto;padding:10px;background:#f9f9f9;border-radius:5px;margin-bottom:10px">
+                            <small>
+                                <p><strong>Security & Liability Terms:</strong></p>
+                                <ul style="margin-bottom:10px">
+                                    <li>Lockers are equipped with digital locks and CCTV monitoring</li>
+                                    <li>Facility is NOT liable for theft, loss, or damage to stored items</li>
+                                    <li>Customer assumes all risk for item security</li>
+                                    <li>No personal injury liability accepted for any reason</li>
+                                    <li>No consequential or indirect damages will be compensated</li>
+                                    <li>We strongly recommend items be insured by customer</li>
+                                    <li>Facility provides storage space only, not security guarantee</li>
+                                    <li>Maximum liability limit: Locker rental amount only</li>
+                                    <li>Items left beyond checkout: Assumed abandoned after 30 days</li>
+                                </ul>
+                            </small>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="lockerAgreeLiability">
+                            <label class="form-check-label" for="lockerAgreeLiability">
+                                I accept the security and liability disclaimer
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Card -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header" style="background:linear-gradient(135deg,#f0f4ff,#e8ecff);border-bottom:2px solid #0014A8">
+                        <h6 class="mb-0"><i class="fas fa-credit-card me-2" style="color:#0014A8"></i>Payment Method</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-0">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="lockerOnlinePayment" value="online" checked>
+                                <label class="form-check-label" for="lockerOnlinePayment">
+                                    <i class="fas fa-credit-card me-2"></i>Online Payment (Razorpay/Stripe)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="lockerCashPayment" value="cash">
+                                <label class="form-check-label" for="lockerCashPayment">
+                                    <i class="fas fa-money-bill me-2"></i>Cash at Pickup
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="btn btn-secondary" onclick="closePanel('bookLockerPanel')">
+                <i class="fas fa-times me-1"></i>Cancel
+            </button>
+            <button type="button" class="btn btn-success" onclick="proceedLockerPayment()">
+                <i class="fas fa-check me-1"></i>Proceed to Payment
+            </button>
+        </div>
+    </div>
+
+    <div class="row" id="lockersGrid">
+        {% for locker in lockers %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-3 locker-item" data-size="{{ locker.locker_type.size }}"
+            data-status="{{ locker.status }}" data-number="{{ locker.locker_number }}">
+            <div class="locker-card {{ locker.status }}" onclick="viewLocker({{ locker.id }})">
+                <img src="/static/images/smart_locker.png"
+                    style="width:100%;height:140px;object-fit:cover;border-radius:8px 8px 0 0;margin:-15px -15px 15px -15px"
+                    alt="Smart Locker">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lock me-1"></i>{{ locker.locker_number }}
+                    </h5>
+                    <span
+                        class="badge bg-{% if locker.status == 'available' %}success{% elif locker.status == 'occupied' %}danger{% else %}warning{% endif %}">
+                        {{ locker.get_status_display }}
+                    </span>
+                </div>
+                <p class="text-muted mb-2">
+                    <i class="fas fa-map-marker-alt me-1"></i>{{ locker.location }}
+                </p>
+                <div class="mb-2">
+                    <span class="badge bg-light text-dark">{{ locker.locker_type.get_size_display }}</span>
+                    {% if locker.locker_type.has_climate_control %}
+                    <span class="badge bg-info text-white"><i class="fas fa-snowflake me-1"></i>Climate</span>
+                    {% endif %}
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">{{ locker.locker_type.name }}</small>
+                    {% if user.role.role in 'superadmin,admin,admin,supervisor,staff' %}
+                    {% load categories_tags %}
+                    {% get_category_info locker.locker_type.name as cat_info %}
+                    {% if cat_info.created_by %}
+                    <small class="text-muted d-block"><i class="fas fa-user me-1"></i>{{ cat_info.created_by }} • {{ cat_info.created_at }}</small>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                <div class="d-flex gap-1 mt-2">
+                    {% if user_role != 'customer' %}
+                    <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); editLocker({{ locker.id }}, '{{ locker.locker_number }}', '{{ locker.location }}', '{{ locker.status }}', '{{ locker.locker_type.size }}')" title="Edit">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    {% endif %}
+                    {% if locker.status == 'available' %}
+                    <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); addToWishlist({{ locker.id }}, 'locker')" title="Add to Wishlist">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); addToCart({{ locker.id }}, 'locker')" title="Add to Cart">
+                        <i class="fas fa-cart-plus"></i>
+                    </button>
+                    <button class="btn btn-sm btn-primary flex-grow-1"
+                        onclick="event.stopPropagation(); bookLocker({{ locker.id }}, {{ locker.locker_type.hourly_rate }}, {{ locker.locker_type.daily_rate }}, {{ locker.locker_type.weekly_rate }}, {{ locker.locker_type.monthly_rate }})">
+                        <i class="fas fa-calendar-plus"></i> Book
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    let currentLocker = null;
+    let rates = { hourly: 0, daily: 0, weekly: 0, monthly: 0 };
+
+    function togglePanel(panelId) {
+        const allPanels = document.querySelectorAll('.embedded-panel');
+        allPanels.forEach(panel => {
+            if (panel.id !== panelId) panel.classList.remove('active');
+        });
+
+        const panel = document.getElementById(panelId);
+        if (panel.classList.contains('active')) {
+            panel.classList.remove('active');
+        } else {
+            panel.classList.add('active');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function closePanel(panelId) {
+        document.getElementById(panelId).classList.remove('active');
+    }
+
+    function viewLocker(id) {
+        // Disabled - view locker functionality removed
+        return false;
+    }
+
+    function bookLocker(id, hourly, daily, weekly, monthly) {
+        currentLocker = id;
+        rates = { hourly: hourly, daily: daily, weekly: weekly, monthly: monthly };
+        document.getElementById('bookLockerId').value = id;
+        document.getElementById('lockerStartDate').valueAsDate = new Date();
+        updateLockerTotal();
+        togglePanel('bookLockerPanel');
+    }
+
+    function updateLockerTotal() {
+        const type = document.getElementById('durationType').value;
+        const count = parseInt(document.getElementById('durationCount').value) || 1;
+        const rate = rates[type] || 0;
+        const total = rate * count;
+        
+        let durationUnit = 'months';
+        if (type === 'hourly') durationUnit = 'hours';
+        else if (type === 'daily') durationUnit = 'days';
+        else if (type === 'weekly') durationUnit = 'weeks';
+        
+        document.getElementById('lockerRateDisplay').textContent = '₹' + rate.toFixed(2);
+        document.getElementById('lockerDurationDisplay').textContent = count;
+        document.getElementById('lockerDurationUnit').textContent = durationUnit;
+        document.getElementById('lockerTotalDisplay').textContent = '₹' + total.toFixed(2);
+    }
+
+    function proceedLockerPayment() {
+        const agreeTerms = document.getElementById('lockerAgreeTerms').checked;
+        const agreePenalty = document.getElementById('lockerAgreePenalty').checked;
+        const agreeLiability = document.getElementById('lockerAgreeLiability').checked;
+
+        if (!agreeTerms || !agreePenalty || !agreeLiability) {
+            alert('Please accept all terms and conditions before proceeding.');
+            return;
+        }
+
+        const form = document.getElementById('bookLockerForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = new FormData(form);
+        const data = {
+            locker_id: document.getElementById('bookLockerId').value,
+            customer_name: formData.get('customer_name'),
+            customer_email: formData.get('customer_email'),
+            customer_phone: formData.get('customer_phone'),
+            duration_type: formData.get('duration_type'),
+            duration_count: formData.get('duration_count'),
+            start_date: formData.get('start_date'),
+            items_description: formData.get('items_description'),
+            payment_method: document.querySelector('input[name="paymentMethod"]:checked').value,
+            agree_terms: agreeTerms,
+            agree_penalty: agreePenalty,
+            agree_liability: agreeLiability
+        };
+
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+
+        fetch('/api/booking/locker/process/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(data)
+        })
+        .then(r => {
+            if (!r.ok) {
+                return r.json().then(err => Promise.reject(err));
+            }
+            return r.json();
+        })
+        .then(result => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Proceed to Payment';
+
+            if (result.success) {
+                alert(`Booking Created Successfully!\n\nBooking Number: ${result.booking_reference}\n\n${result.payment_required ? 'Please proceed with payment.' : 'Payment will be collected at pickup.'}`);
+                closePanel('bookLockerPanel');
+                form.reset();
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                alert('Booking failed: ' + (result.message || result.error || 'Unknown error'));
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Proceed to Payment';
+            const errorMsg = err.message || (typeof err === 'object' ? JSON.stringify(err) : err);
+            alert('Error processing booking: ' + errorMsg);
+            console.error('Booking error:', err);
+        });
+    }
+
+    function filterLockers() {
+        const sizeFilter = document.getElementById('sizeFilter') ? document.getElementById('sizeFilter').value.toLowerCase() : '';
+        const statusFilter = document.getElementById('statusFilter') ? document.getElementById('statusFilter').value.toLowerCase() : '';
+        const searchInput = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase() : '';
+
+        const lockers = document.querySelectorAll('.locker-item');
+
+        lockers.forEach(locker => {
+            const size = (locker.dataset.size || '').toLowerCase();
+            const status = (locker.dataset.status || '').toLowerCase();
+            const number = (locker.dataset.number || locker.dataset.lockerNumber || '').toLowerCase();
+            const name = (locker.dataset.name || '').toLowerCase();
+
+            const matchSize = !sizeFilter || size.includes(sizeFilter);
+            const matchStatus = !statusFilter || status.includes(statusFilter);
+            const matchSearch = !searchInput || number.includes(searchInput) || name.includes(searchInput);
+
+            locker.style.display = matchSize && matchStatus && matchSearch ? '' : 'none';
+        });
+        if (typeof applyPagination === 'function') {
+            applyPagination();
+        }
+    }
+
+    function applyPagination() {
+        const perPage = document.getElementById('perPageFilter').value;
+        const lockers = Array.from(document.querySelectorAll('.locker-item')).filter(l => l.style.display !== 'none');
+        const limit = perPage === 'all' ? lockers.length : parseInt(perPage);
+        lockers.forEach((locker, idx) => {
+            locker.style.display = idx < limit ? '' : 'none';
+        });
+    }
+
+    function clearFilters() {
+        document.getElementById('sizeFilter').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('searchInput').value = '';
+        filterLockers();
+    }
+
+    function editLocker(id, number, location, status, size) {
+        const modalHtml = `
+            <div class="modal fade" id="editModal${id}" tabindex="-1">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background:linear-gradient(135deg,#0014A8,#000E75);color:#fff">
+                            <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Locker Details</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="nav nav-tabs mb-3" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#basic${id}"><i class="fas fa-info-circle me-1"></i>Basic Info</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#specs${id}"><i class="fas fa-cogs me-1"></i>Specifications</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#assignment${id}"><i class="fas fa-user me-1"></i>Assignment</a></li>
+                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#audit${id}"><i class="fas fa-history me-1"></i>Audit Trail</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="basic${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Locker ID</label>
+                                            <input type="text" class="form-control" value="LKR-${id}" readonly>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Locker Number *</label>
+                                            <input type="text" class="form-control" id="editNumber${id}" value="${number}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Locker Name / Label</label>
+                                            <input type="text" class="form-control" id="editName${id}" placeholder="e.g., Locker A12">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Location *</label>
+                                            <input type="text" class="form-control" id="editLocation${id}" value="${location}" placeholder="Floor, section, area">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Status</label>
+                                            <select class="form-select" id="editStatus${id}">
+                                                <option value="available" ${status==='available'?'selected':''}>Available</option>
+                                                <option value="occupied" ${status==='occupied'?'selected':''}>Occupied</option>
+                                                <option value="maintenance" ${status==='maintenance'?'selected':''}>Under Maintenance</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Image Upload</label>
+                                            <input type="file" class="form-control" id="editImage${id}" accept="image/*" onchange="previewLockerImage(${id}, this)">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Image URL</label>
+                                            <input type="text" class="form-control" id="editImageUrl${id}" placeholder="Or paste image URL">
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Preview</label>
+                                            <div><img id="currentImg${id}" src="/static/images/smart_locker.png" style="max-height:150px;object-fit:cover;border-radius:8px" class="img-thumbnail"></div>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Notes / Description</label>
+                                            <textarea class="form-control" id="editNotes${id}" rows="3" placeholder="Admin comments, special instructions..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="specs${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Size / Dimensions</label>
+                                            <select class="form-select" id="editSize${id}">
+                                                <option value="small" ${size==='small'?'selected':''}>Small</option>
+                                                <option value="medium" ${size==='medium'?'selected':''}>Medium</option>
+                                                <option value="large" ${size==='large'?'selected':''}>Large</option>
+                                                <option value="xlarge" ${size==='xlarge'?'selected':''}>Extra Large</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Type</label>
+                                            <select class="form-select" id="editType${id}">
+                                                <option value="standard">Standard</option>
+                                                <option value="smart">Smart Locker</option>
+                                                <option value="refrigerated">Refrigerated</option>
+                                                <option value="climate">Climate Controlled</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Security Level</label>
+                                            <select class="form-select" id="editSecurity${id}">
+                                                <option value="pin">PIN Code</option>
+                                                <option value="rfid">RFID Card</option>
+                                                <option value="biometric">Biometric</option>
+                                                <option value="key">Physical Key</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Condition</label>
+                                            <select class="form-select" id="editCondition${id}">
+                                                <option value="new">New</option>
+                                                <option value="good">Good</option>
+                                                <option value="repair">Needs Repair</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Exact Dimensions</label>
+                                            <input type="text" class="form-control" id="editDimensions${id}" placeholder="e.g., 12x18x24 inches">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="assignment${id}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Assigned User / Employee Name</label>
+                                            <input type="text" class="form-control" id="editAssignedUser${id}" placeholder="Who is using the locker">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">User ID / Employee Code</label>
+                                            <input type="text" class="form-control" id="editUserId${id}" placeholder="System user reference">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Assignment Date</label>
+                                            <input type="date" class="form-control" id="editAssignDate${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Return Date / Expiry</label>
+                                            <input type="date" class="form-control" id="editReturnDate${id}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Access Code</label>
+                                            <input type="text" class="form-control" id="editAccessCode${id}" placeholder="PIN or access code">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">Contact Phone</label>
+                                            <input type="tel" class="form-control" id="editPhone${id}">
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Items Stored</label>
+                                            <textarea class="form-control" id="editItems${id}" rows="3" placeholder="Description of items stored in locker..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="audit${id}">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Access Permissions</label>
+                                            <select class="form-select" id="editPermissions${id}" multiple>
+                                                <option value="admin">Admin</option>
+                                                <option value="supervisor">Supervisor</option>
+                                                <option value="staff">Staff</option>
+                                            </select>
+                                            <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Audit Trail</label>
+                                            <div class="alert alert-secondary">
+                                                <small>
+                                                    <i class="fas fa-user me-1"></i>Last modified by: <strong>Admin</strong><br>
+                                                    <i class="fas fa-clock me-1"></i>Date/Time: <strong>Today</strong><br>
+                                                    <i class="fas fa-edit me-1"></i>Changes: Status updated
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold">Maintenance History</label>
+                                            <textarea class="form-control" id="editMaintenance${id}" rows="3" placeholder="Last service, repairs, inspections..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i>Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveLockerEdit(${id})"><i class="fas fa-save me-1"></i>Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const existingModal = document.getElementById(`editModal${id}`);
+        if (existingModal) existingModal.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = new bootstrap.Modal(document.getElementById(`editModal${id}`));
+        modal.show();
+        
+        document.getElementById(`editModal${id}`).addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+    }
+    
+    function previewLockerImage(id, input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('currentImg' + id).src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    function saveLockerEdit(id) {
+        const formData = new FormData();
+        
+        const lockerNum = document.getElementById('editNumber' + id);
+        const location = document.getElementById('editLocation' + id);
+        const status = document.getElementById('editStatus' + id);
+        const imageFile = document.getElementById('editImage' + id);
+        
+        if (lockerNum) formData.append('locker_number', lockerNum.value);
+        if (location) formData.append('location', location.value);
+        if (status) formData.append('status', status.value);
+        if (imageFile && imageFile.files && imageFile.files[0]) {
+            formData.append('image', imageFile.files[0]);
+        }
+        
+        fetch(`/lockers/api/locker/${id}/update/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(response => {
+            if (response.success) {
+                alert('Locker updated successfully!');
+                bootstrap.Modal.getInstance(document.getElementById('editModal' + id)).hide();
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                alert('Update failed: ' + (response.error || 'Unknown error'));
+            }
+        })
+        .catch(err => {
+            console.error('Save error:', err);
+            alert('Error updating locker');
+        });
+    }
+
+    function getCookie(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return '';
+    }
+
+    function addToWishlist(id, type) {
+        const itemData = {
+            product_id: id,
+            title: `Locker #${id}`,
+            price: rates.daily || 0,
+            description: 'Smart Locker',
+            image: '/static/images/smart_locker.png',
+            type: type
+        };
+
+        fetch('/wishlist/api/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(itemData)
+        }).then(r => r.json()).then(() => alert('Added to wishlist'));
+    }
+
+    function addToCart(id, type) {
+        const itemData = {
+            product_id: id,
+            title: `Locker #${id}`,
+            price: rates.daily || 0,
+            quantity: 1,
+            image: '/static/images/smart_locker.png',
+            type: type
+        };
+
+        fetch('/cart/api/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(itemData)
+        }).then(r => r.json()).then(() => alert('Added to cart'));
+    }
+</script>
+{% endblock %}
+

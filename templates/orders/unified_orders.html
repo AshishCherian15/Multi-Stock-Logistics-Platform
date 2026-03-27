@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Orders & Bookings{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h2 class="mb-4">Orders & Bookings</h2>
+    
+    <ul class="nav nav-tabs" id="orderTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="marketplace-tab" data-bs-toggle="tab" href="#marketplace" role="tab">
+                <i class="fas fa-shopping-cart"></i> Marketplace Orders
+                <span class="badge bg-primary">{{ marketplace_orders.count }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="rentals-tab" data-bs-toggle="tab" href="#rentals" role="tab">
+                <i class="fas fa-tools"></i> Rental Bookings
+                <span class="badge bg-success">{{ rental_bookings.count }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="storage-tab" data-bs-toggle="tab" href="#storage" role="tab">
+                <i class="fas fa-warehouse"></i> Storage Bookings
+                <span class="badge bg-info">{{ storage_bookings.count }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="lockers-tab" data-bs-toggle="tab" href="#lockers" role="tab">
+                <i class="fas fa-lock"></i> Locker Bookings
+                <span class="badge bg-warning">{{ locker_bookings.count }}</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="orderTabsContent">
+        <!-- Marketplace Orders -->
+        <div class="tab-pane fade show active" id="marketplace" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in marketplace_orders %}
+                        <tr>
+                            <td><strong>{{ order.order_number }}</strong></td>
+                            <td>{{ order.customer_user.username|default:"N/A" }}</td>
+                            <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>{{ order.items.count }}</td>
+                            <td>₹{{ order.total_amount }}</td>
+                            <td><span class="badge bg-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                            <td>
+                                <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-sm btn-primary">View</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center">No marketplace orders</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Rental Bookings -->
+        <div class="tab-pane fade" id="rentals" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Booking #</th>
+                            <th>Equipment</th>
+                            <th>Customer</th>
+                            <th>Duration</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in rental_bookings %}
+                        <tr>
+                            <td><strong>RB{{ booking.id|stringformat:"05d" }}</strong></td>
+                            <td>{{ booking.item.name }}</td>
+                            <td>{{ booking.customer.username }}</td>
+                            <td>{{ booking.duration_count }} {{ booking.duration_type }}</td>
+                            <td>₹{{ booking.total_amount }}</td>
+                            <td><span class="badge bg-{{ booking.status }}">{{ booking.status|title }}</span></td>
+                            <td>
+                                <a href="{% url 'rentals:rental_booking_detail' booking.id %}" class="btn btn-sm btn-success">View</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center">No rental bookings</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Storage Bookings -->
+        <div class="tab-pane fade" id="storage" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Booking #</th>
+                            <th>Unit</th>
+                            <th>Customer</th>
+                            <th>Period</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in storage_bookings %}
+                        <tr>
+                            <td><strong>SB{{ booking.id|stringformat:"05d" }}</strong></td>
+                            <td>{{ booking.unit.unit_number }}</td>
+                            <td>{{ booking.user.username }}</td>
+                            <td>{{ booking.start_date|date:"Y-m-d" }} to {{ booking.end_date|date:"Y-m-d" }}</td>
+                            <td>₹{{ booking.total_amount }}</td>
+                            <td><span class="badge bg-{{ booking.status }}">{{ booking.status|title }}</span></td>
+                            <td>
+                                <a href="{% url 'storage:storage_booking_detail' booking.id %}" class="btn btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center">No storage bookings</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Locker Bookings -->
+        <div class="tab-pane fade" id="lockers" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Booking #</th>
+                            <th>Locker</th>
+                            <th>Customer</th>
+                            <th>Duration</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in locker_bookings %}
+                        <tr>
+                            <td><strong>LB{{ booking.id|stringformat:"05d" }}</strong></td>
+                            <td>{{ booking.locker.locker_number }}</td>
+                            <td>{{ booking.created_by.username }}</td>
+                            <td>{{ booking.duration_count }} {{ booking.duration_type }}</td>
+                            <td>₹{{ booking.total_amount }}</td>
+                            <td><span class="badge bg-{{ booking.status }}">{{ booking.status|title }}</span></td>
+                            <td>
+                                <a href="{% url 'lockers:locker_booking_detail' booking.id %}" class="btn btn-sm btn-warning">View</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center">No locker bookings</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge.bg-pending { background-color: #ffc107 !important; }
+.badge.bg-active { background-color: #28a745 !important; }
+.badge.bg-confirmed { background-color: #17a2b8 !important; }
+.badge.bg-completed { background-color: #6c757d !important; }
+.badge.bg-cancelled { background-color: #dc3545 !important; }
+</style>
+{% endblock %}

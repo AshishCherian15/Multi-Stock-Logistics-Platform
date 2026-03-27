@@ -1,0 +1,448 @@
+{% extends 'base.html' %}
+{% block title %}Customer Management{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-users me-2" style="color:#0014A8;"></i>Customer Management</h2>
+        <div class="btn-group">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+                <i class="fas fa-plus me-2"></i>Add Customer
+            </button>
+        </div>
+    </div>
+
+    <!-- Customer Stats -->
+    <div class="row mb-4">
+        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-lg-0">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h5>Total Customers</h5>
+                    <h3 class="mb-0">{{ total_customers }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-lg-0">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                    <h5>Active Customers</h5>
+                    <h3 class="mb-0">{{ active_customers }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3 mb-lg-0">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-ticket-alt fa-2x mb-2"></i>
+                    <h5>Pending Tickets</h5>
+                    <h3 class="mb-0">{{ pending_tickets }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-rupee-sign fa-2x mb-2"></i>
+                    <h5>Avg Order Value</h5>
+                    <h3 class="mb-0">₹{{ avg_order_value|floatformat:2 }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            <form method="get" class="row g-2">
+                <div class="col-12 col-md-3">
+                    <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Search by name, city, contact...">
+                </div>
+                <div class="col-6 col-md-2">
+                    <select name="city" class="form-select">
+                        <option value="">All Cities</option>
+                        {% for city in cities %}
+                        <option value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>{{ city }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <select name="sort" class="form-select">
+                        <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Sort by Name</option>
+                        <option value="city" {% if request.GET.sort == 'city' %}selected{% endif %}>Sort by City</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-1"></i>Apply
+                    </button>
+                </div>
+                <div class="col-12 col-md-2 text-md-end">
+                    <div class="btn-group w-100 w-md-auto">
+                        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-download me-2"></i>Export
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/pages/customers/export/?format=excel&search={{ search }}&city={{ request.GET.city }}&status={{ request.GET.status }}&sort={{ request.GET.sort|default:'name' }}"><i class="fas fa-file-excel me-2"></i>Excel (.xlsx)</a></li>
+                            <li><a class="dropdown-item" href="/pages/customers/export/?format=csv&search={{ search }}&city={{ request.GET.city }}&status={{ request.GET.status }}&sort={{ request.GET.sort|default:'name' }}"><i class="fas fa-file-csv me-2"></i>CSV (.csv)</a></li>
+                            <li><a class="dropdown-item disabled" href="#" title="PDF export not available yet"><i class="fas fa-file-pdf me-2"></i>PDF (.pdf)</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="card shadow-sm border-0" style="border-radius:15px;">
+        <div class="card-header" style="background:#f8f9fa;border-radius:15px 15px 0 0;">
+            <h5 class="mb-0"><i class="fas fa-address-book me-2"></i>Customer Directory</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead style="background:#f8f9fa;">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Customer</th>
+                            <th class="d-none d-md-table-cell">City</th>
+                            <th class="d-none d-lg-table-cell">Contact</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in customers %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        {% if c.profile and c.profile.avatar %}
+                                        <div class="avatar-wrapper" onclick="openCustomerAvatarModal('{{ c.id }}', '{{ c.profile.avatar.url }}', '{{ c.customer_name|slice:":2"|upper }}')" style="cursor:pointer;" role="button" tabindex="0" aria-label="View avatar for {{ c.customer_name }}">
+                                            <img src="{{ c.profile.avatar.url }}" 
+                                                 alt="{{ c.customer_name }}'s avatar" 
+                                                 class="rounded-circle" 
+                                                 style="width:40px;height:40px;object-fit:cover;border:2px solid #0014A8;"
+                                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                                            <div class="avatar-initials rounded-circle" 
+                                                 style="width:40px;height:40px;background:#0014A8;color:white;display:none;align-items:center;justify-content:center;font-weight:bold;font-size:16px;border:2px solid #0014A8;">
+                                                {{ c.customer_name|slice:":2"|upper }}
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar-initials rounded-circle" 
+                                                 style="width:40px;height:40px;background:#0014A8;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;border:2px solid #0014A8;">
+                                                {{ c.customer_name|slice:":2"|upper }}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <strong>{{ c.customer_name }}</strong>
+                                        <br><small class="text-muted d-none d-lg-inline">Manager: {{ c.customer_manager }}</small>
+                                        <small class="text-muted d-md-none"><br>{{ c.customer_city }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="d-none d-md-table-cell">{{ c.customer_city }}</td>
+                            <td class="d-none d-lg-table-cell">{{ c.customer_contact }}</td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="viewCustomer({{ c.id }})" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="editCustomer({{ c.id }})" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <form method="post" action="{% url 'pages:customer_delete' c.id %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete {{ c.customer_name }}?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                    <button class="btn btn-outline-info" onclick="messageCustomer({{ c.id }})" title="Message">
+                                        <i class="fas fa-comment"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="fas fa-users fa-3x mb-3 d-block" style="opacity:0.3;"></i>
+                                No customers found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if customers.has_other_pages %}
+    <nav aria-label="Customer pagination" class="mt-3">
+        <ul class="pagination justify-content-center">
+            {% if customers.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ customers.previous_page_number }}&search={{ search }}">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link"><i class="fas fa-chevron-left"></i> Previous</span>
+            </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">Page {{ customers.number }} of {{ customers.paginator.num_pages }}</span>
+            </li>
+            
+            {% if customers.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ customers.next_page_number }}&search={{ search }}">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Next <i class="fas fa-chevron-right"></i></span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Avatar Modal -->
+<div id="customerAvatarModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:10000;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:600px;">
+        <div class="modal-content" style="background:transparent;border:none;">
+            <div class="modal-header" style="border:none;position:absolute;right:10px;top:10px;z-index:1;">
+                <button type="button" class="btn-close btn-close-white" onclick="closeCustomerAvatarModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                <img id="customerEnlargedAvatar" src="" alt="Enlarged avatar" style="max-width:100%;max-height:80vh;border-radius:10px;display:none;">
+                <div id="customerEnlargedInitials" style="width:400px;height:400px;background:#0014A8;color:white;display:none;align-items:center;justify-content:center;font-size:120px;font-weight:bold;border-radius:10px;margin:0 auto;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="margin-top: 80px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCustomerModalLabel"><i class="fas fa-user-plus me-2"></i>Add New Customer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="customerForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Customer Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="customer_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">City <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="customer_city" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Contact <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" name="customer_contact" required pattern="[0-9]{10}">
+                                <small class="text-muted">10-digit phone number</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Manager</label>
+                                <input type="text" class="form-control" name="customer_manager">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Level</label>
+                                <select class="form-select" name="customer_level">
+                                    <option value="1" selected>Level 1</option>
+                                    <option value="2">Level 2</option>
+                                    <option value="3">Level 3</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" name="customer_address" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveCustomer()">
+                    <i class="fas fa-save me-1"></i>Save Customer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Mobile responsive enhancements */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 0.75rem;
+    }
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.75rem;
+    }
+    .avatar-initials {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 14px !important;
+    }
+    .avatar-wrapper img {
+        width: 32px !important;
+        height: 32px !important;
+    }
+}
+
+/* Table hover effects */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 20, 168, 0.05);
+    cursor: pointer;
+}
+
+/* Button hover enhancements */
+.btn-outline-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Card animations */
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+function openCustomerAvatarModal(customerId, avatarUrl, initials) {
+    const modal = document.getElementById('customerAvatarModal');
+    const img = document.getElementById('customerEnlargedAvatar');
+    const initialsDiv = document.getElementById('customerEnlargedInitials');
+    
+    if (avatarUrl && avatarUrl !== 'None') {
+        img.src = avatarUrl;
+        img.style.display = 'block';
+        initialsDiv.style.display = 'none';
+    } else {
+        initialsDiv.textContent = initials;
+        initialsDiv.style.display = 'flex';
+        img.style.display = 'none';
+    }
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.style.opacity = '1', 10);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCustomerAvatarModal() {
+    const modal = document.getElementById('customerAvatarModal');
+    modal.style.opacity = '0';
+    setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }, 300);
+}
+
+function viewCustomer(id) {
+    // Navigate to customer detail view
+    window.location.href = `/pages/customers/${id}/`;
+}
+
+function editCustomer(id) {
+    // Navigate to customer edit form
+    window.location.href = `/pages/customers/${id}/edit/`;
+}
+
+function messageCustomer(id) {
+    // Open messaging for this customer
+    window.location.href = `/pages/customers/${id}/message/`;
+}
+
+function saveCustomer() {
+    const form = document.getElementById('customerForm');
+    const formData = new FormData(form);
+    
+    // Show loading state
+    const saveBtn = event.target;
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
+    saveBtn.disabled = true;
+    
+    fetch('/pages/customers/create/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + (data.message || 'Failed to save customer'));
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    });
+}
+
+// Close modal on click outside
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('customerAvatarModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCustomerAvatarModal();
+            }
+        });
+    }
+});
+
+// Keyboard navigation for avatar modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('customerAvatarModal');
+        if (modal && modal.style.display === 'flex') {
+            closeCustomerAvatarModal();
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}Mobile API Documentation{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-mobile-alt me-2"></i>Mobile API Documentation</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Available Endpoints</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Endpoint</th>
+                                    <th>Method</th>
+                                    <th>Description</th>
+                                    <th>Parameters</th>
+                                    <th>Test</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>/api/mobile/?endpoint=dashboard</code></td>
+                                    <td><span class="badge bg-success">GET</span></td>
+                                    <td>Dashboard metrics</td>
+                                    <td>endpoint=dashboard</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="testAPI('dashboard')">Test</button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/mobile/?endpoint=products</code></td>
+                                    <td><span class="badge bg-success">GET</span></td>
+                                    <td>Product list</td>
+                                    <td>endpoint=products</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="testAPI('products')">Test</button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/mobile/?endpoint=orders</code></td>
+                                    <td><span class="badge bg-success">GET</span></td>
+                                    <td>Order list</td>
+                                    <td>endpoint=orders</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="testAPI('orders')">Test</button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/notifications/</code></td>
+                                    <td><span class="badge bg-success">GET</span></td>
+                                    <td>Real-time notifications</td>
+                                    <td>None</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="testAPI('notifications')">Test</button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/analytics/</code></td>
+                                    <td><span class="badge bg-success">GET</span></td>
+                                    <td>Analytics data</td>
+                                    <td>None</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="testAPI('analytics')">Test</button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/goods/</code></td>
+                                    <td><span class="badge bg-info">GET/POST</span></td>
+                                    <td>Products CRUD</td>
+                                    <td>Various</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="testAPI('goods')">Test</button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/api/stock/</code></td>
+                                    <td><span class="badge bg-info">GET/POST</span></td>
+                                    <td>Stock management</td>
+                                    <td>Various</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="testAPI('stock')">Test</button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>/multistock/api/marketplace/</code></td>
+                                    <td><span class="badge bg-warning">GET/POST</span></td>
+                                    <td>Marketplace operations</td>
+                                    <td>Various</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="testAPI('marketplace')">Test</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>API Response</h5>
+                </div>
+                <div class="card-body">
+                    <pre id="apiResponse" class="bg-light p-3" style="min-height: 200px;">Click "Test" button to see API response</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function testAPI(endpoint) {
+    const responseDiv = document.getElementById('apiResponse');
+    responseDiv.textContent = 'Loading...';
+    
+    let url;
+    switch(endpoint) {
+        case 'notifications':
+            url = '/api/notifications/';
+            break;
+        case 'analytics':
+            url = '/api/analytics/';
+            break;
+        case 'goods':
+            url = '/api/goods/';
+            break;
+        case 'stock':
+            url = '/api/stock/';
+            break;
+        case 'marketplace':
+            url = '/multistock/api/marketplace/';
+            break;
+        default:
+            url = `/api/mobile/?endpoint=${endpoint}`;
+    }
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            responseDiv.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+            responseDiv.textContent = `Error: ${error.message}`;
+        });
+}
+</script>
+{% endblock %}

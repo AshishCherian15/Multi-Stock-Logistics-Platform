@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ ticket.ticket_number }}{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:800px">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h2 class="fw-bold mb-1">{{ ticket.subject }}</h2><code class="text-muted">{{ ticket.ticket_number }}</code></div>
+    <a href="{% url 'tickets:list' %}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i>Back</a>
+  </div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span><strong>{{ ticket.user.username }}</strong> — {{ ticket.created_at|date:"M d, Y H:i" }}</span>
+      <div>
+        <span class="badge bg-info text-dark me-1">{{ ticket.get_category_display }}</span>
+        {% if ticket.status == 'open' %}<span class="badge bg-primary">Open</span>{% elif ticket.status == 'in_progress' %}<span class="badge bg-warning text-dark">In Progress</span>{% elif ticket.status == 'resolved' %}<span class="badge bg-success">Resolved</span>{% else %}<span class="badge bg-secondary">Closed</span>{% endif %}
+      </div>
+    </div>
+    <div class="card-body">{{ ticket.description|linebreaks }}</div>
+  </div>
+  {% for msg in ticket_messages %}
+  <div class="card mb-3 {% if msg.is_staff_reply %}border-primary{% endif %}">
+    <div class="card-header {% if msg.is_staff_reply %}bg-primary bg-opacity-10{% endif %} d-flex justify-content-between">
+      <strong>{{ msg.user.username }}{% if msg.is_staff_reply %} <span class="badge bg-primary ms-1">Staff</span>{% endif %}</strong>
+      <small>{{ msg.created_at|date:"M d, Y H:i" }}</small>
+    </div>
+    <div class="card-body">{{ msg.message|linebreaks }}</div>
+  </div>
+  {% endfor %}
+  {% if ticket.status != 'closed' and ticket.status != 'resolved' %}
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <h6 class="fw-semibold mb-3">Add Reply</h6>
+      <form method="post">{% csrf_token %}
+        <textarea name="message" class="form-control mb-3" rows="4" required placeholder="Type your reply..."></textarea>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-reply me-1"></i>Send</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+  {% if request.user.is_staff %}
+  <div class="card border-warning">
+    <div class="card-body">
+      <h6 class="fw-semibold">Update Status</h6>
+      <form method="post" action="{% url 'tickets:update_status' ticket.id %}" class="d-flex gap-2">{% csrf_token %}
+        <select name="status" class="form-select form-select-sm" style="max-width:200px">
+          <option value="open">Open</option><option value="in_progress">In Progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option>
+        </select>
+        <button type="submit" class="btn btn-warning btn-sm">Update</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

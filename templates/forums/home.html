@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Forums - MultiStock{% endblock %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h2><i class="fas fa-comments me-2"></i>Community Forums</h2>
+    </div>
+    {% for category in categories %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex">
+                <div class="me-3">
+                    <div class="bg-{{ category.color }} text-white rounded p-3">
+                        <i class="fas {{ category.icon }} fa-2x"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <h5><a href="{% url 'forums:category_topics' category.id %}">{{ category.name }}</a></h5>
+                    <p class="text-muted mb-2">{{ category.description }}</p>
+                    <small class="text-muted">
+                        <i class="fas fa-comments me-1"></i>{{ category.topic_count }} Topics
+                        <i class="fas fa-comment ms-3 me-1"></i>{{ category.post_count }} Posts
+                    </small>
+                </div>
+                <div class="text-end">
+                    {% if category.latest %}
+                    <small class="text-muted">
+                        Latest: <strong>{{ category.latest.title|truncatewords:5 }}</strong><br>
+                        by {{ category.latest.author.username }}<br>
+                        {{ category.latest.updated_at|timesince }} ago
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info">No categories yet</div>
+    {% endfor %}
+</div>
+{% endblock %}

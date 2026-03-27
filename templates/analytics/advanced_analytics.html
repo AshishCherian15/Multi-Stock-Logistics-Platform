@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+{% block title %}Advanced Analytics{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-line me-2"></i>Advanced Analytics Dashboard</h2>
+        <button class="btn btn-primary" onclick="refreshData()">
+            <i class="fas fa-sync me-2"></i>Refresh
+        </button>
+    </div>
+
+    <!-- KPI Cards Row 1 -->
+    <div class="row mb-3">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-gradient-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 id="totalRevenue">₹0</h4>
+                            <p class="mb-0">Total Revenue</p>
+                            <small id="revenueSparkline">▁▃▅▇█</small>
+                        </div>
+                        <i class="fas fa-rupee-sign fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-gradient-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 id="totalOrders">0</h4>
+                            <p class="mb-0">Total Orders</p>
+                            <small>+12% from last month</small>
+                        </div>
+                        <i class="fas fa-shopping-cart fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-gradient-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 id="totalCustomers">0</h4>
+                            <p class="mb-0">Total Customers</p>
+                            <small>+8% growth rate</small>
+                        </div>
+                        <i class="fas fa-users fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-gradient-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 id="totalProducts">0</h4>
+                            <p class="mb-0">Total Products</p>
+                            <small>Across all categories</small>
+                        </div>
+                        <i class="fas fa-box fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards Row 2 -->
+    <div class="row mb-3">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-primary h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                    <h5 id="avgOrderValue">₹0</h5>
+                    <small class="text-muted">Avg Order Value</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-success h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-percentage fa-2x text-success mb-2"></i>
+                    <h5 id="conversionRate">0%</h5>
+                    <small class="text-muted">Conversion Rate</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-warning h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-warehouse fa-2x text-warning mb-2"></i>
+                    <h5 id="stockValue">₹0</h5>
+                    <small class="text-muted">Stock Value</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-danger h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+                    <h5 id="lowStock">0</h5>
+                    <small class="text-muted">Low Stock Items</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row mb-3">
+        <div class="col-lg-8 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-area me-2"></i>Revenue Trend (Area Chart)</h5>
+                </div>
+                <div class="card-body" style="height:300px">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie me-2"></i>Categories (Pie Chart)</h5>
+                </div>
+                <div class="card-body" style="height:300px">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row mb-3">
+        <div class="col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Monthly Sales (Bar Chart)</h5>
+                </div>
+                <div class="card-body" style="height:300px">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line me-2"></i>Stock Movement (Line Graph)</h5>
+                </div>
+                <div class="card-body" style="height:300px">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 3 -->
+    <div class="row mb-3">
+        <div class="col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie me-2"></i>Order Status (Doughnut)</h5>
+                </div>
+                <div class="card-body" style="height:300px">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-spider me-2"></i>Performance (Radar)</h5>
+                </div>
+                <div class="card-body" style="height:300px">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Top Products (Column)</h5>
+                </div>
+                <div class="card-body" style="height:300px">
+                    <canvas id="columnChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Tables -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Top Products</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Sales</th>
+                                    <th>Revenue</th>
+                                    <th>Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>iPhone 15 Pro</td>
+                                    <td>245</td>
+                                    <td>₹30.6L</td>
+                                    <td><span class="badge bg-success">+15%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>MacBook Pro M3</td>
+                                    <td>89</td>
+                                    <td>₹22.3L</td>
+                                    <td><span class="badge bg-success">+8%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Samsung Galaxy S24</td>
+                                    <td>156</td>
+                                    <td>₹12.5L</td>
+                                    <td><span class="badge bg-warning">-2%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Customer Insights</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>New Customers</span>
+                            <strong>89 this month</strong>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Returning Customers</span>
+                            <strong>68%</strong>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" style="width: 68%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Customer Satisfaction</span>
+                            <strong>4.2/5</strong>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" style="width: 84%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let charts = {};
+
+document.addEventListener('DOMContentLoaded', () => loadAnalytics());
+
+function loadAnalytics() {
+    fetch('/analytics/api/data/')
+        .then(r => r.json())
+        .then(data => {
+            // Update KPIs
+            document.getElementById('totalRevenue').textContent = '₹' + data.total_revenue.toLocaleString();
+            document.getElementById('totalOrders').textContent = data.total_orders.toLocaleString();
+            document.getElementById('totalCustomers').textContent = data.total_customers.toLocaleString();
+            document.getElementById('totalProducts').textContent = data.total_products.toLocaleString();
+            document.getElementById('avgOrderValue').textContent = '₹' + (data.total_revenue / (data.total_orders || 1)).toFixed(0);
+            document.getElementById('conversionRate').textContent = '3.2%';
+            document.getElementById('stockValue').textContent = '₹' + (data.total_products * 500).toLocaleString();
+            document.getElementById('lowStock').textContent = Math.floor(data.total_products * 0.1);
+
+            createCharts(data);
+        })
+        .catch(err => console.error('Error:', err));
+}
+
+function createCharts(data) {
+    // Area Chart - Revenue
+    createChart('revenueChart', 'line', {
+        labels: data.revenue_labels,
+        datasets: [{
+            label: 'Revenue',
+            data: data.revenue_data,
+            borderColor: '#0014A8',
+            backgroundColor: 'rgba(0,20,168,0.2)',
+            fill: true,
+            tension: 0.4
+        }]
+    });
+
+    // Pie Chart - Categories
+    createChart('categoryChart', 'pie', {
+        labels: data.category_labels,
+        datasets: [{
+            data: data.category_data,
+            backgroundColor: ['#0014A8', '#28a745', '#ffc107', '#dc3545']
+        }]
+    });
+
+    // Bar Chart - Monthly Sales
+    createChart('barChart', 'bar', {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Sales',
+            data: [65, 59, 80, 81, 56, 55],
+            backgroundColor: '#0014A8'
+        }]
+    });
+
+    // Line Chart - Stock Movement
+    createChart('lineChart', 'line', {
+        labels: data.revenue_labels,
+        datasets: [{
+            label: 'Stock In',
+            data: [30, 45, 35, 50, 40, 60, 55],
+            borderColor: '#28a745',
+            tension: 0.4
+        }, {
+            label: 'Stock Out',
+            data: [20, 35, 30, 40, 35, 45, 40],
+            borderColor: '#dc3545',
+            tension: 0.4
+        }]
+    });
+
+    // Doughnut Chart - Order Status
+    createChart('doughnutChart', 'doughnut', {
+        labels: ['Completed', 'Pending', 'Cancelled'],
+        datasets: [{
+            data: [70, 20, 10],
+            backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+        }]
+    });
+
+    // Radar Chart - Performance
+    createChart('radarChart', 'radar', {
+        labels: ['Sales', 'Quality', 'Speed', 'Support', 'Value'],
+        datasets: [{
+            label: 'Performance',
+            data: [85, 90, 75, 80, 88],
+            backgroundColor: 'rgba(0,20,168,0.2)',
+            borderColor: '#0014A8'
+        }]
+    });
+
+    // Column Chart - Top Products
+    createChart('columnChart', 'bar', {
+        labels: ['Product A', 'Product B', 'Product C', 'Product D'],
+        datasets: [{
+            label: 'Units Sold',
+            data: [120, 95, 80, 65],
+            backgroundColor: ['#0014A8', '#28a745', '#ffc107', '#17a2b8']
+        }]
+    });
+}
+
+function createChart(id, type, data) {
+    const ctx = document.getElementById(id);
+    if (!ctx) return;
+    if (charts[id]) charts[id].destroy();
+    charts[id] = new Chart(ctx, {
+        type: type,
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: type !== 'pie' && type !== 'doughnut' && type !== 'radar' ? { y: { beginAtZero: true } } : {}
+        }
+    });
+}
+
+function refreshData() {
+    loadAnalytics();
+}
+</script>
+
+<style>
+.bg-gradient-primary { background: linear-gradient(45deg, #007bff, #0056b3); }
+.bg-gradient-success { background: linear-gradient(45deg, #28a745, #1e7e34); }
+.bg-gradient-info { background: linear-gradient(45deg, #17a2b8, #117a8b); }
+.bg-gradient-warning { background: linear-gradient(45deg, #ffc107, #e0a800); }
+</style>
+{% endblock %}

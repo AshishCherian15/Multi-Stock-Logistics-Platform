@@ -1,0 +1,1129 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Access - MultiStock</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23007bff'><path d='M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6V377.4c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4V134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1v-188L288 246.6v188z'/></svg>">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="team-login-container">
+        <!-- Animated Background -->
+        <div class="login-bg">
+            <div class="floating-icon icon-1">👥</div>
+            <div class="floating-icon icon-2">🔧</div>
+            <div class="floating-icon icon-3">📊</div>
+            <div class="floating-icon icon-4">⚙️</div>
+        </div>
+
+        <div class="container">
+            <div class="row justify-content-center align-items-center min-vh-100">
+                <div class="col-lg-5 col-md-7">
+                    <div class="login-card">
+                        <!-- Header -->
+                        <div class="login-header">
+                            <div class="logo-top">
+                                <svg width="32" height="32" viewBox="0 0 512 512" fill="#4f46e5"
+                                    style="margin-right: 8px;">
+                                    <path
+                                        d="M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6V377.4c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4V134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1v-188L288 246.6v188z" />
+                                </svg>
+                                <span>MultiStock</span>
+                            </div>
+                            <div class="login-icon">👥</div>
+                            <h2>Team Access</h2>
+                            <p>Staff & Administrator Portal</p>
+                        </div>
+
+                        <!-- Form -->
+                        <form method="post" class="login-form">
+                            {% csrf_token %}
+
+                            <a href="{% url 'auth:login_selection' %}" class="back-link">
+                                <i class="fas fa-arrow-left"></i> Back to Login Options
+                            </a>
+
+                            {% if messages %}
+                            <div class="alert alert-danger" role="alert" style="margin-top: 10px;">
+                                {% for message in messages %}
+                                    <div>{{ message }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            {% if form.non_field_errors %}
+                            <div class="error-message" style="display: none;">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ form.non_field_errors }}
+                            </div>
+                            {% endif %}
+
+                            <div class="form-group">
+                                <label for="id_username" class="field-label">Username or Email</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <input type="text" name="username" id="id_username"
+                                        class="form-control floating-input" placeholder="Enter your username or email"
+                                        value="" autocomplete="off" required aria-label="Username or Email"
+                                        aria-describedby="username-help">
+                                    <span class="floating-label" id="username-help">Username or Email</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_password" class="field-label">Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-lock input-icon"></i>
+                                    <input type="password" name="password" id="id_password"
+                                        class="form-control floating-input" placeholder="Enter your password" value=""
+                                        autocomplete="new-password" required aria-label="Password"
+                                        aria-describedby="password-help">
+                                    <span class="floating-label" id="password-help">Password</span>
+                                    <button type="button" class="password-toggle" id="togglePassword"
+                                        title="Show Password" aria-label="Toggle password visibility">
+                                        <i class="fas fa-eye" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group remember-me">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="remember" id="remember">
+                                    <span>Remember Me</span>
+                                </label>
+                            </div>
+
+                            <div class="forgot-password-section">
+                                <a href="{% url 'auth:forgot_password' %}" class="forgot-link">
+                                    <i class="fas fa-key"></i>
+                                    Forgot Password?
+                                </a>
+                            </div>
+
+                            <button type="submit" class="login-btn" id="loginBtn">
+                                <i class="fas fa-lock-open btn-icon-left"></i>
+                                <span class="btn-text">Access Dashboard</span>
+                                <div class="spinner" id="loginSpinner" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                                <i class="fas fa-arrow-right btn-icon"></i>
+                            </button>
+
+                            <!-- Error Messages -->
+                            <div id="errorMessage" class="error-message" style="display: none;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span id="errorText">Invalid credentials. Please try again.</span>
+                            </div>
+                        </form>
+
+                        <!-- Demo Info -->
+                        <div class="demo-info">
+                            <div class="demo-accounts">
+                                <h6>🎯 Demo Accounts</h6>
+                                <div class="demo-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Click any account to auto-fill</span>
+                                </div>
+                                <div class="demo-tabs">
+                                    <button class="tab-btn active" data-tab="admin">SuperAdmin/Admin</button>
+                                    <button class="tab-btn" data-tab="subadmin">SubAdmin</button>
+                                    <button class="tab-btn" data-tab="staff">Staff</button>
+                                </div>
+                                <div class="demo-list" id="admin-tab">
+                                    <div class="demo-item" data-username="superuser" data-password="super123">
+                                        <div class="demo-role">🔴 SuperAdmin</div>
+                                        <div class="demo-creds">superuser / super123</div>
+                                        <div class="demo-tooltip">Full system access & management</div>
+                                    </div>
+                                    <div class="demo-item" data-username="testcustomer" data-password="super123">
+                                        <div class="demo-role">🔴 SuperAdmin</div>
+                                        <div class="demo-creds">testcustomer / super123</div>
+                                        <div class="demo-tooltip">Full system access & management</div>
+                                    </div>
+                                    <div class="demo-item" data-username="admin" data-password="admin123">
+                                        <div class="demo-role">🔵 Admin</div>
+                                        <div class="demo-creds">admin / admin123</div>
+                                        <div class="demo-tooltip">Administrative access</div>
+                                    </div>
+                                    <div class="demo-item" data-username="admin_rajesh" data-password="admin123">
+                                        <div class="demo-role">🔵 Admin</div>
+                                        <div class="demo-creds">admin_rajesh / admin123</div>
+                                        <div class="demo-tooltip">Administrative access</div>
+                                    </div>
+                                    <div class="demo-item" data-username="admin_priya" data-password="admin123">
+                                        <div class="demo-role">🔵 Admin</div>
+                                        <div class="demo-creds">admin_priya / admin123</div>
+                                        <div class="demo-tooltip">Administrative access</div>
+                                    </div>
+                                </div>
+                                <div class="demo-list" id="subadmin-tab" style="display:none;">
+                                    <div class="demo-item" data-username="subadmin_suresh" data-password="sub123">
+                                        <div class="demo-role">🟡 SubAdmin</div>
+                                        <div class="demo-creds">subadmin_suresh / sub123</div>
+                                        <div class="demo-tooltip">Supervisor/Store manager access</div>
+                                    </div>
+                                    <div class="demo-item" data-username="senior_lakshmi" data-password="staff123">
+                                        <div class="demo-role">🟡 SubAdmin</div>
+                                        <div class="demo-creds">senior_lakshmi / staff123</div>
+                                        <div class="demo-tooltip">Supervisor/Senior staff operations</div>
+                                    </div>
+                                </div>
+                                <div class="demo-list" id="staff-tab" style="display:none;">
+                                    <div class="demo-item" data-username="staff" data-password="staff123">
+                                        <div class="demo-role">🟠 Staff</div>
+                                        <div class="demo-creds">staff / staff123</div>
+                                        <div class="demo-tooltip">Basic staff operations</div>
+                                    </div>
+                                    <div class="demo-item" data-username="staff_amit" data-password="staff123">
+                                        <div class="demo-role">🟠 Staff</div>
+                                        <div class="demo-creds">staff_amit / staff123</div>
+                                        <div class="demo-tooltip">Staff operations</div>
+                                    </div>
+                                    <div class="demo-item" data-username="staff_vikram" data-password="staff123">
+                                        <div class="demo-role">🟠 Staff</div>
+                                        <div class="demo-creds">staff_vikram / staff123</div>
+                                        <div class="demo-tooltip">Staff operations</div>
+                                    </div>
+                                    <div class="demo-item" data-username="superadmin" data-password="staff123">
+                                        <div class="demo-role">🟠 Staff</div>
+                                        <div class="demo-creds">superadmin / staff123</div>
+                                        <div class="demo-tooltip">Staff operations</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .team-login-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0014A8 0%, #000E75 50%, #000842 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-login-container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #0014A8 0%, #000E75 50%, #000842 100%);
+            z-index: -1;
+        }
+
+        .login-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 2.5rem;
+            opacity: 0.1;
+            animation: floatAround 8s ease-in-out infinite;
+        }
+
+        .icon-1 {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .icon-2 {
+            top: 25%;
+            right: 20%;
+            animation-delay: 2s;
+        }
+
+        .icon-3 {
+            bottom: 30%;
+            left: 25%;
+            animation-delay: 4s;
+        }
+
+        .icon-4 {
+            bottom: 20%;
+            right: 15%;
+            animation-delay: 6s;
+        }
+
+        @keyframes floatAround {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            25% {
+                transform: translate(20px, -20px) rotate(90deg);
+            }
+
+            50% {
+                transform: translate(-10px, -30px) rotate(180deg);
+            }
+
+            75% {
+                transform: translate(-20px, 10px) rotate(270deg);
+            }
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            animation: slideInUp 0.8s ease-out;
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        .login-header h2 {
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 2.2rem;
+        }
+
+        .login-header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .logo-top {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #4f46e5;
+            font-size: 1.1rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #4f46e5;
+        }
+
+        .field-label {
+            display: block;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 0.25rem;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            height: 48px;
+            padding: 0 3rem 0 2.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+            color: #374151;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #9ca3af;
+            transition: color 0.3s;
+        }
+
+        .input-wrapper input:focus::placeholder {
+            color: transparent;
+        }
+
+        .input-wrapper input[type="password"] {
+            font-family: text-security-disc, -webkit-text-security, monospace;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+        }
+
+        .floating-label {
+            position: absolute;
+            left: 2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            opacity: 0;
+        }
+
+        .floating-input:focus~.floating-label,
+        .floating-input:not(:placeholder-shown)~.floating-label {
+            top: -0.625rem;
+            left: 0.75rem;
+            transform: translateY(0);
+            font-size: 0.75rem;
+            color: #4f46e5;
+            background: white;
+            padding: 0 0.375rem;
+            opacity: 1;
+        }
+
+        .remember-me {
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            z-index: 1;
+            font-size: 1rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: #4f46e5;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1.1rem;
+            background: linear-gradient(135deg, #0014A8, #000E75, #000842);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-icon-left {
+            font-size: 1.2rem;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 20, 168, 0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: none;
+        }
+
+        .forgot-password-section {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .forgot-link {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: #4f46e5;
+        }
+
+        .demo-help {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .demo-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            border: 1px solid #e0f2fe;
+        }
+
+        .demo-item:hover {
+            background: #e0f2fe;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-role {
+            font-weight: 600;
+            color: #0369a1;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .demo-creds {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .demo-tooltip {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .forgot-password-section {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .forgot-link {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: rgba(107, 114, 128, 0.1);
+            position: relative;
+        }
+
+        .forgot-link::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #4f46e5;
+            transition: width 0.3s;
+        }
+
+        .forgot-link:hover {
+            color: #4f46e5;
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        .forgot-link:hover::after {
+            width: 80%;
+        }
+
+        .error-message {
+            background: linear-gradient(45deg, #fee2e2, #fecaca);
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid #fca5a5;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .error-message {
+            background: linear-gradient(45deg, #fee2e2, #fecaca);
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .field-error {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .demo-info {
+            background: linear-gradient(45deg, #f0f9ff, #e0f2fe);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .demo-info h6 {
+            color: #0369a1;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .demo-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e0f2fe;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6b7280;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #0369a1;
+            border-bottom-color: #0369a1;
+        }
+
+        .tab-btn:hover {
+            background: rgba(3, 105, 161, 0.05);
+        }
+
+        .copy-icon {
+            cursor: pointer;
+            color: #6b7280;
+            margin-left: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .copy-icon:hover {
+            color: #0369a1;
+        }
+
+
+
+        .demo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .demo-item {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #374151;
+            border: 1px solid #e0f2fe;
+        }
+
+
+
+
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            .login-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .demo-help {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+
+    <script>
+        // Store fetched users globally
+        let teamUsers = {};
+        let selectedRoleFilter = null;
+        
+        // Map login selection roles to actual database roles
+        const roleMapping = {
+            'owner': 'superadmin',
+            'partner': 'admin',
+            'subadmin': 'subadmin',
+            'employee': 'staff'
+        };
+        
+        // Fetch team users from API on page load
+        async function fetchTeamUsers() {
+            try {
+                const response = await fetch('/auth/api/team-users/');
+                const data = await response.json();
+                if (data.success && data.users_by_role) {
+                    teamUsers = data.users_by_role;
+                    
+                    // Check if role was selected from login selection page
+                    const selectionRole = localStorage.getItem('selectedRole');
+                    if (selectionRole) {
+                        selectedRoleFilter = roleMapping[selectionRole] || null;
+                        localStorage.removeItem('selectedRole'); // Clear after reading
+                    }
+                    
+                    populateDemoAccounts();
+                } else {
+                    console.error('Failed to fetch team users:', data.error);
+                    // Use default/fallback accounts if API fails
+                    useDefaultAccounts();
+                }
+            } catch (error) {
+                console.error('Error fetching team users:', error);
+                // Use default/fallback accounts if API fails
+                useDefaultAccounts();
+            }
+        }
+        
+        // Default passwords for demo accounts (you can change these)
+        const defaultPasswords = {
+            'superuser': 'super123',
+            'testcustomer': 'super123',
+            'admin': 'admin123',
+            'admin_rajesh': 'admin123',
+            'admin_priya': 'admin123',
+            'subadmin_suresh': 'sub123',
+            'senior_lakshmi': 'staff123',
+            'staff': 'staff123',
+            'staff_amit': 'staff123',
+            'staff_vikram': 'staff123',
+            'superadmin': 'staff123'
+        };
+        
+        // Fallback accounts if API fails
+        function useDefaultAccounts() {
+            teamUsers = {
+                'superadmin': [
+                    { username: 'superuser', role: 'superadmin', email: 'superuser@multistock.com' },
+                    { username: 'testcustomer', role: 'superadmin', email: 'testcustomer@multistock.com' }
+                ],
+                'admin': [
+                    { username: 'admin', role: 'admin', email: 'admin@multistock.com' },
+                    { username: 'admin_rajesh', role: 'admin', email: 'rajesh@multistock.com' },
+                    { username: 'admin_priya', role: 'admin', email: 'priya@multistock.com' }
+                ],
+                'subadmin': [
+                    { username: 'subadmin_suresh', role: 'subadmin', email: 'suresh@multistock.com' },
+                    { username: 'senior_lakshmi', role: 'subadmin', email: 'lakshmi.senior@multistock.in' }
+                ],
+                'staff': [
+                    { username: 'staff', role: 'staff', email: 'staff@multistock.com' },
+                    { username: 'staff_amit', role: 'staff', email: 'amit@multistock.com' },
+                    { username: 'staff_vikram', role: 'staff', email: 'vikram@multistock.com' }
+                ]
+            };
+            populateDemoAccounts();
+        }
+        
+        // Populate demo accounts from API data
+        function populateDemoAccounts() {
+            const superadminTab = document.getElementById('admin-tab');
+            const subadminTab = document.getElementById('subadmin-tab');
+            const staffTab = document.getElementById('staff-tab');
+            
+            // Map role names to display names
+            const roleDisplay = {
+                'superadmin': { icon: '🔴', name: 'SuperAdmin', tooltip: 'Full system access' },
+                'admin': { icon: '🔵', name: 'Admin', tooltip: 'Administrative access' },
+                'subadmin': { icon: '🟡', name: 'SubAdmin', tooltip: 'Supervisor/Store manager' },
+                'staff': { icon: '🟠', name: 'Staff', tooltip: 'Staff operations' }
+            };
+            
+            // Filter users based on selected role from login selection
+            if (selectedRoleFilter) {
+                // Show only the selected role's accounts
+                const filteredUsers = teamUsers[selectedRoleFilter] || [];
+                const display = roleDisplay[selectedRoleFilter];
+                
+                let html = filteredUsers.map(user => {
+                    const password = defaultPasswords[user.username] || 'demo123';
+                    return `
+                        <div class="demo-item" data-username="${user.username}" data-password="${password}">
+                            <div class="demo-role">${display.icon} ${display.name}</div>
+                            <div class="demo-creds">${user.username} / ${password}</div>
+                            <div class="demo-tooltip">${user.email || display.tooltip}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Show in first tab and hide other tabs
+                if (superadminTab) {
+                    superadminTab.innerHTML = html;
+                    superadminTab.style.display = 'flex';
+                }
+                if (subadminTab) subadminTab.style.display = 'none';
+                if (staffTab) staffTab.style.display = 'none';
+                
+                // Hide tab buttons since we're showing only one role
+                const tabBtns = document.querySelectorAll('.tab-btn');
+                tabBtns.forEach(btn => btn.style.display = 'none');
+            } else {
+                // Show all roles in their respective tabs
+                
+                // Populate SuperAdmin/Admin tab (combination)
+                let superadminHtml = '';
+                if (teamUsers['superadmin']) {
+                    superadminHtml += teamUsers['superadmin'].map(user => {
+                        const password = defaultPasswords[user.username] || 'super123';
+                        return `
+                            <div class="demo-item" data-username="${user.username}" data-password="${password}">
+                                <div class="demo-role">🔴 SuperAdmin</div>
+                                <div class="demo-creds">${user.username} / ${password}</div>
+                                <div class="demo-tooltip">${user.email || 'Full system access'}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                if (teamUsers['admin']) {
+                    superadminHtml += teamUsers['admin'].map(user => {
+                        const password = defaultPasswords[user.username] || 'admin123';
+                        return `
+                            <div class="demo-item" data-username="${user.username}" data-password="${password}">
+                                <div class="demo-role">🔵 Admin</div>
+                                <div class="demo-creds">${user.username} / ${password}</div>
+                                <div class="demo-tooltip">${user.email || 'Administrative access'}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                if (superadminTab) superadminTab.innerHTML = superadminHtml;
+                
+                // Populate SubAdmin tab
+                let subadminHtml = '';
+                if (teamUsers['subadmin']) {
+                    subadminHtml = teamUsers['subadmin'].map(user => {
+                        const password = defaultPasswords[user.username] || 'sub123';
+                        return `
+                            <div class="demo-item" data-username="${user.username}" data-password="${password}">
+                                <div class="demo-role">🟡 SubAdmin</div>
+                                <div class="demo-creds">${user.username} / ${password}</div>
+                                <div class="demo-tooltip">${user.email || 'Supervisor access'}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                if (subadminTab) subadminTab.innerHTML = subadminHtml;
+                
+                // Populate Staff tab
+                let staffHtml = '';
+                if (teamUsers['staff']) {
+                    staffHtml = teamUsers['staff'].map(user => {
+                        const password = defaultPasswords[user.username] || 'staff123';
+                        return `
+                            <div class="demo-item" data-username="${user.username}" data-password="${password}">
+                                <div class="demo-role">🟠 Staff</div>
+                                <div class="demo-creds">${user.username} / ${password}</div>
+                                <div class="demo-tooltip">${user.email || 'Staff operations'}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                if (staffTab) staffTab.innerHTML = staffHtml;
+            }
+            
+            // Re-bind click handlers
+            bindDemoItemHandlers();
+        }
+        
+        // Bind click handlers to demo items
+        function bindDemoItemHandlers() {
+            const usernameField = document.getElementById('id_username');
+            const passwordField = document.getElementById('id_password');
+            
+            document.querySelectorAll('.demo-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    const username = this.getAttribute('data-username');
+                    const password = this.getAttribute('data-password');
+                    
+                    // Clear fields first
+                    if (usernameField) usernameField.value = '';
+                    if (passwordField) passwordField.value = '';
+                    
+                    // Animate typing effect
+                    setTimeout(() => {
+                        if (usernameField) {
+                            usernameField.value = username;
+                            usernameField.dispatchEvent(new Event('input'));
+                        }
+                    }, 100);
+                    
+                    setTimeout(() => {
+                        if (passwordField) {
+                            passwordField.value = password;
+                            passwordField.dispatchEvent(new Event('input'));
+                        }
+                    }, 300);
+                    
+                    // Visual feedback
+                    this.style.background = '#dbeafe';
+                    setTimeout(() => {
+                        this.style.background = '';
+                    }, 1000);
+                });
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch team users from API
+            fetchTeamUsers();
+            
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordField = document.getElementById('id_password');
+            const usernameField = document.getElementById('id_username');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginForm = document.querySelector('.login-form');
+
+            // Clear any auto-filled values and set proper placeholders
+            if (usernameField) {
+                usernameField.value = '';
+                usernameField.placeholder = 'Enter your username or email';
+            }
+            if (passwordField) {
+                passwordField.value = '';
+                passwordField.placeholder = 'Enter your password';
+            }
+
+            // Password toggle
+            if (togglePassword && passwordField && toggleIcon) {
+                togglePassword.addEventListener('click', function () {
+                    if (passwordField.type === 'password') {
+                        passwordField.type = 'text';
+                        toggleIcon.classList.remove('fa-eye');
+                        toggleIcon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordField.type = 'password';
+                        toggleIcon.classList.remove('fa-eye-slash');
+                        toggleIcon.classList.add('fa-eye');
+                    }
+                });
+            }
+
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const tab = this.getAttribute('data-tab');
+                    document.querySelectorAll('.demo-list').forEach(list => list.style.display = 'none');
+                    document.getElementById(tab + '-tab').style.display = 'flex';
+                });
+            });
+
+            // Form submission with loading spinner and validation
+            if (loginForm && loginBtn) {
+                loginForm.addEventListener('submit', function (e) {
+                    // Hide any previous error messages
+                    document.getElementById('errorMessage').style.display = 'none';
+
+                    // Validate fields
+                    if (!usernameField.value.trim() || !passwordField.value.trim()) {
+                        e.preventDefault();
+                        showError('Please fill in all fields');
+                        return;
+                    }
+
+                    // Show loading state
+                    loginBtn.disabled = true;
+                    document.querySelector('.btn-text').style.display = 'none';
+                    document.querySelector('.btn-icon').style.display = 'none';
+                    document.getElementById('loginSpinner').style.display = 'block';
+                });
+            }
+
+            // Error display function
+            function showError(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                const errorText = document.getElementById('errorText');
+                errorText.textContent = message;
+                errorDiv.style.display = 'flex';
+
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 5000);
+            }
+
+            // Only show error messages if there are actual Django form errors
+            const djangoErrors = document.querySelector('.error-message');
+            if (djangoErrors && djangoErrors.textContent.trim() && djangoErrors.style.display !== 'none') {
+                // Only show if it's a real error from form submission
+                if (document.referrer.includes('team_login') || window.location.search.includes('error')) {
+                    showError('Invalid username or password. Please try again.');
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+

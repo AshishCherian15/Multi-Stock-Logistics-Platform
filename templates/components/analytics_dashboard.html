@@ -1,0 +1,107 @@
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas {{ icon1 }} fa-2x mb-2" style="color:#0014A8"></i>
+                <h6 class="text-muted">{{ label1 }}</h6>
+                <h3 class="mb-0">{{ value1 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas {{ icon2 }} fa-2x mb-2" style="color:#28a745"></i>
+                <h6 class="text-muted">{{ label2 }}</h6>
+                <h3 class="mb-0">{{ value2 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas {{ icon3 }} fa-2x mb-2" style="color:#ffc107"></i>
+                <h6 class="text-muted">{{ label3 }}</h6>
+                <h3 class="mb-0">{{ value3 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas {{ icon4 }} fa-2x mb-2" style="color:#17a2b8"></i>
+                <h6 class="text-muted">{{ label4 }}</h6>
+                <h3 class="mb-0">{{ value4 }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">{{ chart_title|default:"Trends" }}</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="{{ chart_id|default:'trendChart' }}" style="max-height:300px"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">{{ pie_title|default:"Distribution" }}</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="{{ pie_id|default:'pieChart' }}" style="max-height:300px"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const trendCtx=document.getElementById('{{ chart_id|default:"trendChart" }}');
+if(trendCtx){
+new Chart(trendCtx,{
+type:'line',
+data:{
+labels:{{ chart_labels|safe|default:"['Jan','Feb','Mar','Apr','May','Jun']" }},
+datasets:[{
+label:'{{ chart_dataset_label|default:"Activity" }}',
+data:{{ chart_data|safe|default:"[12,19,15,25,22,30]" }},
+borderColor:'#0014A8',
+backgroundColor:'rgba(0,20,168,0.1)',
+tension:0.4,
+fill:true
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:true,
+plugins:{legend:{display:true,position:'top'}},
+scales:{y:{beginAtZero:true}}
+}
+});
+}
+
+const pieCtx=document.getElementById('{{ pie_id|default:"pieChart" }}');
+if(pieCtx){
+new Chart(pieCtx,{
+type:'doughnut',
+data:{
+labels:{{ pie_labels|safe|default:"['Active','Inactive','Pending']" }},
+datasets:[{
+data:{{ pie_data|safe|default:"[65,25,10]" }},
+backgroundColor:['#0014A8','#28a745','#ffc107']
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:true,
+plugins:{legend:{display:true,position:'bottom'}}
+}
+});
+}
+</script>

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Maintenance Schedule - Rentals{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <h2 class="mb-4"><i class="fas fa-tools me-2"></i>Maintenance Schedule</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Scheduled Date</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Completion Date</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in schedules %}
+                        <tr>
+                            <td><strong>{{ schedule.item.name }}</strong></td>
+                            <td>{{ schedule.scheduled_date|date:"M d, Y H:i" }}</td>
+                            <td>{{ schedule.description }}</td>
+                            <td>
+                                {% if schedule.completed %}
+                                <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if schedule.completion_date %}
+                                {{ schedule.completion_date|date:"M d, Y H:i" }}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ schedule.notes|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <i class="fas fa-calendar-check fa-3x text-muted mb-3 d-block"></i>
+                                <p class="text-muted">No maintenance schedules found.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

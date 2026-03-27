@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Stock Adjustments{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0"><i class="fas fa-sliders-h me-2 text-primary"></i>Stock Adjustments</h2>
+    <a href="{% url 'adjustments:create' %}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>New Adjustment</a>
+  </div>
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-dark"><tr><th>Product</th><th>Type</th><th>Qty</th><th>Reason</th><th>Status</th><th>By</th><th>Date</th><th></th></tr></thead>
+        <tbody>
+        {% for a in adjustments %}
+        <tr>
+          <td>{{ a.product.goods_desc }}</td>
+          <td>{{ a.get_adjustment_type_display }}</td>
+          <td><span class="{% if a.quantity < 0 %}text-danger{% else %}text-success{% endif %}">{{ a.quantity }}</span></td>
+          <td>{{ a.reason|truncatechars:40 }}</td>
+          <td>{% if a.status == 'approved' %}<span class="badge bg-success">Approved</span>{% elif a.status == 'rejected' %}<span class="badge bg-danger">Rejected</span>{% else %}<span class="badge bg-warning text-dark">Pending</span>{% endif %}</td>
+          <td>{{ a.created_by.username|default:"-" }}</td>
+          <td>{{ a.created_at|date:"M d, Y" }}</td>
+          <td>{% if a.status == 'pending' %}<form method="post" action="{% url 'adjustments:approve' a.id %}" class="d-flex gap-1">{% csrf_token %}<button name="action" value="approve" class="btn btn-xs btn-success">✓</button><button name="action" value="reject" class="btn btn-xs btn-danger">✗</button></form>{% endif %}</td>
+        </tr>
+        {% empty %}<tr><td colspan="8" class="text-center py-4 text-muted">No adjustments.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

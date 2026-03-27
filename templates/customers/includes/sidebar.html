@@ -1,0 +1,128 @@
+{% load static %}
+
+<nav id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <h3><i class="fas fa-shopping-bag me-2"></i>Customer Portal</h3>
+    </div>
+
+    <div class="sidebar-content">
+        <ul class="nav flex-column">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a href="{% url 'customers:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+            </li>
+
+            <!-- Shopping Section -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#shoppingMenu" role="button" 
+                   aria-expanded="{% if 'marketplace' in request.resolver_match.url_name or 'cart' in request.resolver_match.url_name or 'wishlist' in request.resolver_match.url_name or 'orders' in request.resolver_match.url_name %}true{% else %}false{% endif %}" 
+                   aria-controls="shoppingMenu">
+                    <i class="fas fa-shopping-bag me-2"></i>Shopping
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+                <div class="collapse {% if 'marketplace' in request.resolver_match.url_name or 'cart' in request.resolver_match.url_name or 'wishlist' in request.resolver_match.url_name or 'orders' in request.resolver_match.url_name %}show{% endif %}" id="shoppingMenu">
+                    <ul class="nav flex-column ms-4">
+                        <li class="nav-item">
+
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cart:cart_page' %}" class="nav-link {% if 'cart' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="fas fa-shopping-cart me-2"></i>Cart
+                                {% if cart_count and cart_count > 0 %}
+                                    <span class="badge bg-primary rounded-pill float-end">{{ cart_count }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'wishlist:wishlist_page' %}" class="nav-link {% if 'wishlist' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="fas fa-heart me-2"></i>Wishlist
+                                {% if wishlist_count and wishlist_count > 0 %}
+                                    <span class="badge bg-danger rounded-pill float-end">{{ wishlist_count }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'customers:my_orders' %}" class="nav-link {% if 'my_orders' in request.resolver_match.url_name or 'order_detail' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="fas fa-receipt me-2"></i>My Orders
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <!-- Services Section -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#servicesMenu" role="button" 
+                   aria-expanded="{% if 'mine' in request.resolver_match.url_name or 'rentals' in request.resolver_match.url_name or 'storage' in request.resolver_match.url_name or 'lockers' in request.resolver_match.url_name %}true{% else %}false{% endif %}" 
+                   aria-controls="servicesMenu">
+                    <i class="fas fa-concierge-bell me-2"></i>Services
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+                <div class="collapse {% if 'mine' in request.resolver_match.url_name or 'rentals' in request.resolver_match.url_name or 'storage' in request.resolver_match.url_name or 'lockers' in request.resolver_match.url_name %}show{% endif %}" id="servicesMenu">
+                    <ul class="nav flex-column ms-4">
+                        <li class="nav-item">
+                            <a href="{% url 'customers:my_rentals' %}" class="nav-link {% if 'my_rentals' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="fas fa-key me-2"></i>Rentals
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'customers:my_storage' %}" class="nav-link {% if 'my_storage' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="fas fa-warehouse me-2"></i>Storage Units
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'lockers:list' %}" class="nav-link {% if 'lockers' in request.resolver_match.url_name and 'my_lockers' not in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="fas fa-box me-2"></i>Lockers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'customers:my_lockers' %}" class="nav-link {% if 'my_lockers' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="fas fa-boxes me-2"></i>My Lockers
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <!-- Account Section -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#accountMenu" role="button" 
+                   aria-expanded="{% if 'my_profile' in request.resolver_match.url_name or 'about' in request.resolver_match.url_name %}true{% else %}false{% endif %}" 
+                   aria-controls="accountMenu">
+                    <i class="fas fa-user-circle me-2"></i>Account
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+                <div class="collapse {% if 'my_profile' in request.resolver_match.url_name or 'about' in request.resolver_match.url_name %}show{% endif %}" id="accountMenu">
+                    <ul class="nav flex-column ms-4">
+                        <li class="nav-item">
+                            <a href="{% url 'customers:my_profile' %}" class="nav-link {% if 'my_profile' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="fas fa-user-edit me-2"></i>My Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/about/" class="nav-link {% if 'about' in request.path %}active{% endif %}">
+                                <i class="fas fa-info-circle me-2"></i>About Us
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer p-3">
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}https://via.placeholder.com/40?text=User{% endif %}" 
+                     class="rounded-circle" width="40" height="40" alt="Profile">
+            </div>
+            <div class="flex-grow-1 min-width-0">
+                <div class="fw-bold small text-truncate">{{ user.get_full_name|default:user.username }}</div>
+                <div class="small text-muted text-truncate">{{ user.email }}</div>
+            </div>
+        </div>
+    </div>
+</nav>

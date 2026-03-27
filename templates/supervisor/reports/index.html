@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Performance Reports - Supervisor Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-chart-line me-2"></i>Performance Reports</h2>
+            <p class="text-muted mb-0">View operational performance</p>
+        </div>
+        <div>
+            <a href="{% url 'supervisor_panel:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Date Range</label>
+                    <select class="form-select" name="days" onchange="this.form.submit()">
+                        <option value="7" {% if days==7 %}selected{% endif %}>Last 7 Days</option>
+                        <option value="30" {% if days==30 %}selected{% endif %}>Last 30 Days</option>
+                        <option value="90" {% if days==90 %}selected{% endif %}>Last 90 Days</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart text-primary mb-2" style="font-size: 2.5rem;"></i>
+                    <h3 class="mb-0">{{ total_orders }}</h3>
+                    <small class="text-muted">Total Orders</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle text-success mb-2" style="font-size: 2.5rem;"></i>
+                    <h3 class="mb-0">{{ completed_orders }}</h3>
+                    <small class="text-muted">Completed</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock text-warning mb-2" style="font-size: 2.5rem;"></i>
+                    <h3 class="mb-0">{{ pending_orders }}</h3>
+                    <small class="text-muted">Pending</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-users text-info mb-2" style="font-size: 2.5rem;"></i>
+                    <h3 class="mb-0">{{ active_team }}</h3>
+                    <small class="text-muted">Active Team</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Performance -->
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-users me-2"></i>Team Performance</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Total Team Members:</span>
+                        <strong>{{ team_members }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Active Team ({{ days }} days):</span>
+                        <strong class="text-success">{{ active_team }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Completion Rate:</span>
+                        <strong class="text-success">
+                            {% if total_orders > 0 %}
+                            {{ completed_orders|floatformat:0 }}/{{ total_orders }} ({% widthratio completed_orders
+                            total_orders 100 %}%)
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Alerts -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Inventory Alerts</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Low Stock Items:</strong> {{ low_stock }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-ban me-2"></i>
+                        <strong>Out of Stock Items:</strong> {{ out_of_stock }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

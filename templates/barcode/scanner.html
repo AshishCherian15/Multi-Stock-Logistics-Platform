@@ -1,0 +1,483 @@
+{% extends 'base.html' %}
+
+{% block title %}Barcode Scanner - MultiStock{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1><i class="fas fa-barcode me-2"></i>Barcode Scanner</h1>
+        <p class="lead">Scan barcodes to quickly find and manage products</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-camera me-2"></i>Scanner Interface</h5>
+            </div>
+            <div class="card-body text-center">
+                <div id="scanner-container" style="height: 400px; background: #f8f9fa; border: 2px dashed #dee2e6; display: flex; align-items: center; justify-content: center;">
+                    <div>
+                        <i class="fas fa-camera fa-4x text-muted mb-3"></i>
+                        <p class="text-muted">Camera will appear here</p>
+                        <button class="btn btn-primary" onclick="startScanner()">
+                            <i class="fas fa-play me-2"></i>Start Scanner
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-success me-2" onclick="startScanner()">
+                        <i class="fas fa-camera me-2"></i>Start Camera
+                    </button>
+                    <button class="btn btn-danger me-2" onclick="stopScanner()">
+                        <i class="fas fa-stop me-2"></i>Stop Camera
+                    </button>
+                    <button class="btn btn-info" onclick="switchCamera()">
+                        <i class="fas fa-sync me-2"></i>Switch Camera
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-search me-2"></i>Scan Results</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Scanned Barcode</label>
+                    <input type="text" class="form-control" id="scannedCode" placeholder="Barcode will appear here" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Manual Entry</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="manualCode" placeholder="Enter barcode manually">
+                        <button class="btn btn-primary" onclick="searchProduct()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="productInfo" class="mt-3">
+                    <!-- Product information will appear here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-history me-2"></i>Recent Scans</h5>
+            </div>
+            <div class="card-body">
+                <div id="recentScans">
+                    <p class="text-muted">No recent scans</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-cogs me-2"></i>Scanner Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="autoSearch" checked>
+                            <label class="form-check-label" for="autoSearch">
+                                Auto-search on scan
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="playSound" checked>
+                            <label class="form-check-label" for="playSound">
+                                Play sound on scan
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="continuousMode">
+                            <label class="form-check-label" for="continuousMode">
+                                Continuous scanning
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Scanner Status</label>
+                        <div id="scannerStatusIndicator" class="badge bg-secondary">Ready</div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Scan Format</label>
+                        <select class="form-select" id="scanFormat">
+                            <option value="all">All Formats</option>
+                            <option value="ean13">EAN-13</option>
+                            <option value="code128">Code 128</option>
+                            <option value="qr">QR Code</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Quick Actions</label>
+                        <div class="btn-group w-100">
+                            <button class="btn btn-outline-primary btn-sm" onclick="clearHistory()">Clear History</button>
+                            <button class="btn btn-outline-success btn-sm" onclick="exportScans()">Export Scans</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let recentScans = [];
+let isScanning = false;
+let stream = null;
+
+function startScanner() {
+    const container = document.getElementById('scanner-container');
+    container.innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Starting camera...</p>
+        </div>
+    `;
+    
+    navigator.mediaDevices.getUserMedia({ 
+        video: { 
+            facingMode: 'environment',
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+        } 
+    })
+    .then(videoStream => {
+        stream = videoStream;
+        container.innerHTML = `
+            <div class="position-relative">
+                <video id="video" width="100%" height="400" autoplay playsinline style="border-radius: 8px;"></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+                <div class="position-absolute top-50 start-50 translate-middle" style="border: 2px solid #00ff00; width: 250px; height: 120px; background: transparent; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);"></div>
+                <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white p-2 text-center">
+                    <button class="btn btn-success btn-sm me-2" onclick="captureBarcode()"><i class="fas fa-camera me-1"></i>Capture</button>
+                    <small>Position barcode in green frame, then capture</small>
+                </div>
+            </div>
+        `;
+        
+        const video = document.getElementById('video');
+        video.srcObject = stream;
+        isScanning = true;
+    })
+    .catch(err => {
+        container.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="fas fa-camera me-2"></i>
+                Camera access failed. Please allow camera permissions.
+                <br><small>Error: ${err.message}</small>
+            </div>
+        `;
+    });
+}
+
+function captureBarcode() {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    
+    // Show captured image
+    const container = document.getElementById('scanner-container');
+    container.innerHTML = `
+        <div class="text-center">
+            <img src="${canvas.toDataURL()}" style="max-width: 100%; height: 300px; border-radius: 8px;" class="mb-3">
+            <div class="spinner-border text-primary mb-2" role="status"></div>
+            <p>Processing barcode...</p>
+        </div>
+    `;
+    
+    // Simulate barcode processing
+    setTimeout(() => {
+        processBarcode();
+    }, 2000);
+}
+
+function processBarcode() {
+    // Simulate successful barcode detection
+    const testCodes = ['1234567890123', '2345678901234', '3456789012345', '4567890123456', '5678901234567'];
+    const detectedCode = testCodes[Math.floor(Math.random() * testCodes.length)];
+    
+    document.getElementById('scannedCode').value = detectedCode;
+    
+    // Visual feedback
+    const container = document.getElementById('scanner-container');
+    container.style.border = '3px solid #28a745';
+    setTimeout(() => {
+        container.style.border = '';
+    }, 1000);
+    
+    // Play sound if enabled
+    if (document.getElementById('playSound').checked) {
+        playBeepSound();
+    }
+    
+    // Auto-search if enabled
+    if (document.getElementById('autoSearch').checked) {
+        searchProduct();
+    }
+    
+    // Show success message
+    const container2 = document.getElementById('scanner-container');
+    container2.innerHTML = `
+        <div class="alert alert-success text-center">
+            <i class="fas fa-check-circle fa-3x mb-3"></i>
+            <h5>Barcode Detected!</h5>
+            <p class="mb-3">Code: <strong>${detectedCode}</strong></p>
+            <button class="btn btn-primary" onclick="startScanner()">Scan Another</button>
+        </div>
+    `;
+}
+
+
+
+function stopScanner() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+    isScanning = false;
+    
+    const container = document.getElementById('scanner-container');
+    container.innerHTML = `
+        <div>
+            <i class="fas fa-camera fa-4x text-muted mb-3"></i>
+            <p class="text-muted">Camera stopped</p>
+            <button class="btn btn-primary" onclick="startScanner()">
+                <i class="fas fa-play me-2"></i>Start Scanner
+            </button>
+        </div>
+    `;
+}
+
+function switchCamera() {
+    alert('Switching to next available camera...');
+}
+
+function searchProduct() {
+    const code = document.getElementById('manualCode').value || document.getElementById('scannedCode').value;
+    if (!code) {
+        alert('Please enter or scan a barcode first');
+        return;
+    }
+    
+    // Sample product database
+    const products = {
+        '1234567890123': { name: 'iPhone 15 Pro', price: '₹125,000', stock: 5, category: 'Electronics' },
+        '2345678901234': { name: 'Samsung Galaxy S24', price: '₹85,000', stock: 8, category: 'Electronics' },
+        '3456789012345': { name: 'Nike Air Max', price: '₹12,000', stock: 12, category: 'Fashion' },
+        '4567890123456': { name: 'Dell Laptop', price: '₹65,000', stock: 3, category: 'Electronics' },
+        '5678901234567': { name: 'Adidas Shoes', price: '₹8,500', stock: 15, category: 'Fashion' }
+    };
+    
+    const productInfo = document.getElementById('productInfo');
+    const product = products[code];
+    
+    if (product) {
+        productInfo.innerHTML = `
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-check-circle me-2"></i>Product Found</h6>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>Code:</strong> ${code}<br>
+                        <strong>Name:</strong> ${product.name}<br>
+                        <strong>Price:</strong> ${product.price}<br>
+                        <strong>Stock:</strong> ${product.stock} units<br>
+                        <strong>Category:</strong> ${product.category}
+                    </p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm" onclick="viewProductDetails('${code}')">View Details</button>
+                        <button class="btn btn-success btn-sm" onclick="addToCart('${code}')">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        productInfo.innerHTML = `
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Product Not Found</h6>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>Code:</strong> ${code}<br>
+                        <span class="text-muted">This barcode is not in our database.</span>
+                    </p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="addNewProduct('${code}')">Add New Product</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Add to recent scans
+    addToRecentScans(code);
+}
+
+function addToRecentScans(code) {
+    recentScans.unshift({
+        code: code,
+        time: new Date().toLocaleTimeString()
+    });
+    
+    if (recentScans.length > 5) {
+        recentScans = recentScans.slice(0, 5);
+    }
+    
+    updateRecentScansDisplay();
+}
+
+function updateRecentScansDisplay() {
+    const container = document.getElementById('recentScans');
+    if (recentScans.length === 0) {
+        container.innerHTML = '<p class="text-muted">No recent scans</p>';
+        return;
+    }
+    
+    container.innerHTML = recentScans.map(scan => `
+        <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+            <div>
+                <strong>${scan.code}</strong><br>
+                <small class="text-muted">${scan.time}</small>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" onclick="searchSpecificProduct('${scan.code}')">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function searchSpecificProduct(code) {
+    document.getElementById('manualCode').value = code;
+    searchProduct();
+}
+
+function playBeepSound() {
+    // Create audio context for beep sound
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'square';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+function viewProductDetails(code) {
+    alert(`Viewing details for product: ${code}`);
+}
+
+function addToCart(code) {
+    alert(`Added product ${code} to cart!`);
+}
+
+function addNewProduct(code) {
+    const name = prompt('Enter product name:');
+    const price = prompt('Enter product price:');
+    if (name && price) {
+        alert(`New product added: ${name} - ${price}`);
+    }
+}
+
+function switchCamera() {
+    if (isScanning) {
+        stopScanner();
+        setTimeout(() => {
+            startScanner();
+        }, 500);
+    }
+}
+
+function clearHistory() {
+    recentScans = [];
+    updateRecentScansDisplay();
+    updateScannerStatus('History cleared');
+}
+
+function exportScans() {
+    if (recentScans.length === 0) {
+        alert('No scans to export');
+        return;
+    }
+    
+    const csvContent = 'Barcode,Time\n' + recentScans.map(scan => `${scan.code},${scan.time}`).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'barcode_scans.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+function updateScannerStatus(message) {
+    const indicator = document.getElementById('scannerStatusIndicator');
+    if (indicator) {
+        indicator.textContent = message;
+        indicator.className = 'badge bg-info';
+        setTimeout(() => {
+            indicator.textContent = 'Ready';
+            indicator.className = 'badge bg-secondary';
+        }, 3000);
+    }
+}
+
+// Handle keyboard input for barcode scanners
+document.addEventListener('keydown', function(e) {
+    // Prevent conflicts with form inputs
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+    }
+    
+    // Handle barcode scanner input (typically ends with Enter)
+    if (e.key === 'Enter' && barcodeBuffer.length > 0) {
+        document.getElementById('manualCode').value = barcodeBuffer;
+        searchProduct();
+        barcodeBuffer = '';
+    } else if (e.key.length === 1) {
+        barcodeBuffer += e.key;
+        // Clear buffer after 100ms of inactivity
+        clearTimeout(barcodeTimeout);
+        barcodeTimeout = setTimeout(() => {
+            barcodeBuffer = '';
+        }, 100);
+    }
+});
+
+let barcodeBuffer = '';
+let barcodeTimeout;
+</script>
+{% endblock %}

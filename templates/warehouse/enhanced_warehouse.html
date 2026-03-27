@@ -1,0 +1,834 @@
+{% extends 'base.html' %}
+{% block title %}Warehouse Management{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-warehouse me-2"></i>Warehouse Management</h2>
+        <div class="btn-group">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWarehouseModal">
+                <i class="fas fa-plus me-2"></i>Add Warehouse
+            </button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#transferModal">
+                <i class="fas fa-exchange-alt me-2"></i>Transfer Stock
+            </button>
+            <button class="btn btn-info" onclick="scanBarcode()">
+                <i class="fas fa-barcode me-2"></i>Scan Item
+            </button>
+        </div>
+    </div>
+
+    <!-- Warehouse Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-warehouse fa-2x mb-2"></i>
+                    <h5>Total Warehouses</h5>
+                    <h3 id="statWarehouses">{{ total_warehouses }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-boxes fa-2x mb-2"></i>
+                    <h5>Total Items</h5>
+                    <h3 id="statItems">{{ total_items }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-truck fa-2x mb-2"></i>
+                    <h5>Pending Transfers</h5>
+                    <h3 id="statTransfers">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-2x mb-2"></i>
+                    <h5>Capacity Used</h5>
+                    <h3 id="statCapacity">78%</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warehouse Filters -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small text-muted mb-1">Search</label>
+                    <input type="text" class="form-control" id="warehouseSearch" placeholder="Search by name or location">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-1">Location</label>
+                    <select class="form-select" id="locationFilter">
+                        <option value="">All Locations</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-1">Status</label>
+                    <select class="form-select" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted mb-1">&nbsp;</label>
+                    <button class="btn btn-primary w-100" onclick="applyWarehouseFilters()">
+                        <i class="fas fa-filter me-1"></i>Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warehouse Locations -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Warehouse Locations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Location</th>
+                                    <th>Zone</th>
+                                    <th>Capacity</th>
+                                    <th>Current Stock</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for wh in warehouses %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if wh.warehouse_image %}
+                                            <img src="{{ wh.warehouse_image }}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;margin-right:10px;" onerror="this.style.display='none'">
+                                            {% endif %}
+                                            <div>
+                                                <strong>{{ wh.warehouse_name }}</strong>
+                                                <br><small class="text-muted">{{ wh.warehouse_city }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-primary">Zone A</span></td>
+                                    <td>N/A</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" style="width: 50%">N/A</div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewWarehouseDetails({{ wh.id }})" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" onclick="editWarehouse({{ wh.id }})" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        {% if user.is_superuser or user.role.role == 'superadmin' %}
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteWarehouse({{ wh.id }}, '{{ wh.warehouse_name }}')" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-center">No warehouses found</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie me-2"></i>Capacity Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="capacityChart" height="200"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Stock by Location</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="stockChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock by Location -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <h5>Stock by Location</h5>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary active" onclick="showView('grid')">
+                    <i class="fas fa-th"></i> Grid
+                </button>
+                <button class="btn btn-outline-primary" onclick="showView('list')">
+                    <i class="fas fa-list"></i> List
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="gridView">
+                <div class="row">
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card border">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Zone A-1</h6>
+                                    <span class="badge bg-success">85% Full</span>
+                                </div>
+                                <p class="text-muted mb-2">Rack 1-10, Bin 1-50</p>
+                                <div class="d-flex justify-content-between">
+                                    <small>Capacity: 500</small>
+                                    <small>Current: 425</small>
+                                </div>
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 85%"></div>
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewZone('A-1')">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="scanZone('A-1')">
+                                        <i class="fas fa-barcode me-1"></i>Scan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card border">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Zone A-2</h6>
+                                    <span class="badge bg-warning">60% Full</span>
+                                </div>
+                                <p class="text-muted mb-2">Rack 11-20, Bin 51-100</p>
+                                <div class="d-flex justify-content-between">
+                                    <small>Capacity: 500</small>
+                                    <small>Current: 300</small>
+                                </div>
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar bg-warning" style="width: 60%"></div>
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewZone('A-2')">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="scanZone('A-2')">
+                                        <i class="fas fa-barcode me-1"></i>Scan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card border">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Zone B-1</h6>
+                                    <span class="badge bg-danger">95% Full</span>
+                                </div>
+                                <p class="text-muted mb-2">Rack 21-30, Bin 101-150</p>
+                                <div class="d-flex justify-content-between">
+                                    <small>Capacity: 500</small>
+                                    <small>Current: 475</small>
+                                </div>
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar bg-danger" style="width: 95%"></div>
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewZone('B-1')">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="scanZone('B-1')">
+                                        <i class="fas fa-barcode me-1"></i>Scan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Warehouse Modal -->
+<div class="modal fade" id="addWarehouseModal" tabindex="-1" aria-labelledby="addWarehouseModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog" style="margin-top: 80px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addWarehouseModalLabel">Add New Warehouse</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="warehouseForm">
+                    <div class="mb-3">
+                        <label class="form-label">Warehouse Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" id="warehouseName" required>
+                        <div class="invalid-feedback">Warehouse name is required</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="location" id="warehouseLocation" required>
+                        <div class="invalid-feedback">Location is required</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Capacity <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" name="capacity" id="warehouseCapacity" required min="1">
+                        <div class="invalid-feedback">Valid capacity is required</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Image URL</label>
+                        <input type="url" class="form-control" name="image" id="warehouseImage" placeholder="https://example.com/image.jpg">
+                        <div id="imagePreview" class="mt-2"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" id="warehouseNotes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveWarehouseBtn" onclick="saveWarehouse()">Save Warehouse</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Stock Modal -->
+<div class="modal fade" id="addStockModal" tabindex="-1" aria-labelledby="addStockLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-top: 80px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStockLabel">Add Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addStockForm">
+                    <div class="mb-3">
+                        <label class="form-label">Select Product <span class="text-danger">*</span></label>
+                        <select class="form-select" name="product" id="stockProductSelect" required>
+                            <option value="">Select Product</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a product</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Warehouse <span class="text-danger">*</span></label>
+                        <select class="form-select" name="warehouse" required>
+                            <option value="">Select Warehouse</option>
+                            {% for wh in warehouses %}
+                            <option value="{{ wh.id }}">{{ wh.warehouse_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="invalid-feedback">Please select a warehouse</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" name="quantity" required min="1">
+                        <div class="invalid-feedback">Valid quantity is required</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveStock()">Add Stock</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transfer Modal -->
+<div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog" style="margin-top: 80px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transferModalLabel">Transfer Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="transferForm">
+                    <div class="mb-3">
+                        <label class="form-label">Product</label>
+                        <select class="form-select" name="product" id="productSelect" required>
+                            <option value="">Select Product</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">From Location</label>
+                                <select class="form-select" name="from_location" required>
+                                    <option value="">Select Location</option>
+                                    <option value="main">Main Warehouse</option>
+                                    <option value="secondary">Secondary Warehouse</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">To Location</label>
+                                <select class="form-select" name="to_location" required>
+                                    <option value="">Select Location</option>
+                                    <option value="main">Main Warehouse</option>
+                                    <option value="secondary">Secondary Warehouse</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" name="quantity" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="processTransfer()">Transfer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let warehouseModal = null;
+let transferModal = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const whModalEl = document.getElementById('addWarehouseModal');
+    warehouseModal = new bootstrap.Modal(whModalEl, { backdrop: false });
+    
+    const trModalEl = document.getElementById('transferModal');
+    transferModal = new bootstrap.Modal(trModalEl, { backdrop: false });
+    
+    whModalEl.addEventListener('hidden.bs.modal', function() {
+        document.getElementById('warehouseForm').reset();
+        document.getElementById('warehouseForm').classList.remove('was-validated');
+        document.querySelector('#addWarehouseModal .modal-title').textContent = 'Add New Warehouse';
+        document.getElementById('saveWarehouseBtn').setAttribute('onclick', 'saveWarehouse()');
+        document.getElementById('imagePreview').innerHTML = '';
+        document.body.classList.remove('modal-open');
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    });
+    
+    trModalEl.addEventListener('hidden.bs.modal', function() {
+        document.getElementById('transferForm').reset();
+        document.body.classList.remove('modal-open');
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    });
+    
+    document.getElementById('warehouseImage').addEventListener('input', function(e) {
+        const url = e.target.value;
+        const preview = document.getElementById('imagePreview');
+        if (url) {
+            preview.innerHTML = `<img src="${url}" style="max-width:200px;max-height:150px;border-radius:8px;" onerror="this.style.display='none'">`;
+        } else {
+            preview.innerHTML = '';
+        }
+    });
+    
+    loadProducts();
+    loadStats();
+    
+    const addStockModalEl = document.getElementById('addStockModal');
+    if (addStockModalEl) {
+        const addStockModal = new bootstrap.Modal(addStockModalEl, { backdrop: false });
+        addStockModalEl.addEventListener('hidden.bs.modal', function() {
+            document.getElementById('addStockForm').reset();
+            document.body.classList.remove('modal-open');
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        });
+    }
+});
+
+function viewWarehouseDetails(id) {
+    fetch(`/warehouses/api/${id}/`)
+        .then(r => {
+            if (!r.ok) throw new Error('Failed to load warehouse');
+            return r.json();
+        })
+        .then(data => {
+            const imgHtml = data.warehouse_image ? `<img src="${data.warehouse_image}" style="max-width:100%;border-radius:8px;margin-bottom:15px;">` : '';
+            const content = `
+                <div class="modal fade" id="viewWarehouseModal" tabindex="-1" aria-labelledby="viewWarehouseLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="margin-top: 80px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="viewWarehouseLabel">Warehouse Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ${imgHtml}
+                                <p><strong>Name:</strong> ${data.warehouse_name}</p>
+                                <p><strong>Location:</strong> ${data.warehouse_city || 'N/A'}</p>
+                                <p><strong>Address:</strong> ${data.warehouse_address || 'N/A'}</p>
+                                <p><strong>Contact:</strong> ${data.warehouse_contact || 'N/A'}</p>
+                                <p><strong>Manager:</strong> ${data.warehouse_manager || 'N/A'}</p>
+                                <p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>
+                                <p><strong>Created:</strong> ${new Date(data.create_time).toLocaleDateString()}</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', content);
+            const viewModal = new bootstrap.Modal(document.getElementById('viewWarehouseModal'), {backdrop: false});
+            viewModal.show();
+            document.getElementById('viewWarehouseModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+                document.body.classList.remove('modal-open');
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            });
+        })
+        .catch(err => showToast(err.message || 'Error loading warehouse', 'error'));
+}
+
+function editWarehouse(id) {
+    fetch(`/warehouses/api/${id}/`)
+        .then(r => {
+            if (!r.ok) throw new Error('Failed to load warehouse');
+            return r.json();
+        })
+        .then(data => {
+            document.getElementById('warehouseName').value = data.warehouse_name || '';
+            document.getElementById('warehouseLocation').value = data.warehouse_city || '';
+            document.getElementById('warehouseCapacity').value = 5000;
+            document.getElementById('warehouseImage').value = data.warehouse_image || '';
+            document.getElementById('warehouseNotes').value = data.warehouse_address || '';
+            
+            if (data.warehouse_image) {
+                document.getElementById('imagePreview').innerHTML = `<img src="${data.warehouse_image}" style="max-width:200px;max-height:150px;border-radius:8px;">`;
+            }
+            
+            document.querySelector('#addWarehouseModal .modal-title').textContent = 'Edit Warehouse';
+            document.getElementById('saveWarehouseBtn').setAttribute('onclick', `updateWarehouse(${id})`);
+            warehouseModal.show();
+        })
+        .catch(err => showToast(err.message || 'Error loading warehouse', 'error'));
+}
+
+function saveWarehouse() {
+    const form = document.getElementById('warehouseForm');
+    form.classList.add('was-validated');
+    
+    if (!form.checkValidity()) {
+        showToast('Please fill all required fields correctly', 'error');
+        return;
+    }
+    
+    const data = {
+        warehouse_name: document.getElementById('warehouseName').value,
+        warehouse_city: document.getElementById('warehouseLocation').value,
+        warehouse_address: document.getElementById('warehouseNotes').value,
+        warehouse_contact: '',
+        warehouse_manager: '',
+        warehouse_image: document.getElementById('warehouseImage').value,
+        creater: '{{ user.username }}'
+    };
+    
+    fetch('/warehouses/create/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('Failed to create warehouse');
+        return r.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showToast('Warehouse added successfully', 'success');
+            warehouseModal.hide();
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast(data.message || 'Error adding warehouse', 'error');
+        }
+    })
+    .catch(err => showToast(err.message || 'Error adding warehouse', 'error'));
+}
+
+function updateWarehouse(id) {
+    const form = document.getElementById('warehouseForm');
+    form.classList.add('was-validated');
+    
+    if (!form.checkValidity()) {
+        showToast('Please fill all required fields correctly', 'error');
+        return;
+    }
+    
+    const data = {
+        warehouse_name: document.getElementById('warehouseName').value,
+        warehouse_city: document.getElementById('warehouseLocation').value,
+        warehouse_address: document.getElementById('warehouseNotes').value,
+        warehouse_contact: '',
+        warehouse_manager: '',
+        warehouse_image: document.getElementById('warehouseImage').value
+    };
+    
+    fetch(`/warehouses/api/${id}/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('Failed to update warehouse');
+        return r.json();
+    })
+    .then(data => {
+        showToast('Warehouse updated successfully', 'success');
+        warehouseModal.hide();
+        setTimeout(() => location.reload(), 1000);
+    })
+    .catch(err => showToast(err.message || 'Error updating warehouse', 'error'));
+}
+
+function viewZone(zone) {
+    fetch(`/warehouses/zone/${zone}/`)
+        .then(r => r.json())
+        .then(data => {
+            const itemsHtml = data.items.map(i => `<tr><td>${i.code}</td><td>${i.desc}</td><td>${i.qty}</td></tr>`).join('');
+            const content = `
+                <div class="modal fade" id="viewZoneModal" tabindex="-1" aria-labelledby="viewZoneLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" style="margin-top: 80px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="viewZoneLabel">Zone ${data.zone} Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Capacity:</strong> ${data.capacity} units</p>
+                                <p><strong>Current Stock:</strong> ${data.current} units</p>
+                                <p><strong>Utilization:</strong> ${Math.round((data.current/data.capacity)*100)}%</p>
+                                <h6 class="mt-3">Items in Zone:</h6>
+                                <table class="table table-sm"><thead><tr><th>Code</th><th>Description</th><th>Qty</th></tr></thead><tbody>${itemsHtml}</tbody></table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', content);
+            const zoneModal = new bootstrap.Modal(document.getElementById('viewZoneModal'), {backdrop: false});
+            zoneModal.show();
+            document.getElementById('viewZoneModal').addEventListener('hidden.bs.modal', function() {
+                this.remove();
+                document.body.classList.remove('modal-open');
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            });
+        })
+        .catch(err => showToast('Error loading zone details', 'error'));
+}
+
+function scanZone(zone) {
+    window.location.href = `/barcode/?zone=${zone}`;
+}
+
+function scanBarcode() {
+    window.location.href = '/barcode/';
+}
+
+function processTransfer() {
+    const form = document.getElementById('transferForm');
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        showToast('Please fill all required fields', 'error');
+        return;
+    }
+    showToast('Stock transfer initiated successfully', 'success');
+    transferModal.hide();
+}
+
+function showToast(msg, type = 'info') {
+    const colors = { success: '#10b981', error: '#ef4444', info: '#0014A8' };
+    const t = document.createElement('div');
+    t.style.cssText = `position:fixed;top:20px;right:20px;background:${colors[type]};color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;animation:slideIn 0.3s`;
+    t.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+
+function showView(type) {
+    document.querySelectorAll('.btn-group .btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    if (type === 'list') {
+        alert('List view - Show detailed table format');
+    }
+}
+
+function loadProducts() {
+    fetch('/warehouses/products/')
+        .then(r => r.json())
+        .then(products => {
+            const selects = [document.getElementById('productSelect'), document.getElementById('stockProductSelect')];
+            selects.forEach(select => {
+                if (select) {
+                    products.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.id;
+                        opt.textContent = `${p.code} - ${p.name}`;
+                        select.appendChild(opt);
+                    });
+                }
+            });
+        })
+        .catch(err => console.error('Error loading products:', err));
+}
+
+function saveStock() {
+    const form = document.getElementById('addStockForm');
+    form.classList.add('was-validated');
+    if (!form.checkValidity()) {
+        showToast('Please fill all required fields', 'error');
+        return;
+    }
+    showToast('Stock added successfully', 'success');
+    bootstrap.Modal.getInstance(document.getElementById('addStockModal')).hide();
+}
+
+function loadStats() {
+    fetch('/warehouses/stats/')
+        .then(r => r.json())
+        .then(stats => {
+            document.getElementById('statWarehouses').textContent = stats.total_warehouses;
+            document.getElementById('statItems').textContent = stats.total_items;
+            document.getElementById('statTransfers').textContent = stats.pending_transfers;
+            document.getElementById('statCapacity').textContent = stats.capacity_used + '%';
+        })
+        .catch(err => console.error('Error loading stats:', err));
+}
+
+function deleteWarehouse(id, name) {
+    if (!confirm(`Are you sure you want to delete warehouse "${name}"? This action cannot be undone.`)) {
+        return;
+    }
+    
+    fetch(`/warehouses/api/${id}/`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('Failed to delete warehouse');
+        return r.json();
+    })
+    .then(data => {
+        showToast('Warehouse deleted successfully', 'success');
+        setTimeout(() => location.reload(), 1000);
+    })
+    .catch(err => showToast(err.message || 'Error deleting warehouse', 'error'));
+}
+
+function applyWarehouseFilters() {
+    const search = document.getElementById('warehouseSearch')?.value.toLowerCase() || '';
+    const location = document.getElementById('locationFilter')?.value.toLowerCase() || '';
+    const status = document.getElementById('statusFilter')?.value.toLowerCase() || '';
+    
+    const rows = document.querySelectorAll('#productsTable tbody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const matchSearch = !search || text.includes(search);
+        const matchLocation = !location || text.includes(location);
+        const matchStatus = !status || text.includes(status);
+        
+        row.style.display = (matchSearch && matchLocation && matchStatus) ? '' : 'none';
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Capacity Distribution Chart
+    new Chart(document.getElementById('capacityChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Used', 'Available'],
+            datasets: [{
+                data: [78, 22],
+                backgroundColor: ['#0014A8', '#e5e7eb']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+    
+    // Stock by Location Chart
+    new Chart(document.getElementById('stockChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Zone A-1', 'Zone A-2', 'Zone B-1', 'Zone B-2'],
+            datasets: [{
+                label: 'Stock Units',
+                data: [425, 300, 475, 350],
+                backgroundColor: '#10b981'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+});
+</script>
+{% endblock %}

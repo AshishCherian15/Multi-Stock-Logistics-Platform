@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Barcode — {{ product.goods_desc }}{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:700px">
+  <h2 class="fw-bold mb-4"><i class="fas fa-barcode me-2 text-primary"></i>Product Barcode</h2>
+  <div class="card shadow-sm">
+    <div class="card-body text-center">
+      <h5 class="fw-semibold">{{ product.goods_desc }}</h5>
+      <p class="text-muted">SKU: <code>{{ product.goods_code }}</code> &nbsp;|&nbsp; ₹{{ product.goods_price }}</p>
+      {% if barcode_b64 %}
+      <div class="mb-4"><p class="text-muted small mb-1">Code128 Barcode</p><img src="data:image/png;base64,{{ barcode_b64 }}" class="img-fluid" style="max-width:400px" alt="Barcode"></div>
+      {% endif %}
+      {% if qr_b64 %}
+      <div><p class="text-muted small mb-1">QR Code</p><img src="data:image/png;base64,{{ qr_b64 }}" class="img-fluid" style="max-width:180px" alt="QR Code"></div>
+      {% endif %}
+      {% if not barcode_b64 and not qr_b64 %}
+      <div class="alert alert-warning">Install: <code>pip install qrcode python-barcode Pillow</code></div>
+      {% endif %}
+    </div>
+    <div class="card-footer text-center">
+      <button onclick="window.print()" class="btn btn-outline-primary btn-sm me-2"><i class="fas fa-print me-1"></i>Print</button>
+      <a href="{% url 'barcode_system' %}" class="btn btn-outline-secondary btn-sm">Back</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

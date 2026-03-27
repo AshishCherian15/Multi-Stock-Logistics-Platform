@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Invoice {{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap');
+:root{--primary:#1A73E8;--secondary:#F5F5F5;--text:#333}
+.invoice-container{background:#fff;border-radius:8px;box-shadow:0 2px 15px rgba(0,0,0,0.1);padding:2.5rem;max-width:900px;margin:0 auto;font-family:'Roboto',sans-serif}
+.invoice-header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--primary);padding-bottom:1rem;margin-bottom:1.5rem}
+.logo{font-size:26px;font-weight:700;color:var(--primary);letter-spacing:1px}
+.invoice-label{font-size:28px;font-weight:700;color:var(--primary);text-transform:uppercase}
+.invoice-meta{text-align:right;font-size:13px;margin-top:0.5rem;line-height:1.8}
+.billing-section{background:var(--secondary);padding:15px;margin:1rem 0;border-radius:4px}
+.billing-section h5{font-size:16px;font-weight:600;color:var(--primary);margin-bottom:0.5rem}
+.billing-section p{line-height:1.6;margin:3px 0;font-size:13px}
+.items-table{width:100%;border-collapse:collapse;margin:1.5rem 0}
+.items-table thead{background:var(--primary);color:#fff}
+.items-table th{padding:12px;text-align:left;font-weight:600;font-size:12px;text-transform:uppercase}
+.items-table th:nth-child(2),.items-table th:nth-child(3),.items-table th:nth-child(4){text-align:right}
+.items-table td{padding:12px;border-bottom:1px solid #ddd;font-size:13px}
+.items-table td:nth-child(2),.items-table td:nth-child(3),.items-table td:nth-child(4){text-align:right}
+.items-table tbody tr:nth-child(even){background:var(--secondary)}
+.summary-box{width:300px;margin-left:auto;margin-top:1rem}
+.summary-box table{width:100%;border-collapse:collapse}
+.summary-box td{padding:8px 10px;font-size:14px;border-bottom:1px solid #ddd}
+.summary-box td:last-child{text-align:right;font-weight:600}
+.summary-box .total-row{background:var(--primary);color:#fff;font-weight:700;font-size:16px}
+.payment-box{margin:1rem 0;padding:15px;background:var(--secondary);border-left:4px solid var(--primary)}
+.payment-box h5{font-size:16px;font-weight:600;color:var(--primary);margin-bottom:0.5rem}
+.terms-box{margin:1rem 0;padding:12px;background:#FAFAFA;border-radius:4px}
+.terms-box h5{font-size:14px;font-weight:600;margin-bottom:0.5rem}
+.terms-box p{font-size:11px;line-height:1.6;color:#666}
+.action-btn{border-radius:8px;padding:0.6rem 1.5rem;font-weight:600;margin:0.25rem}
+.status-badge{padding:0.5rem 1.5rem;border-radius:20px;font-weight:600;font-size:0.9rem}
+</style>
+
+<div class="container-fluid py-4">
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="logo">MULTISTOCK</div>
+            <div>
+                <div class="invoice-label">INVOICE</div>
+                <div class="invoice-meta">
+                    <strong>{{ invoice.invoice_number }}</strong><br>
+                    Date: {{ invoice.invoice_date|date:"M d, Y" }}<br>
+                    Due: {{ invoice.due_date|date:"M d, Y" }}<br>
+                    <span class="status-badge {% if invoice.status == 'paid' %}bg-success{% elif invoice.status == 'overdue' %}bg-danger{% elif invoice.status == 'sent' %}bg-info{% else %}bg-secondary{% endif %}">
+                        {{ invoice.get_status_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing Information -->
+        <div class="billing-section">
+            <h5>BILLING TO</h5>
+            <p><strong>{{ invoice.customer_name }}</strong></p>
+            <p>Email: {{ invoice.customer_email }}</p>
+            <p>Phone: {{ invoice.customer_phone }}</p>
+            <p>Address: {{ invoice.customer_address }}</p>
+        </div>
+
+        <!-- Invoice Items -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width:50%">ITEM DESCRIPTION</th>
+                    <th style="width:15%">QTY</th>
+                    <th style="width:17.5%">PRICE</th>
+                    <th style="width:17.5%">AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in invoice.items.all %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ item.price }}</td>
+                    <td>₹{{ item.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Summary -->
+        <div class="summary-box">
+            <table>
+                <tr><td>Subtotal</td><td>₹{{ invoice.subtotal }}</td></tr>
+                <tr><td>Tax ({{ invoice.tax_rate }}%)</td><td>₹{{ invoice.tax_amount }}</td></tr>
+                {% if invoice.discount_amount > 0 %}
+                <tr><td>Discount</td><td>-₹{{ invoice.discount_amount }}</td></tr>
+                {% endif %}
+                <tr class="total-row"><td>TOTAL AMOUNT DUE</td><td>₹{{ invoice.grand_total }}</td></tr>
+            </table>
+        </div>
+
+        <!-- Payment Info -->
+        {% if invoice.payment_method %}
+        <div class="payment-box">
+            <h5>PAYMENT METHOD</h5>
+            <p><strong>Bank:</strong> {{ invoice.bank_name|default:"MultiStock Bank" }}</p>
+            <p><strong>Account:</strong> {{ invoice.account_number|default:"XXXX-XXXX-XXXX" }}</p>
+            <p><strong>Method:</strong> {{ invoice.payment_method|title }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Terms -->
+        <div class="terms-box">
+            <h5>TERMS & CONDITIONS</h5>
+            <p>{{ invoice.terms_conditions|default:"Payment is due within 30 days. Late payments may incur additional charges. Please include invoice number with payment." }}</p>
+        </div>
+        
+        <div class="text-center my-4">
+            <h5 style="color:var(--primary);font-weight:700">Thank you for your Business!</h5>
+        </div>
+
+        <!-- Receipts -->
+        {% if receipts %}
+        <div class="invoice-section">
+            <h5 style="color:var(--zaffre)"><i class="fas fa-receipt me-2"></i>Payment Receipts</h5>
+            {% for receipt in receipts %}
+            <div class="info-box d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ receipt.receipt_number }}</strong> - ₹{{ receipt.amount_paid }}
+                    <br><small class="text-muted">{{ receipt.payment_date|date:"M d, Y" }} via {{ receipt.payment_mode|title }}</small>
+                </div>
+                <a href="{% url 'billing:receipt_pdf' receipt.id %}" class="btn btn-sm btn-outline-success"><i class="fas fa-download me-1"></i>PDF</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div class="text-center mt-4">
+            <a href="{% url 'billing:invoice_list' %}" class="btn btn-outline-secondary action-btn"><i class="fas fa-arrow-left me-1"></i>Back</a>
+            <a href="{% url 'billing:invoice_detail' invoice.id %}" class="btn btn-primary action-btn" style="background:linear-gradient(135deg,var(--zaffre),#000E75)"><i class="fas fa-eye me-1"></i>View Bill</a>
+            <a href="{% url 'billing:invoice_pdf' invoice.id %}" class="btn btn-success action-btn"><i class="fas fa-download me-1"></i>Download Bill PDF</a>
+            {% if invoice.status != 'paid' %}
+            <a href="{% url 'billing:receipt_create' invoice.id %}" class="btn btn-info action-btn"><i class="fas fa-receipt me-1"></i>Create Receipt</a>
+            {% endif %}
+            {% if receipts %}
+            <a href="{% url 'billing:receipt_detail' receipts.0.id %}" class="btn btn-warning action-btn"><i class="fas fa-eye me-1"></i>View Receipt</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

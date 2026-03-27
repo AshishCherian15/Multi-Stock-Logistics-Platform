@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% block title %}My Wishlist & Cart - MultiStock{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <h2 class="mb-4"><i class="fas fa-heart me-2"></i>My Wishlist & Cart</h2>
+
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#wishlist"><i class="fas fa-heart me-2"></i>Wishlist
+                <span class="badge bg-danger" id="wishlistCount">0</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#cart"><i class="fas fa-shopping-cart me-2"></i>Cart <span
+                    class="badge bg-success" id="cartCount">0</span></a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Wishlist Tab -->
+        <div class="tab-pane fade show active" id="wishlist">
+            <div class="d-flex justify-content-between mb-3">
+                <h4>My Wishlist</h4>
+                <button class="btn btn-outline-danger btn-sm" onclick="clearWishlist()"><i
+                        class="fas fa-trash me-1"></i>Clear All</button>
+            </div>
+            <div class="row" id="wishlistItems"></div>
+        </div>
+
+        <!-- Cart Tab -->
+        <div class="tab-pane fade" id="cart">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h4>Shopping Cart</h4>
+                        <button class="btn btn-outline-danger btn-sm" onclick="clearCart()"><i
+                                class="fas fa-trash me-1"></i>Clear Cart</button>
+                    </div>
+                    <div id="cartItems"></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Order Summary</h5>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <strong id="cartSubtotal">₹0</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Discount:</span>
+                                <strong class="text-success" id="cartDiscount">₹0</strong>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <strong>Total:</strong>
+                                <strong class="text-primary" id="cartTotal">₹0</strong>
+                            </div>
+                            <button class="btn btn-primary w-100 mb-2" onclick="checkout()"><i
+                                    class="fas fa-check me-2"></i>Checkout</button>
+                            <button class="btn btn-outline-secondary w-100" onclick="continueShopping()"><i
+                                    class="fas fa-arrow-left me-2"></i>Continue Shopping</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadWishlist() {
+        fetch('/wishlist/api/get/')
+            .then(r => r.json())
+            .then(data => {
+                const container = document.getElementById('wishlistItems');
+                document.getElementById('wishlistCount').textContent = data.items.length;
+                if (data.items.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center py-5"><i class="fas fa-heart fa-3x text-muted mb-3"></i><p class="text-muted">Your wishlist is empty</p></div>';
+                    return;
+                }
+                container.innerHTML = data.items.map(item => `
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        ${item.image ? `<img src="${item.image}" class="card-img-top" style="height:200px;object-fit:cover" alt="${item.title}">` : '<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:200px"><i class="fas fa-image fa-3x text-muted"></i></div>'}
+                        <div class="card-body">
+                            <h6 class="card-title">${item.title}</h6>
+                            ${item.description ? `<p class="card-text text-muted small">${item.description.substring(0, 80)}${item.description.length > 80 ? '...' : ''}</p>` : ''}
+                            <p class="text-primary fw-bold mb-2">₹${item.price}</p>
+                            ${item.seller ? `<small class="text-muted d-block mb-2"><i class="fas fa-store me-1"></i>${item.seller}</small>` : ''}
+                            <div class="btn-group w-100">
+                                <button class="btn btn-sm btn-primary" onclick="moveToCart(${item.id})" title="Move to Cart"><i class="fas fa-cart-plus me-1"></i>Add to Cart</button>
+                                <button class="btn btn-sm btn-danger" onclick="removeFromWishlist(${item.id})" title="Remove"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            });
+    }
+
+    function loadCart() {
+        fetch('/cart/api/get/')
+            .then(r => r.json())
+            .then(data => {
+                const container = document.getElementById('cartItems');
+                document.getElementById('cartCount').textContent = data.total_items;
+                document.getElementById('cartSubtotal').textContent = '₹' + data.subtotal.toFixed(2);
+                document.getElementById('cartTotal').textContent = '₹' + data.subtotal.toFixed(2);
+                if (data.items.length === 0) {
+                    container.innerHTML = '\u003cdiv class=\"text-center py-5\"\u003e\u003ci class=\"fas fa-shopping-cart fa-3x text-muted mb-3\"\u003e\u003cp class=\"text-muted\"\u003eYour cart is empty\u003c/p\u003e\u003c/div\u003e';
+                    return;
+                }
+                container.innerHTML = data.items.map(item => `
+                \u003cdiv class=\"card mb-3\"\u003e
+                    \u003cdiv class=\"card-body\"\u003e
+                        \u003cdiv class=\"row align-items-center\"\u003e
+                            \u003cdiv class=\"col-md-2\"\u003e
+                                ${item.image ? `\u003cimg src=\"${item.image}\" class=\"img-fluid rounded\" style=\"max-height:80px;object-fit:cover\" alt=\"${item.title}\"\u003e` : '\u003cdiv class=\"bg-light rounded d-flex align-items-center justify-content-center\" style=\"height:80px\"\u003e\u003ci class=\"fas fa-image text-muted\"\u003e\u003c/i\u003e\u003c/div\u003e'}
+                            \u003c/div\u003e
+                            \u003cdiv class=\"col-md-4\"\u003e
+                                \u003ch6 class=\"mb-1\"\u003e${item.title}\u003c/h6\u003e
+                                \u003csmall class=\"text-muted\"\u003e₹${item.price} each\u003c/small\u003e
+                                ${item.seller ? `\u003cbr\u003e\u003csmall class=\"text-muted\"\u003e\u003ci class=\"fas fa-store me-1\"\u003e\u003c/i\u003e${item.seller}\u003c/small\u003e` : ''}
+                            \u003c/div\u003e
+                            \u003cdiv class=\"col-md-2\"\u003e
+                                \u003cdiv class=\"input-group input-group-sm\"\u003e
+                                    \u003cbutton class=\"btn btn-outline-secondary\" onclick=\"updateQuantity(${item.id}, ${item.quantity - 1})\"\u003e-\u003c/button\u003e
+                                    \u003cinput type=\"number\" class=\"form-control text-center\" value=\"${item.quantity}\" min=\"1\" onchange=\"updateQuantity(${item.id}, this.value)\" style=\"max-width:60px\"\u003e
+                                    \u003cbutton class=\"btn btn-outline-secondary\" onclick=\"updateQuantity(${item.id}, ${item.quantity + 1})\"\u003e+\u003c/button\u003e
+                                \u003c/div\u003e
+                            \u003c/div\u003e
+                            \u003cdiv class=\"col-md-2 text-center\"\u003e
+                                \u003cstrong class=\"text-primary\"\u003e₹${item.total.toFixed(2)}\u003c/strong\u003e
+                            \u003c/div\u003e
+                            \u003cdiv class=\"col-md-2 text-end\"\u003e
+                                \u003cbutton class=\"btn btn-sm btn-outline-danger\" onclick=\"removeFromCart(${item.id})\" title=\"Remove from cart\"\u003e\u003ci class=\"fas fa-trash\"\u003e\u003c/i\u003e Remove\u003c/button\u003e
+                            \u003c/div\u003e
+                        \u003c/div\u003e
+                    \u003c/div\u003e
+                \u003c/div\u003e
+            `).join('');
+            });
+    }
+
+    function removeFromWishlist(id) {
+        fetch(`/wishlist/api/remove/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCookie('csrftoken') } })
+            .then(r => r.json())
+            .then(() => loadWishlist());
+    }
+
+    function clearWishlist() {
+        if (confirm('Clear all wishlist items?')) {
+            fetch('/wishlist/api/clear/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } })
+                .then(r => r.json())
+                .then(() => loadWishlist());
+        }
+    }
+
+    function removeFromCart(id) {
+        fetch(`/cart/api/remove/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCookie('csrftoken') } })
+            .then(r => r.json())
+            .then(() => loadCart());
+    }
+
+    function clearCart() {
+        if (confirm('Clear all cart items?')) {
+            fetch('/cart/api/clear/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } })
+                .then(r => r.json())
+                .then(() => loadCart());
+        }
+    }
+
+    function updateQuantity(id, qty) {
+        fetch(`/cart/api/update/${id}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify({ quantity: parseInt(qty) })
+        }).then(() => loadCart());
+    }
+
+    function moveToCart(id) {
+        fetch(`/wishlist/api/get/`)
+            .then(r => r.json())
+            .then(data => {
+                const item = data.items.find(i => i.id === id);
+                return fetch('/cart/api/add/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ ...item, quantity: 1 })
+                });
+            })
+            .then(() => removeFromWishlist(id))
+            .then(() => loadCart());
+    }
+
+    function checkout() {
+        window.location.href = '/orders/checkout/';
+    }
+
+    function continueShopping() {
+        window.location.href = '/products/marketplace/';
+    }
+
+    function getCookie(name) {
+        let v = null;
+        if (document.cookie) {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    v = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return v;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        loadWishlist();
+        loadCart();
+    });
+</script>
+{% endblock %}

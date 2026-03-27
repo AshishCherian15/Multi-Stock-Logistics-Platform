@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Customer Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h2 class="mb-4"><i class="fas fa-store me-2"></i>Customer Portal - Welcome, {{ user.username }}</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card text-white" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-bag fa-2x mb-2"></i>
+                    <h3>{{ my_orders|default:0 }}</h3>
+                    <small>My Orders</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white" style="background:linear-gradient(135deg,#f093fb,#f5576c)">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h3>{{ pending_orders|default:0 }}</h3>
+                    <small>Pending</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                    <h3>{{ cart_items|default:0 }}</h3>
+                    <small>Cart Items</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">
+                <div class="card-body text-center">
+                    <i class="fas fa-heart fa-2x mb-2"></i>
+                    <h3>{{ wishlist_items|default:0 }}</h3>
+                    <small>Wishlist</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white" style="background:linear-gradient(135deg,#f6d365,#fda085)">
+                <div class="card-body text-center">
+                    <i class="fas fa-truck fa-2x mb-2"></i>
+                    <h3>{{ active_rentals|default:0 }}</h3>
+                    <small>Rentals</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white" style="background:linear-gradient(135deg,#ffd89b,#19547b)">
+                <div class="card-body text-center">
+                    <i class="fas fa-warehouse fa-2x mb-2"></i>
+                    <h3>{{ storage_units|default:0 }}</h3>
+                    <small>Storage</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white" style="background:linear-gradient(135deg,#a8edea,#fed6e3)">
+                <div class="card-body text-center">
+                    <i class="fas fa-lock fa-2x mb-2"></i>
+                    <h3>{{ locker_bookings|default:0 }}</h3>
+                    <small>Lockers</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12"><h4><i class="fas fa-bolt me-2"></i>Quick Actions</h4></div>
+        <div class="col-md-2">
+            <a href="{% url 'customers:marketplace' %}" class="card text-center text-decoration-none p-3 hover-shadow">
+                <i class="fas fa-store fa-2x text-success mb-2"></i>
+                <h6>Marketplace</h6>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'customers:my_orders' %}" class="card text-center text-decoration-none p-3 hover-shadow">
+                <i class="fas fa-shopping-bag fa-2x text-primary mb-2"></i>
+                <h6>My Orders</h6>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="/cart/" class="card text-center text-decoration-none p-3 hover-shadow">
+                <i class="fas fa-shopping-cart fa-2x text-info mb-2"></i>
+                <h6>Cart ({{ cart_items|default:0 }})</h6>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="/wishlist/" class="card text-center text-decoration-none p-3 hover-shadow">
+                <i class="fas fa-heart fa-2x text-danger mb-2"></i>
+                <h6>Wishlist ({{ wishlist_items|default:0 }})</h6>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'customers:mine' %}" class="card text-center text-decoration-none p-3 hover-shadow">
+                <i class="fas fa-boxes fa-2x text-warning mb-2"></i>
+                <h6>My Services</h6>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'customers:my_profile' %}" class="card text-center text-decoration-none p-3 hover-shadow">
+                <i class="fas fa-user fa-2x text-secondary mb-2"></i>
+                <h6>My Profile</h6>
+            </a>
+        </div>
+    </div>
+
+    {% if recent_orders %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-history me-2"></i>Recent Orders</h5>
+                </div>
+                <div class="card-body">
+                    {% for order in recent_orders %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                        <div>
+                            <strong>Order #{{ order.order_number }}</strong>
+                            <span class="badge bg-primary ms-2">{{ order.status|title }}</span>
+                        </div>
+                        <div>
+                            <span class="text-muted">₹{{ order.total_amount }}</span>
+                            <a href="{% url 'customers:order_detail' order.id %}" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

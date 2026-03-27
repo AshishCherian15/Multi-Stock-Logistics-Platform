@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Create Receipt{% endblock %}
+{% block content %}
+<style>
+    :root {
+        --zaffre: #0014A8
+    }
+
+    .receipt-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 20, 168, 0.12);
+        padding: 2.5rem;
+        max-width: 700px;
+        margin: 0 auto
+    }
+
+    .invoice-info {
+        background: linear-gradient(135deg, rgba(0, 20, 168, 0.05), rgba(0, 20, 168, 0.1));
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--zaffre)
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem
+    }
+
+    .form-control,
+    .form-select {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 0.75rem;
+        transition: all 0.3s
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--zaffre);
+        box-shadow: 0 0 0 0.2rem rgba(0, 20, 168, 0.15)
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--zaffre), #000E75);
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: 600
+    }
+
+    .amount-display {
+        background: linear-gradient(135deg, var(--zaffre), #000E75);
+        color: #fff;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        margin: 2rem 0
+    }
+
+    .amount-display h2 {
+        font-size: 2.5rem;
+        margin: 0
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="receipt-card">
+        <div class="text-center mb-4">
+            <h2><i class="fas fa-receipt me-2" style="color:var(--zaffre)"></i>Create Payment Receipt</h2>
+            <p class="text-muted">Generate receipt for invoice payment</p>
+        </div>
+
+        <!-- Invoice Information -->
+        <div class="invoice-info">
+            <h5 class="mb-3" style="color:var(--zaffre)"><i class="fas fa-file-invoice me-2"></i>Invoice Details</h5>
+            <div class="row">
+                <div class="col-6">
+                    <p class="mb-2"><strong>Invoice Number:</strong><br>{{ invoice.invoice_number }}</p>
+                    <p class="mb-2"><strong>Customer:</strong><br>{{ invoice.customer_name }}</p>
+                </div>
+                <div class="col-6">
+                    <p class="mb-2"><strong>Invoice Date:</strong><br>{{ invoice.invoice_date|date:"M d, Y" }}</p>
+                    <p class="mb-2"><strong>Due Date:</strong><br>{{ invoice.due_date|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Amount Display -->
+        <div class="amount-display">
+            <p class="mb-2" style="font-size:1.1rem;opacity:0.9">Invoice Amount</p>
+            <h2>₹{{ invoice.grand_total }}</h2>
+        </div>
+
+        <!-- Receipt Form -->
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label class="form-label">Payment Date *</label>
+                <input type="date" name="payment_date" id="payment_date" class="form-control" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Payment Mode *</label>
+                <select name="payment_mode" class="form-select" required>
+                    <option value="">Select Payment Mode</option>
+                    <option value="cash">Cash</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                    <option value="card">Credit/Debit Card</option>
+                    <option value="upi" selected>UPI</option>
+                    <option value="cheque">Cheque</option>
+                    <option value="online">Online Payment</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Amount Paid (₹) *</label>
+                <input type="number" name="amount_paid" id="amount_paid" class="form-control" min="0" step="0.01"
+                    required value="{{ invoice.grand_total }}" placeholder="0.00">
+                <small class="text-muted">Auto-filled with invoice total amount</small>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Note:</strong> A unique receipt number will be automatically generated. The invoice status will
+                be updated to "Paid" after receipt creation.
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-check-circle me-2"></i>Generate
+                    Receipt</button>
+                <a href="{% url 'billing:invoice_detail' invoice.id %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Auto-fill payment date with today's date
+        const dateInput = document.getElementById('payment_date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+        dateInput.max = today;
+
+        // Amount is already auto-filled from template
+        // Receipt form initialized
+    });
+</script>
+{% endblock %}

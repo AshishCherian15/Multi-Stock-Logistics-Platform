@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Details - Customer Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- Header Card -->
+    <div class="card border-0 bg-gradient mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="card-body py-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1"><i class="fas fa-receipt me-2"></i>Order #{{ order.order_number }}</h2>
+                    <p class="mb-0 opacity-75">View details and track your order</p>
+                </div>
+                <a href="{% url 'customers:my_orders' %}" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Orders
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="fas fa-box me-2 text-primary"></i>Order Items</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>{{ item.product_name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>₹{{ item.unit_price }}</td>
+                                <td>₹{{ item.total_price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                <td><strong>₹{{ order.total_amount }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Delivery Fee:</strong></td>
+                                <td><strong>₹{{ order.delivery_fee|default:0 }}</strong></td>
+                            </tr>
+                            <tr class="table-primary">
+                                <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
+                                <td><strong>₹{{ order.grand_total }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="fas fa-info-circle me-2 text-info"></i>Order Status</h5>
+                    <p><strong>Status:</strong> <span class="badge bg-primary">{{ order.status|title }}</span></p>
+                    <p><strong>Payment:</strong> <span class="badge bg-warning">{{ order.payment_status|title }}</span></p>
+                    <p><strong>Payment Method:</strong> {{ order.payment_method|default:"N/A"|title }}</p>
+                    <p><strong>Order Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="fas fa-truck me-2 text-success"></i>Delivery Info</h5>
+                    <p><strong>Address:</strong><br>{{ order.delivery_address|default:"N/A" }}</p>
+                    <p><strong>Phone:</strong> {{ order.delivery_phone|default:"N/A" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
