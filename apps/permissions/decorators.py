@@ -3,6 +3,21 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponseForbidden
 from functools import wraps
 
+
+def _normalize_role(role):
+    """Normalize role aliases across legacy/new role naming schemes."""
+    mapping = {
+        'owner': 'superadmin',
+        'partner': 'admin',
+        'manager': 'subadmin',
+        'supervisor': 'subadmin',
+        'employee': 'staff',
+        'senior_staff': 'staff',
+        'sub-admin': 'subadmin',
+    }
+    role = (role or '').strip().lower()
+    return mapping.get(role, role)
+
 def get_user_role(user):
     """Get user role from UserRole model or fallback to user attributes"""
     if not user or not user.is_authenticated:
@@ -10,14 +25,23 @@ def get_user_role(user):
     
     if user.is_superuser:
         return 'superadmin'
+
+    # Prefer UserProfile role first because this is the primary role source in this project.
+    try:
+        from users.models import UserProfile
+        profile = UserProfile.objects.filter(user=user).first()
+        if profile and profile.role:
+            return _normalize_role(profile.role)
+    except Exception:
+        pass
     
     # Check UserRole model
     try:
         from permissions.models import UserRole
         user_role = UserRole.objects.filter(user=user).first()
         if user_role:
-            return user_role.role
-    except:
+            return _normalize_role(user_role.role)
+    except Exception:
         pass
     
     # Fallback to Django groups
@@ -30,7 +54,7 @@ def get_user_role(user):
             return 'subadmin'
         elif user.is_staff:
             return 'staff'
-    except:
+    except Exception:
         pass
     
     return 'customer'

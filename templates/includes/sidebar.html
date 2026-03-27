@@ -35,7 +35,11 @@
         <div class="nav-section-header"
             style="padding:12px 20px;font-size:0.75rem;font-weight:600;color:#6c757d;text-transform:uppercase;letter-spacing:1px;margin-top:10px">
             {% if user.role.role == 'customer' %}Services{% else %}Revenue Modules{% endif %}</div>
+        {% if user_role == 'customer' %}
         <a href="/rentals/" class="nav-item"><i class="fas fa-key"></i><span>Rentals</span></a>
+        {% else %}
+        <a href="/rentals/admin/" class="nav-item"><i class="fas fa-key"></i><span>Rentals</span></a>
+        {% endif %}
         <a href="/storage/" class="nav-item"><i class="fas fa-boxes"></i><span>Storage Units</span></a>
         <a href="/lockers/" class="nav-item"><i class="fas fa-lock"></i><span>Lockers</span></a>
         <a href="/billing/" class="nav-item"><i class="fas fa-file-invoice-dollar"></i><span>Billing & Receipts</span></a>

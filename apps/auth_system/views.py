@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import random
 import logging
 from .forms import CustomUserCreationForm
+from permissions.decorators import get_user_role
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +31,9 @@ def team_login(request):
         password = request.POST.get('password', '')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            user_role = getattr(getattr(user, 'role', None), 'role', None)
-            allowed = {'superadmin', 'admin', 'subadmin', 'staff', 'supervisor'}
-            if user.is_staff or user.is_superuser or user_role in allowed:
+            user_role = get_user_role(user)
+            allowed = {'superadmin', 'admin', 'subadmin', 'staff'}
+            if user_role in allowed:
                 login(request, user)
                 request.session['login_verified'] = True
                 return redirect('dashboard')
@@ -54,8 +55,8 @@ def customer_login(request):
         if user is not None:
             login(request, user)
             request.session['login_verified'] = True
-            user_role = getattr(getattr(user, 'role', None), 'role', None)
-            if user.is_staff or user.is_superuser or user_role in {'superadmin', 'admin', 'subadmin', 'staff', 'supervisor'}:
+            user_role = get_user_role(user)
+            if user_role in {'superadmin', 'admin', 'subadmin', 'staff'}:
                 return redirect('dashboard')
             return redirect('customer_dashboard')
         else:
@@ -179,8 +180,25 @@ def guest_access(request):
 
 def api_team_users(request):
     from django.contrib.auth.models import User
-    users = list(User.objects.filter(is_staff=True).values('id', 'username', 'email'))
-    return JsonResponse({'users': users})
+
+    users_by_role = {
+        'superadmin': [],
+        'admin': [],
+        'subadmin': [],
+        'staff': [],
+    }
+
+    for user in User.objects.filter(is_active=True).order_by('username'):
+        role = get_user_role(user)
+        if role in users_by_role:
+            users_by_role[role].append({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'role': role,
+            })
+
+    return JsonResponse({'success': True, 'users_by_role': users_by_role})
 
 
 def demo_google_callback(request):

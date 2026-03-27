@@ -9,6 +9,7 @@ from datetime import timedelta
 import json
 from .models import RentalItem, RentalBooking, RentalCategory, MaintenanceSchedule
 from permissions.decorators import require_permission
+from permissions.decorators import get_user_role
 
 
 @login_required
@@ -19,10 +20,7 @@ def rentals_list(request):
     else:
         items = RentalItem.objects.filter(category__category_type=category).select_related('category')
     categories = RentalCategory.objects.all()
-    try:
-        user_role = request.user.role.role
-    except:
-        user_role = 'customer'
+    user_role = get_user_role(request.user)
     return render(request, 'rentals/enhanced_list.html', {
         'items': items, 'categories': categories,
         'selected_category': category or 'all', 'user_role': user_role,

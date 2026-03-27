@@ -6,11 +6,11 @@
 
 [![Django](https://img.shields.io/badge/Django-4.2.11-092E20?style=for-the-badge&logo=django&logoColor=white)](https://djangoproject.com)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org)
-[![Next.js](https://img.shields.io/badge/Next.js-14-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
+[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
+[![PythonAnywhere](https://img.shields.io/badge/Hosted%20on-PythonAnywhere-1a73e8?style=for-the-badge)](https://ashstarfall01.pythonanywhere.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-**[🌐 Live Demo](#)** &nbsp;•&nbsp; **[🐛 Report Bug](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)** &nbsp;•&nbsp; **[💡 Request Feature](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)**
+**[🌐 Live Demo](https://ashstarfall01.pythonanywhere.com)** &nbsp;•&nbsp; **[🐛 Report Bug](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)** &nbsp;•&nbsp; **[💡 Request Feature](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)**
 
 ---
 
@@ -92,12 +92,12 @@ Built as a Final Year CS Engineering project, it demonstrates enterprise softwar
 | Layer | Technology |
 |-------|-----------|
 | Backend | Django 4.2.11, Django REST Framework 3.15 |
-| Database | PostgreSQL 15 (production) / SQLite (dev) |
-| Frontend | Next.js 14, React 18, CSS (custom + Bootstrap-style UI) |
+| Database | SQLite (included in repo — zero setup needed) |
+| Frontend | Django HTML templates, Bootstrap 5, Chart.js |
 | Authentication | Django session auth + DRF Token auth |
 | Static Files | WhiteNoise (compressed, cached) |
 | Barcode/QR | python-barcode 0.15, qrcode 7.4 |
-| Deployment | Vercel (frontend), Render (backend via render.yaml) |
+| Deployment | PythonAnywhere (live at ashstarfall01.pythonanywhere.com) |
 
 ---
 
@@ -105,8 +105,7 @@ Built as a Final Year CS Engineering project, it demonstrates enterprise softwar
 
 ### Prerequisites
 - Python 3.11+
-- Node.js 18+
-- pip and npm
+- pip
 - Git
 
 ### Backend Setup (Django)
@@ -141,9 +140,6 @@ python manage.py populate_data
 python manage.py seed_rentals
 python manage.py seed_storage
 python manage.py seed_lockers
-
-# Export database for frontend
-python export_simple.py
 
 # Run development server
 python manage.py runserver
@@ -204,11 +200,8 @@ You can also capture your local UI screenshots after running both servers and ad
 - Customer Login: `http://127.0.0.1:8000/auth/customer-login/`
 - Guest Access: `http://127.0.0.1:8000/guest/`
 
-**Frontend (Local):**
-- Main: `http://localhost:3000/`
-- Login Selection: `http://localhost:3000/login-selection`
-- Team Login: `http://localhost:3000/team-login`
-- Customer Login: `http://localhost:3000/customer-login`
+**Live Site:**
+- `https://ashstarfall01.pythonanywhere.com/`
 
 ### 👥 Team Login Credentials
 
@@ -279,26 +272,12 @@ Multi-Stock-Logistics-Platform/
 │   ├── inventory/             # Inventory management
 │   ├── analytics/             # Dashboard & metrics
 │   └── ...                    # 30+ more apps
-├── frontend-vercel/           # Next.js frontend
-│   ├── src/
-│   │   ├── app/              # Next.js 14 app router
-│   │   │   ├── login-selection/
-│   │   │   ├── team-login/
-│   │   │   ├── customer-login/
-│   │   │   ├── products/
-│   │   │   ├── rentals/
-│   │   │   ├── storage/
-│   │   │   └── lockers/
-│   │   ├── components/       # Reusable components
-│   │   └── lib/             # Utilities & data loaders
-│   └── public/
-│       └── data/            # Exported database JSON
-├── templates/                # Django HTML templates
+├── templates/                # Django HTML templates (role-aware UI)
 ├── static/                   # CSS, JS, images
 ├── media/                    # Uploaded files
 ├── fixtures/                 # Seed data
-├── greaterwms/              # Django project settings
-├── export_simple.py         # Database export script
+├── greaterwms/              # Django project settings & URLs
+├── db.sqlite3               # Pre-seeded demo database (included)
 ├── CREDENTIALS.md           # Complete login credentials
 ├── requirements.txt         # Python dependencies
 ├── manage.py
@@ -307,80 +286,42 @@ Multi-Stock-Logistics-Platform/
 
 ---
 
-## 🌐 Frontend Deployment
+## 🌐 Deployment (PythonAnywhere)
 
-### Deploy to Vercel
+This project is live at **https://ashstarfall01.pythonanywhere.com**
 
-1. **Push to GitHub:**
+### Deploy Your Own Free Instance
+
+1. **Sign up** at [pythonanywhere.com](https://www.pythonanywhere.com) (free tier)
+2. **Open a Bash console** and run:
 ```bash
-git add .
-git commit -m "Add complete project"
-git push origin main
+git clone https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform.git
+cd Multi-Stock-Logistics-Platform
+python3.11 -m venv ~/.virtualenvs/multistock-env
+source ~/.virtualenvs/multistock-env/bin/activate
+pip install -r requirements.txt
+python manage.py collectstatic --noinput
 ```
-
-2. **Import to Vercel:**
-   - Go to [vercel.com](https://vercel.com)
-   - Click "Import Project"
-   - Select your GitHub repository
-   - Set **Root Directory** to `frontend-vercel`
-   - Click "Deploy"
-
-3. **Environment Variables (Optional):**
-   - No environment variables needed for demo
-   - Data is loaded from `/public/data/frontend_data.json`
-
-### Local Frontend Development
-
-```bash
-cd frontend-vercel
-npm install
-npm run dev
+3. **Create a Web App** (Manual config, Python 3.11)
+4. **WSGI file** — replace contents with:
+```python
+import os, sys
+path = '/home/YOUR_USERNAME/Multi-Stock-Logistics-Platform'
+if path not in sys.path:
+    sys.path.append(path)
+os.environ['DJANGO_SETTINGS_MODULE'] = 'greaterwms.settings'
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
 ```
-
-### Build for Production
-
-```bash
-npm run build
-npm start
-```
-
-### Backend Deployment (Render)
-
-Backend Render deployment is configured through `render.yaml` in this repository.
-
-- Keep `render.yaml` if you plan to deploy backend on Render.
-- You can remove `render.yaml` only if you are certain backend deployment will be handled elsewhere.
-
-The current configuration expects:
-- Django app served by `gunicorn`
-- `DATABASE_URL` (typically PostgreSQL, including Supabase PostgreSQL)
-- CORS/CSRF origins for your frontend domain
+5. **Virtualenv** → `/home/YOUR_USERNAME/.virtualenvs/multistock-env`
+6. **Static files**: `/static/` → `.../staticfiles`, `/media/` → `.../media`
+7. Click **Reload**
 
 ---
 
 ## 💾 Database Management
 
-### Export Database for Frontend
-
-```bash
-# Export all data to JSON
-python export_simple.py
-```
-
-This creates `frontend-vercel/public/data/frontend_data.json` with:
-- Products
-- Stock Items
-- Rentals
-- Rental Categories
-- Storage Units
-- Lockers
-- Locker Types
-- Warehouses
-- Orders
-- Order Items
-- Customers
-- Suppliers
-- Coupons
+The repository includes `db.sqlite3` with all demo data pre-seeded — no setup required. Just clone and run.
 
 ### Seed Demo Data
 
@@ -456,16 +397,6 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-### Frontend Not Loading Data?
-```bash
-# Re-export database
-python export_simple.py
-
-# Restart frontend
-cd frontend-vercel
-npm run dev
-```
-
 ### Port Already in Use?
 ```bash
 # Django (change port)
@@ -482,10 +413,6 @@ PORT=3001 npm run dev
 ```bash
 # Django tests
 python manage.py test
-
-# Frontend quality check (lint)
-cd frontend-vercel
-npm run lint
 ```
 
 ---
@@ -516,7 +443,7 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-Made with ❤️ using Django, Next.js & PostgreSQL/SQLite
+Made with ❤️ using Django & SQLite — deployed free on PythonAnywhere
 
 ⭐ Star this repo if you found it useful!
 
