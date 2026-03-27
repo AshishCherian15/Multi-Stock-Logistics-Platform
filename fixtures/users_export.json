@@ -1,0 +1,38 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$v5hXVzE54BeEREhiRt2WYe$egUXJxxmGFP3pxEoy8LZgxG8lxZWpmDyK8SU5+k1vB8=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@multistock.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-03-12T16:15:36.896Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$XRLRudRkrDvOAqPDke2lmb$SxG64v9QvKC/3eziKKU64XYZS85/OwtdRQ00MV2CEis=",
+    "last_login": "2026-03-27T13:10:32.841Z",
+    "is_superuser": false,
+    "username": "customer",
+    "first_name": "",
+    "last_name": "",
+    "email": "customer@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-18T20:55:02.105Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]

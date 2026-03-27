@@ -7,11 +7,10 @@
 [![Django](https://img.shields.io/badge/Django-4.2.11-092E20?style=for-the-badge&logo=django&logoColor=white)](https://djangoproject.com)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org)
-[![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com)
+[![Next.js](https://img.shields.io/badge/Next.js-14-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Frontend%20Live%20on%20Vercel-brightgreen?style=for-the-badge)](https://vercel.com)
 
-**[🌐 Frontend Demo (Vercel)](#)** &nbsp;•&nbsp; **[🐛 Report Bug](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)** &nbsp;•&nbsp; **[💡 Request Feature](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)**
+**[🌐 Live Demo](#)** &nbsp;•&nbsp; **[🐛 Report Bug](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)** &nbsp;•&nbsp; **[💡 Request Feature](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)**
 
 ---
 
@@ -26,123 +25,65 @@
 - [About](#-about)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
+- [Quick Start](#-quick-start)
 - [Screenshots](#-screenshots)
-- [Local Setup](#-local-setup)
+- [Login Credentials](#-login-credentials)
 - [Project Structure](#-project-structure)
-- [Role-Based Access](#-role-based-access)
-- [Deployment](#-deployment-github--vercel-frontend)
+- [Frontend Deployment](#-frontend-deployment)
+- [Database Management](#-database-management)
 - [API Reference](#-api-reference)
+- [Troubleshooting](#-troubleshooting)
 - [Author](#-author)
 
 ---
 
 ## 🧠 About
 
-**Multi-Stock Logistics Platform** is a comprehensive, production-ready warehouse and logistics management system built with Django and PostgreSQL. It covers the full lifecycle of a logistics business — from inventory tracking and multi-vendor marketplace to equipment rentals, smart locker bookings, POS billing, analytics dashboards, and customer support.
+**Multi-Stock Logistics Platform** is a comprehensive, production-ready warehouse and logistics management system built with Django and PostgreSQL backend, with a Next.js frontend for modern deployment. It covers the full lifecycle of a logistics business — from inventory tracking and multi-vendor marketplace to equipment rentals, smart locker bookings, POS billing, analytics dashboards, and customer support.
 
 Built as a Final Year CS Engineering project, it demonstrates enterprise software engineering patterns: role-based access control, RESTful APIs, signal-driven data consistency, audit logging, real-time notifications, and a clean multi-app Django architecture with 40+ apps.
-
----
-
-## 🖼️ Screenshots
-
-> The Vercel frontend is a pixel-accurate clone of the Django guest interface.
-
-### 🏠 Guest Dashboard
-- Blue gradient background (`#0014A8 → #1e40af → #3b82f6`, fixed)
-- Glassmorphism navbar with blur + animated floating particles
-- Hero section with animated stat cards (glassmorphism, hover float effect)
-- Guest mode info banner and CTA section
-
-### 🛒 Marketplace
-- Product grid with search, category filter, sort controls
-- Product cards with stock badges and ₹ pricing
-- "Login to Purchase" gate
-
-### 🔑 Rentals
-- Rental equipment cards with 4-tier pricing (hourly/daily/weekly/monthly)
-- Blue gradient price-tag badges
-- Search + sort filters
-
-### 🏗️ Storage Units
-- 4-stat dashboard (total/available/occupied/maintenance)
-- Storage unit cards with gradient headers, climate control badge
-- ₹ price per month
-
-### 📦 Smart Lockers
-- Same 4-stat dashboard pattern
-- Locker cards with gradient header, locker number, 60px icon
-- Feature badges (climate control, security monitoring)
-- Detailed pricing box
-
-### 🎨 Design System
-| Element | Value |
-|---------|-------|
-| Background | `linear-gradient(135deg, #0014A8 0%, #1e40af 50%, #3b82f6 100%)` fixed |
-| Font | Inter (Google Fonts, 300–800) |
-| CSS framework | Bootstrap 5.3.0 + Font Awesome 6.4.0 |
-| Navbar | Glassmorphism: `backdrop-filter: blur(10px)`, `rgba(255,255,255,0.1)` |
-| Cards | `rgba(255,255,255,0.15)` glass, hover `translateY(-15px) scale(1.05)` |
-| Prices | `#0014A8 → #000E75` gradient badges |
-| Footer | `rgba(30,41,59,0.95)` dark glass |
 
 ---
 
 ## ✨ Features
 
 ### 🛒 Marketplace & Commerce
-| Feature | Details |
-|---------|---------|
-| Multi-vendor marketplace | Browse, search, filter products by category |
-| Shopping cart | Real-time stock validation, coupon support |
-| Order lifecycle | Pending → Confirmed → Shipped → Delivered |
-| Product reviews | Star ratings with verified-purchase badges |
-| Wishlist | Save items for later |
-| Coupon system | Discount codes with usage limits and expiry |
+- Multi-vendor marketplace with search and filters
+- Shopping cart with real-time stock validation
+- Order lifecycle management (Pending → Confirmed → Shipped → Delivered)
+- Product reviews with star ratings
+- Wishlist and coupon system
 
 ### 🏗️ Warehouse Operations
-| Feature | Details |
-|---------|---------|
-| Inventory tracking | Stock levels, movements, low-stock alerts |
-| Barcode & QR generation | Real Code128 + QR codes via `python-barcode` & `qrcode` |
-| Stock adjustments | Damage write-offs, corrections, counts — with approval flow |
-| Stock transfers | Move stock between warehouses with status tracking |
-| Warehouse management | Multi-location support with images |
-| Bulk CSV upload | Upload stock via template CSV |
+- Inventory tracking with stock levels and movements
+- Barcode & QR code generation
+- Stock adjustments with approval workflow
+- Multi-location warehouse support
+- Bulk CSV upload
 
 ### 📦 Rentals, Storage & Lockers
-| Feature | Details |
-|---------|---------|
-| Equipment rental | Hourly/daily/weekly/monthly pricing, booking flow |
-| Storage units | Book by size, duration, with capacity management |
-| Smart lockers | Book, pay, access — with booking detail pages |
-| Rental agreements | Auto-generated agreement pages per booking |
-| Maintenance scheduling | Track maintenance for rental items |
+- Equipment rental with flexible pricing (hourly/daily/weekly/monthly)
+- Storage units booking by size and duration
+- Smart lockers with booking management
+- Automated rental agreements
 
 ### 💳 Payments & Billing
-| Feature | Details |
-|---------|---------|
-| Unified payment flow | Same flow for orders, rentals, storage, lockers |
-| Invoice generation | PDF-ready invoice and receipt templates |
-| Payment history | Filterable history across all booking types |
-| Refund processing | Role-gated refund workflow |
-| COD support | Cash on delivery with pending payment status |
+- Unified payment flow for all services
+- Invoice and receipt generation
+- Payment history tracking
+- Refund processing workflow
 
 ### 📊 Analytics & Reporting
-| Feature | Details |
-|---------|---------|
-| Dashboard charts | Revenue, orders, stock levels — Chart.js |
-| Advanced analytics | Heatmaps, bubble charts, time-series |
-| Report generation | Exportable CSV and XLSX reports |
-| Audit log | Every critical action is logged with user + timestamp |
+- Dashboard charts with Chart.js
+- Advanced analytics with heatmaps
+- Exportable CSV and XLSX reports
+- Complete audit logging
 
 ### 💬 Communication & Support
-| Feature | Details |
-|---------|---------|
-| Support tickets | Full ticket lifecycle: create → reply → resolve |
-| Internal messaging | 1:1 and group chat for team members |
-| Community forums | Topics, posts, threaded replies |
-| Notification centre | In-app notifications with email integration |
+- Support ticket system
+- Internal messaging (1:1 and group chat)
+- Community forums
+- In-app notifications with email integration
 
 ---
 
@@ -150,85 +91,175 @@ Built as a Final Year CS Engineering project, it demonstrates enterprise softwar
 
 | Layer | Technology |
 |-------|-----------|
-| Backend framework | Django 4.2.11 |
-| REST API | Django REST Framework 3.15 |
+| Backend | Django 4.2.11, Django REST Framework 3.15 |
 | Database | PostgreSQL 15 (production) / SQLite (dev) |
-| Authentication | Django session auth + Django Allauth |
-| Frontend | Bootstrap 5, vanilla JS, Chart.js |
-| Static files | WhiteNoise (compressed, cached) |
-| Barcode/QR | `python-barcode` 0.15, `qrcode` 7.4, Pillow 10 |
-| Deployment | GitHub + Vercel (frontend demo) |
-| WSGI server | Gunicorn 21 |
+| Frontend | Next.js 14, React 18, CSS (custom + Bootstrap-style UI) |
+| Authentication | Django session auth + DRF Token auth |
+| Static Files | WhiteNoise (compressed, cached) |
+| Barcode/QR | python-barcode 0.15, qrcode 7.4 |
+| Deployment | Vercel (frontend), Render (backend via render.yaml) |
 
 ---
 
-## 🚀 Local Setup
+## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.11+
-- pip
+- Node.js 18+
+- pip and npm
 - Git
 
-### Step 1 — Clone & install
+### Backend Setup (Django)
 
 ```bash
+# Clone repository
 git clone https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform.git
 cd Multi-Stock-Logistics-Platform
 
+# Create virtual environment
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
+# Install dependencies
 pip install -r requirements.txt
-```
 
-### Step 2 — Configure environment
-
-```bash
+# Configure environment
 cp .env.example .env
-```
+# Edit .env and set SECRET_KEY
 
-Edit `.env` — at minimum set:
-
-```env
-SECRET_KEY=your-secret-key-here
-DEBUG=True
-```
-
-Generate a strong key:
-```bash
+# Generate secret key
 python -c "import secrets; print(secrets.token_urlsafe(50))"
-```
 
-### Step 3 — Migrate & seed
-
-```bash
+# Run migrations
 python manage.py migrate
 
+# Create superuser
 python manage.py createsuperuser
 
-# Optional: seed demo data
+# Seed demo data (optional)
 python manage.py populate_data
 python manage.py seed_rentals
 python manage.py seed_storage
 python manage.py seed_lockers
-python manage.py populate_coupons
-```
 
-### Step 4 — Run
+# Export database for frontend
+python export_simple.py
 
-```bash
+# Run development server
 python manage.py runserver
 ```
 
 Visit **http://127.0.0.1:8000**
 
-### Demo Credentials (after seeding)
+### Use the Included Demo Database (Optional)
 
-| Role | Username | Password | Login Portal |
-|------|----------|----------|-------------|
-| Superadmin / Admin | `admin` | `admin123` | `/auth/team-login/` |
-| Customer | `customer` | `customer123` | `/auth/login/` |
-| Guest | *(no login needed)* | — | `/enter-as-guest/` |
+This repository already includes `db.sqlite3` with preloaded demo data.
+
+```bash
+# If you want to use the included DB directly, just run:
+python manage.py runserver
+```
+
+If you want a fresh database instead, delete `db.sqlite3`, then run `python manage.py migrate` and seed commands.
+
+### Frontend Setup (Next.js)
+
+```bash
+# Navigate to frontend directory
+cd frontend-vercel
+
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+```
+
+Visit **http://localhost:3000**
+
+---
+
+## 🖼️ Screenshots
+
+### Platform Preview Assets
+
+| Module | Preview |
+|--------|---------|
+| Rental Equipment | ![Rental Equipment](static/images/rental_equipment.png) |
+| Smart Lockers | ![Smart Locker](static/images/smart_locker.png) |
+| Storage Units | ![Storage Unit](static/images/storage_unit.png) |
+
+You can also capture your local UI screenshots after running both servers and add them under a folder like `docs/screenshots/`.
+
+---
+
+## 🔐 Login Credentials
+
+### 🌐 Access URLs
+
+**Django Backend (Local):**
+- Main: `http://127.0.0.1:8000/`
+- Login Selection: `http://127.0.0.1:8000/auth/login-selection/`
+- Team Login: `http://127.0.0.1:8000/auth/team-login/`
+- Customer Login: `http://127.0.0.1:8000/auth/customer-login/`
+- Guest Access: `http://127.0.0.1:8000/guest/`
+
+**Frontend (Local):**
+- Main: `http://localhost:3000/`
+- Login Selection: `http://localhost:3000/login-selection`
+- Team Login: `http://localhost:3000/team-login`
+- Customer Login: `http://localhost:3000/customer-login`
+
+### 👥 Team Login Credentials
+
+#### 🔴 SuperAdmin Accounts
+**Full system access & management**
+
+| Username | Password | Email |
+|----------|----------|-------|
+| `superuser` | `super123` | superuser@multistock.com |
+| `testcustomer` | `super123` | testcustomer@multistock.com |
+
+#### 🔵 Admin Accounts
+**Administrative access**
+
+| Username | Password | Email |
+|----------|----------|-------|
+| `admin` | `admin123` | admin@multistock.com |
+| `admin_rajesh` | `admin123` | rajesh@multistock.com |
+| `admin_priya` | `admin123` | priya@multistock.com |
+
+#### 🟡 SubAdmin Accounts
+**Supervisor access**
+
+| Username | Password | Email |
+|----------|----------|-------|
+| `subadmin_suresh` | `sub123` | suresh@multistock.com |
+| `senior_lakshmi` | `staff123` | lakshmi.senior@multistock.in |
+
+#### 🟠 Staff Accounts
+**Basic operations**
+
+| Username | Password | Email |
+|----------|----------|-------|
+| `staff` | `staff123` | staff@multistock.com |
+| `staff_amit` | `staff123` | amit@multistock.com |
+| `staff_vikram` | `staff123` | vikram@multistock.com |
+
+### 🛒 Customer Login Credentials
+
+| Username | Password | Email |
+|----------|----------|-------|
+| `customer` | `customer123` | customer@example.com |
+| `customer_arjun` | `customer123` | arjun@example.com |
+| `customer_deepika` | `customer123` | deepika@example.com |
+
+**Plus 46+ more customer accounts** (all with password: `customer123`)
+
+### 🌍 Guest Access
+No login required - browse-only access at `/guest/`
+
+**📄 Complete credentials documentation:** See [CREDENTIALS.md](CREDENTIALS.md)
 
 ---
 
@@ -236,84 +267,155 @@ Visit **http://127.0.0.1:8000**
 
 ```
 Multi-Stock-Logistics-Platform/
-├── apps/
-│   ├── auth_system/        # Login, register, password reset (OTP)
-│   ├── orders/             # Sales & purchase orders, signals
-│   ├── rentals/            # Equipment rental — booking & analytics
-│   ├── storage/            # Storage unit bookings
-│   ├── lockers/            # Smart locker booking system
-│   ├── payments/           # Unified payment processor & history
-│   ├── tickets/            # Support ticket system ← NEW
-│   ├── reviews/            # Product reviews & ratings ← NEW
-│   ├── adjustments/        # Stock adjustments with approval ← FIXED
-│   ├── returns/            # Return requests & refunds ← FIXED
-│   ├── transfers/          # Inter-warehouse stock transfers ← FIXED
-│   ├── barcode/            # Real Code128 + QR generation ← FIXED
-│   ├── analytics/          # Dashboard charts & metrics
-│   ├── inventory/          # Inventory management
-│   ├── billing/            # Invoices & receipts
-│   ├── messaging/          # Internal chat (1:1 + groups)
-│   ├── forums/             # Community forums
-│   ├── notifications/      # Notification centre + email
-│   ├── audit/              # Audit log middleware
-│   ├── permissions/        # RBAC decorators & context processors
-│   └── ...                 # 30+ more apps
-├── templates/              # Django HTML templates (role-separated)
-├── static/                 # CSS, JS, images
-│   ├── css/                # Dark mode, sidebar, responsive, navbar
-│   └── js/                 # Theme toggle, notifications, search, etc.
-├── greaterwms/             # Django project — settings, urls, wsgi
-├── frontend-vercel/        # Standalone Next.js frontend for Vercel deployment
-├── media/                  # Product images (dev only)
-├── fixtures/               # Seed data JSON
-├── requirements.txt        # All packages pinned
-└── manage.py
+├── apps/                       # Django apps (40+ apps)
+│   ├── auth_system/           # Login, register, password reset
+│   ├── orders/                # Sales & purchase orders
+│   ├── rentals/               # Equipment rental system
+│   ├── storage/               # Storage unit bookings
+│   ├── lockers/               # Smart locker system
+│   ├── payments/              # Unified payment processor
+│   ├── tickets/               # Support ticket system
+│   ├── reviews/               # Product reviews
+│   ├── inventory/             # Inventory management
+│   ├── analytics/             # Dashboard & metrics
+│   └── ...                    # 30+ more apps
+├── frontend-vercel/           # Next.js frontend
+│   ├── src/
+│   │   ├── app/              # Next.js 14 app router
+│   │   │   ├── login-selection/
+│   │   │   ├── team-login/
+│   │   │   ├── customer-login/
+│   │   │   ├── products/
+│   │   │   ├── rentals/
+│   │   │   ├── storage/
+│   │   │   └── lockers/
+│   │   ├── components/       # Reusable components
+│   │   └── lib/             # Utilities & data loaders
+│   └── public/
+│       └── data/            # Exported database JSON
+├── templates/                # Django HTML templates
+├── static/                   # CSS, JS, images
+├── media/                    # Uploaded files
+├── fixtures/                 # Seed data
+├── greaterwms/              # Django project settings
+├── export_simple.py         # Database export script
+├── CREDENTIALS.md           # Complete login credentials
+├── requirements.txt         # Python dependencies
+├── manage.py
+└── README.md
 ```
 
 ---
 
-## 👥 Role-Based Access
+## 🌐 Frontend Deployment
 
-| Role | Portal | Capabilities |
-|------|--------|-------------|
-| **Superadmin** | Team login | Full control — users, settings, analytics, purge |
-| **Admin** | Team login | Orders, inventory, customers, reports, billing |
-| **Supervisor** | Team login | Team management, bookings, approvals, returns |
-| **Staff** | Team login | POS, shipping, day-to-day stock operations |
-| **Customer** | Customer login | Marketplace, cart, orders, bookings, tickets |
-| **Guest** | Guest access | Browse-only — marketplace, services, pricing |
+### Deploy to Vercel
 
----
+1. **Push to GitHub:**
+```bash
+git add .
+git commit -m "Add complete project"
+git push origin main
+```
 
-## 🌐 Deployment (GitHub + Vercel Frontend)
+2. **Import to Vercel:**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "Import Project"
+   - Select your GitHub repository
+   - Set **Root Directory** to `frontend-vercel`
+   - Click "Deploy"
 
-This repository includes a separate frontend app in `frontend-vercel/` for public demo deployment.
-The demo runs fully on Vercel using static exported data and does not require Render.
+3. **Environment Variables (Optional):**
+   - No environment variables needed for demo
+   - Data is loaded from `/public/data/frontend_data.json`
 
-### 1. Push repository to GitHub
+### Local Frontend Development
 
 ```bash
-git init
-git add .
-git commit -m "Add full project with standalone Vercel frontend"
-git branch -M main
-git remote add origin https://github.com/<your-username>/Multi-Stock-Logistics-Platform.git
-git push -u origin main
+cd frontend-vercel
+npm install
+npm run dev
 ```
 
-### 2. Deploy only frontend on Vercel
+### Build for Production
 
-1. Open Vercel and import this GitHub repository.
-2. Set **Root Directory** to `frontend-vercel`.
-3. Framework is detected as Next.js.
-4. No environment variables are required for demo deployment.
-5. Click Deploy.
+```bash
+npm run build
+npm start
+```
 
-### 3. Frontend data source
+### Backend Deployment (Render)
 
-- Frontend data file: `frontend-vercel/public/data/frontend_data.json`
-- Data is extracted from Django and sanitized for frontend use.
-- Sensitive auth/profile models are excluded from the Vercel dataset.
+Backend Render deployment is configured through `render.yaml` in this repository.
+
+- Keep `render.yaml` if you plan to deploy backend on Render.
+- You can remove `render.yaml` only if you are certain backend deployment will be handled elsewhere.
+
+The current configuration expects:
+- Django app served by `gunicorn`
+- `DATABASE_URL` (typically PostgreSQL, including Supabase PostgreSQL)
+- CORS/CSRF origins for your frontend domain
+
+---
+
+## 💾 Database Management
+
+### Export Database for Frontend
+
+```bash
+# Export all data to JSON
+python export_simple.py
+```
+
+This creates `frontend-vercel/public/data/frontend_data.json` with:
+- Products
+- Stock Items
+- Rentals
+- Rental Categories
+- Storage Units
+- Lockers
+- Locker Types
+- Warehouses
+- Orders
+- Order Items
+- Customers
+- Suppliers
+- Coupons
+
+### Seed Demo Data
+
+```bash
+# Populate products
+python manage.py populate_data
+
+# Seed rentals
+python manage.py seed_rentals
+
+# Seed storage units
+python manage.py seed_storage
+
+# Seed lockers
+python manage.py seed_lockers
+
+# Seed coupons
+python manage.py populate_coupons
+```
+
+### Reset Database
+
+```bash
+# Delete database
+rm db.sqlite3
+
+# Run migrations
+python manage.py migrate
+
+# Create superuser
+python manage.py createsuperuser
+
+# Seed data
+python manage.py populate_data
+```
 
 ---
 
@@ -333,24 +435,58 @@ Base URL: `/api/`
 | `/api/search/` | GET | Global search |
 | `/health/` | GET | Health check |
 
-All API endpoints require authentication (session or token). Add `Authorization: Token <token>` header for token auth.
+**Authentication:** Session-based or DRF Token-based
+```bash
+Authorization: Token <your-token>
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Login Not Working?
+1. Verify correct login portal (Team vs Customer)
+2. Check username spelling (case-sensitive)
+3. Clear browser cache
+4. Try incognito mode
+
+### Database Issues?
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+### Frontend Not Loading Data?
+```bash
+# Re-export database
+python export_simple.py
+
+# Restart frontend
+cd frontend-vercel
+npm run dev
+```
+
+### Port Already in Use?
+```bash
+# Django (change port)
+python manage.py runserver 8001
+
+# Next.js (change port)
+PORT=3001 npm run dev
+```
 
 ---
 
 ## 🧪 Running Tests
 
 ```bash
+# Django tests
 python manage.py test
+
+# Frontend quality check (lint)
+cd frontend-vercel
+npm run lint
 ```
-
----
-
-## 👨‍💻 Author
-
-**Ashish Cherian**
-- USN: `4KM22CS018`
-- Branch: B.E. Computer Science & Engineering
-- Year: Final Year, 2025–26
 
 ---
 
@@ -360,10 +496,30 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
+## 👨💻 Author
+
+**Ashish Cherian**
+- USN: `4KM22CS018`
+- Branch: B.E. Computer Science & Engineering
+- Year: Final Year, 2025–26
+- GitHub: [@AshishCherian15](https://github.com/AshishCherian15)
+
+---
+
+## 🆘 Support
+
+- **Issues:** [GitHub Issues](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)
+- **Email:** admin@multistock.com
+- **Documentation:** [CREDENTIALS.md](CREDENTIALS.md)
+
+---
+
 <div align="center">
 
-Made with ❤️ using Django & Bootstrap
+Made with ❤️ using Django, Next.js & PostgreSQL/SQLite
 
 ⭐ Star this repo if you found it useful!
+
+**Last Updated:** March 2026 | **Version:** 2.1
 
 </div>

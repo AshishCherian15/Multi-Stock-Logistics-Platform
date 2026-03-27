@@ -1,0 +1,6981 @@
+[
+{
+  "model": "auth.permission",
+  "pk": 1,
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": 1,
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 2,
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": 1,
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 3,
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": 1,
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 4,
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": 1,
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 5,
+  "fields": {
+    "name": "Can add permission",
+    "content_type": 2,
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 6,
+  "fields": {
+    "name": "Can change permission",
+    "content_type": 2,
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 7,
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": 2,
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 8,
+  "fields": {
+    "name": "Can view permission",
+    "content_type": 2,
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 9,
+  "fields": {
+    "name": "Can add group",
+    "content_type": 3,
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 10,
+  "fields": {
+    "name": "Can change group",
+    "content_type": 3,
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 11,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": 3,
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 12,
+  "fields": {
+    "name": "Can view group",
+    "content_type": 3,
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 13,
+  "fields": {
+    "name": "Can add user",
+    "content_type": 4,
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 14,
+  "fields": {
+    "name": "Can change user",
+    "content_type": 4,
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 15,
+  "fields": {
+    "name": "Can delete user",
+    "content_type": 4,
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 16,
+  "fields": {
+    "name": "Can view user",
+    "content_type": 4,
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 17,
+  "fields": {
+    "name": "Can add content type",
+    "content_type": 5,
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 18,
+  "fields": {
+    "name": "Can change content type",
+    "content_type": 5,
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 19,
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": 5,
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 20,
+  "fields": {
+    "name": "Can view content type",
+    "content_type": 5,
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 21,
+  "fields": {
+    "name": "Can add session",
+    "content_type": 6,
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 22,
+  "fields": {
+    "name": "Can change session",
+    "content_type": 6,
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 23,
+  "fields": {
+    "name": "Can delete session",
+    "content_type": 6,
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 24,
+  "fields": {
+    "name": "Can view session",
+    "content_type": 6,
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 25,
+  "fields": {
+    "name": "Can add Token",
+    "content_type": 7,
+    "codename": "add_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 26,
+  "fields": {
+    "name": "Can change Token",
+    "content_type": 7,
+    "codename": "change_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 27,
+  "fields": {
+    "name": "Can delete Token",
+    "content_type": 7,
+    "codename": "delete_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 28,
+  "fields": {
+    "name": "Can view Token",
+    "content_type": 7,
+    "codename": "view_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 29,
+  "fields": {
+    "name": "Can add token",
+    "content_type": 8,
+    "codename": "add_tokenproxy"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 30,
+  "fields": {
+    "name": "Can change token",
+    "content_type": 8,
+    "codename": "change_tokenproxy"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 31,
+  "fields": {
+    "name": "Can delete token",
+    "content_type": 8,
+    "codename": "delete_tokenproxy"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 32,
+  "fields": {
+    "name": "Can view token",
+    "content_type": 8,
+    "codename": "view_tokenproxy"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 33,
+  "fields": {
+    "name": "Can add Goods",
+    "content_type": 9,
+    "codename": "add_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 34,
+  "fields": {
+    "name": "Can change Goods",
+    "content_type": 9,
+    "codename": "change_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 35,
+  "fields": {
+    "name": "Can delete Goods",
+    "content_type": 9,
+    "codename": "delete_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 36,
+  "fields": {
+    "name": "Can view Goods",
+    "content_type": 9,
+    "codename": "view_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 37,
+  "fields": {
+    "name": "Can add Stock",
+    "content_type": 10,
+    "codename": "add_stocklistmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 38,
+  "fields": {
+    "name": "Can change Stock",
+    "content_type": 10,
+    "codename": "change_stocklistmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 39,
+  "fields": {
+    "name": "Can delete Stock",
+    "content_type": 10,
+    "codename": "delete_stocklistmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 40,
+  "fields": {
+    "name": "Can view Stock",
+    "content_type": 10,
+    "codename": "view_stocklistmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 41,
+  "fields": {
+    "name": "Can add stock alert",
+    "content_type": 11,
+    "codename": "add_stockalert"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 42,
+  "fields": {
+    "name": "Can change stock alert",
+    "content_type": 11,
+    "codename": "change_stockalert"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 43,
+  "fields": {
+    "name": "Can delete stock alert",
+    "content_type": 11,
+    "codename": "delete_stockalert"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 44,
+  "fields": {
+    "name": "Can view stock alert",
+    "content_type": 11,
+    "codename": "view_stockalert"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 45,
+  "fields": {
+    "name": "Can add stock movement",
+    "content_type": 12,
+    "codename": "add_stockmovement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 46,
+  "fields": {
+    "name": "Can change stock movement",
+    "content_type": 12,
+    "codename": "change_stockmovement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 47,
+  "fields": {
+    "name": "Can delete stock movement",
+    "content_type": 12,
+    "codename": "delete_stockmovement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 48,
+  "fields": {
+    "name": "Can view stock movement",
+    "content_type": 12,
+    "codename": "view_stockmovement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 49,
+  "fields": {
+    "name": "Can add Warehouse",
+    "content_type": 13,
+    "codename": "add_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 50,
+  "fields": {
+    "name": "Can change Warehouse",
+    "content_type": 13,
+    "codename": "change_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 51,
+  "fields": {
+    "name": "Can delete Warehouse",
+    "content_type": 13,
+    "codename": "delete_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 52,
+  "fields": {
+    "name": "Can view Warehouse",
+    "content_type": 13,
+    "codename": "view_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 53,
+  "fields": {
+    "name": "Can add Customer",
+    "content_type": 14,
+    "codename": "add_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 54,
+  "fields": {
+    "name": "Can change Customer",
+    "content_type": 14,
+    "codename": "change_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 55,
+  "fields": {
+    "name": "Can delete Customer",
+    "content_type": 14,
+    "codename": "delete_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 56,
+  "fields": {
+    "name": "Can view Customer",
+    "content_type": 14,
+    "codename": "view_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 57,
+  "fields": {
+    "name": "Can add Supplier",
+    "content_type": 15,
+    "codename": "add_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 58,
+  "fields": {
+    "name": "Can change Supplier",
+    "content_type": 15,
+    "codename": "change_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 59,
+  "fields": {
+    "name": "Can delete Supplier",
+    "content_type": 15,
+    "codename": "delete_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 60,
+  "fields": {
+    "name": "Can view Supplier",
+    "content_type": 15,
+    "codename": "view_listmodel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 61,
+  "fields": {
+    "name": "Can add barcode label",
+    "content_type": 16,
+    "codename": "add_barcodelabel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 62,
+  "fields": {
+    "name": "Can change barcode label",
+    "content_type": 16,
+    "codename": "change_barcodelabel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 63,
+  "fields": {
+    "name": "Can delete barcode label",
+    "content_type": 16,
+    "codename": "delete_barcodelabel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 64,
+  "fields": {
+    "name": "Can view barcode label",
+    "content_type": 16,
+    "codename": "view_barcodelabel"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 65,
+  "fields": {
+    "name": "Can add order",
+    "content_type": 17,
+    "codename": "add_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 66,
+  "fields": {
+    "name": "Can change order",
+    "content_type": 17,
+    "codename": "change_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 67,
+  "fields": {
+    "name": "Can delete order",
+    "content_type": 17,
+    "codename": "delete_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 68,
+  "fields": {
+    "name": "Can view order",
+    "content_type": 17,
+    "codename": "view_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 69,
+  "fields": {
+    "name": "Can add order item",
+    "content_type": 18,
+    "codename": "add_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 70,
+  "fields": {
+    "name": "Can change order item",
+    "content_type": 18,
+    "codename": "change_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 71,
+  "fields": {
+    "name": "Can delete order item",
+    "content_type": 18,
+    "codename": "delete_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 72,
+  "fields": {
+    "name": "Can view order item",
+    "content_type": 18,
+    "codename": "view_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 73,
+  "fields": {
+    "name": "Can add order status history",
+    "content_type": 19,
+    "codename": "add_orderstatushistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 74,
+  "fields": {
+    "name": "Can change order status history",
+    "content_type": 19,
+    "codename": "change_orderstatushistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 75,
+  "fields": {
+    "name": "Can delete order status history",
+    "content_type": 19,
+    "codename": "delete_orderstatushistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 76,
+  "fields": {
+    "name": "Can view order status history",
+    "content_type": 19,
+    "codename": "view_orderstatushistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 77,
+  "fields": {
+    "name": "Can add notification",
+    "content_type": 20,
+    "codename": "add_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 78,
+  "fields": {
+    "name": "Can change notification",
+    "content_type": 20,
+    "codename": "change_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 79,
+  "fields": {
+    "name": "Can delete notification",
+    "content_type": 20,
+    "codename": "delete_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 80,
+  "fields": {
+    "name": "Can view notification",
+    "content_type": 20,
+    "codename": "view_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 81,
+  "fields": {
+    "name": "Can add notification preference",
+    "content_type": 21,
+    "codename": "add_notificationpreference"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 82,
+  "fields": {
+    "name": "Can change notification preference",
+    "content_type": 21,
+    "codename": "change_notificationpreference"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 83,
+  "fields": {
+    "name": "Can delete notification preference",
+    "content_type": 21,
+    "codename": "delete_notificationpreference"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 84,
+  "fields": {
+    "name": "Can view notification preference",
+    "content_type": 21,
+    "codename": "view_notificationpreference"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 85,
+  "fields": {
+    "name": "Can add report",
+    "content_type": 22,
+    "codename": "add_report"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 86,
+  "fields": {
+    "name": "Can change report",
+    "content_type": 22,
+    "codename": "change_report"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 87,
+  "fields": {
+    "name": "Can delete report",
+    "content_type": 22,
+    "codename": "delete_report"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 88,
+  "fields": {
+    "name": "Can view report",
+    "content_type": 22,
+    "codename": "view_report"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 89,
+  "fields": {
+    "name": "Can add scheduled report",
+    "content_type": 23,
+    "codename": "add_scheduledreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 90,
+  "fields": {
+    "name": "Can change scheduled report",
+    "content_type": 23,
+    "codename": "change_scheduledreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 91,
+  "fields": {
+    "name": "Can delete scheduled report",
+    "content_type": 23,
+    "codename": "delete_scheduledreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 92,
+  "fields": {
+    "name": "Can view scheduled report",
+    "content_type": 23,
+    "codename": "view_scheduledreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 93,
+  "fields": {
+    "name": "Can add pos sale",
+    "content_type": 24,
+    "codename": "add_possale"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 94,
+  "fields": {
+    "name": "Can change pos sale",
+    "content_type": 24,
+    "codename": "change_possale"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 95,
+  "fields": {
+    "name": "Can delete pos sale",
+    "content_type": 24,
+    "codename": "delete_possale"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 96,
+  "fields": {
+    "name": "Can view pos sale",
+    "content_type": 24,
+    "codename": "view_possale"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 97,
+  "fields": {
+    "name": "Can add pos sale item",
+    "content_type": 25,
+    "codename": "add_possaleitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 98,
+  "fields": {
+    "name": "Can change pos sale item",
+    "content_type": 25,
+    "codename": "change_possaleitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 99,
+  "fields": {
+    "name": "Can delete pos sale item",
+    "content_type": 25,
+    "codename": "delete_possaleitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 100,
+  "fields": {
+    "name": "Can view pos sale item",
+    "content_type": 25,
+    "codename": "view_possaleitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 101,
+  "fields": {
+    "name": "Can add expense category",
+    "content_type": 26,
+    "codename": "add_expensecategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 102,
+  "fields": {
+    "name": "Can change expense category",
+    "content_type": 26,
+    "codename": "change_expensecategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 103,
+  "fields": {
+    "name": "Can delete expense category",
+    "content_type": 26,
+    "codename": "delete_expensecategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 104,
+  "fields": {
+    "name": "Can view expense category",
+    "content_type": 26,
+    "codename": "view_expensecategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 105,
+  "fields": {
+    "name": "Can add expense",
+    "content_type": 27,
+    "codename": "add_expense"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 106,
+  "fields": {
+    "name": "Can change expense",
+    "content_type": 27,
+    "codename": "change_expense"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 107,
+  "fields": {
+    "name": "Can delete expense",
+    "content_type": 27,
+    "codename": "delete_expense"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 108,
+  "fields": {
+    "name": "Can view expense",
+    "content_type": 27,
+    "codename": "view_expense"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 109,
+  "fields": {
+    "name": "Can add inventory report",
+    "content_type": 28,
+    "codename": "add_inventoryreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 110,
+  "fields": {
+    "name": "Can change inventory report",
+    "content_type": 28,
+    "codename": "change_inventoryreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 111,
+  "fields": {
+    "name": "Can delete inventory report",
+    "content_type": 28,
+    "codename": "delete_inventoryreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 112,
+  "fields": {
+    "name": "Can view inventory report",
+    "content_type": 28,
+    "codename": "view_inventoryreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 113,
+  "fields": {
+    "name": "Can add inventory transaction",
+    "content_type": 29,
+    "codename": "add_inventorytransaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 114,
+  "fields": {
+    "name": "Can change inventory transaction",
+    "content_type": 29,
+    "codename": "change_inventorytransaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 115,
+  "fields": {
+    "name": "Can delete inventory transaction",
+    "content_type": 29,
+    "codename": "delete_inventorytransaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 116,
+  "fields": {
+    "name": "Can view inventory transaction",
+    "content_type": 29,
+    "codename": "view_inventorytransaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 117,
+  "fields": {
+    "name": "Can add stock alert",
+    "content_type": 30,
+    "codename": "add_stockalert"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 118,
+  "fields": {
+    "name": "Can change stock alert",
+    "content_type": 30,
+    "codename": "change_stockalert"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 119,
+  "fields": {
+    "name": "Can delete stock alert",
+    "content_type": 30,
+    "codename": "delete_stockalert"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 120,
+  "fields": {
+    "name": "Can view stock alert",
+    "content_type": 30,
+    "codename": "view_stockalert"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 121,
+  "fields": {
+    "name": "Can add conversation",
+    "content_type": 31,
+    "codename": "add_conversation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 122,
+  "fields": {
+    "name": "Can change conversation",
+    "content_type": 31,
+    "codename": "change_conversation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 123,
+  "fields": {
+    "name": "Can delete conversation",
+    "content_type": 31,
+    "codename": "delete_conversation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 124,
+  "fields": {
+    "name": "Can view conversation",
+    "content_type": 31,
+    "codename": "view_conversation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 125,
+  "fields": {
+    "name": "Can add message",
+    "content_type": 32,
+    "codename": "add_message"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 126,
+  "fields": {
+    "name": "Can change message",
+    "content_type": 32,
+    "codename": "change_message"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 127,
+  "fields": {
+    "name": "Can delete message",
+    "content_type": 32,
+    "codename": "delete_message"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 128,
+  "fields": {
+    "name": "Can view message",
+    "content_type": 32,
+    "codename": "view_message"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 129,
+  "fields": {
+    "name": "Can add user status",
+    "content_type": 33,
+    "codename": "add_userstatus"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 130,
+  "fields": {
+    "name": "Can change user status",
+    "content_type": 33,
+    "codename": "change_userstatus"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 131,
+  "fields": {
+    "name": "Can delete user status",
+    "content_type": 33,
+    "codename": "delete_userstatus"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 132,
+  "fields": {
+    "name": "Can view user status",
+    "content_type": 33,
+    "codename": "view_userstatus"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 133,
+  "fields": {
+    "name": "Can add message reaction",
+    "content_type": 34,
+    "codename": "add_messagereaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 134,
+  "fields": {
+    "name": "Can change message reaction",
+    "content_type": 34,
+    "codename": "change_messagereaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 135,
+  "fields": {
+    "name": "Can delete message reaction",
+    "content_type": 34,
+    "codename": "delete_messagereaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 136,
+  "fields": {
+    "name": "Can view message reaction",
+    "content_type": 34,
+    "codename": "view_messagereaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 137,
+  "fields": {
+    "name": "Can add message activity",
+    "content_type": 35,
+    "codename": "add_messageactivity"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 138,
+  "fields": {
+    "name": "Can change message activity",
+    "content_type": 35,
+    "codename": "change_messageactivity"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 139,
+  "fields": {
+    "name": "Can delete message activity",
+    "content_type": 35,
+    "codename": "delete_messageactivity"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 140,
+  "fields": {
+    "name": "Can view message activity",
+    "content_type": 35,
+    "codename": "view_messageactivity"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 141,
+  "fields": {
+    "name": "Can add group action",
+    "content_type": 36,
+    "codename": "add_groupaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 142,
+  "fields": {
+    "name": "Can change group action",
+    "content_type": 36,
+    "codename": "change_groupaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 143,
+  "fields": {
+    "name": "Can delete group action",
+    "content_type": 36,
+    "codename": "delete_groupaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 144,
+  "fields": {
+    "name": "Can view group action",
+    "content_type": 36,
+    "codename": "view_groupaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 145,
+  "fields": {
+    "name": "Can add conversation settings",
+    "content_type": 37,
+    "codename": "add_conversationsettings"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 146,
+  "fields": {
+    "name": "Can change conversation settings",
+    "content_type": 37,
+    "codename": "change_conversationsettings"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 147,
+  "fields": {
+    "name": "Can delete conversation settings",
+    "content_type": 37,
+    "codename": "delete_conversationsettings"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 148,
+  "fields": {
+    "name": "Can view conversation settings",
+    "content_type": 37,
+    "codename": "view_conversationsettings"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 149,
+  "fields": {
+    "name": "Can add rental category",
+    "content_type": 38,
+    "codename": "add_rentalcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 150,
+  "fields": {
+    "name": "Can change rental category",
+    "content_type": 38,
+    "codename": "change_rentalcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 151,
+  "fields": {
+    "name": "Can delete rental category",
+    "content_type": 38,
+    "codename": "delete_rentalcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 152,
+  "fields": {
+    "name": "Can view rental category",
+    "content_type": 38,
+    "codename": "view_rentalcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 153,
+  "fields": {
+    "name": "Can add rental item",
+    "content_type": 39,
+    "codename": "add_rentalitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 154,
+  "fields": {
+    "name": "Can change rental item",
+    "content_type": 39,
+    "codename": "change_rentalitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 155,
+  "fields": {
+    "name": "Can delete rental item",
+    "content_type": 39,
+    "codename": "delete_rentalitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 156,
+  "fields": {
+    "name": "Can view rental item",
+    "content_type": 39,
+    "codename": "view_rentalitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 157,
+  "fields": {
+    "name": "Can add rental booking",
+    "content_type": 40,
+    "codename": "add_rentalbooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 158,
+  "fields": {
+    "name": "Can change rental booking",
+    "content_type": 40,
+    "codename": "change_rentalbooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 159,
+  "fields": {
+    "name": "Can delete rental booking",
+    "content_type": 40,
+    "codename": "delete_rentalbooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 160,
+  "fields": {
+    "name": "Can view rental booking",
+    "content_type": 40,
+    "codename": "view_rentalbooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 161,
+  "fields": {
+    "name": "Can add maintenance schedule",
+    "content_type": 41,
+    "codename": "add_maintenanceschedule"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 162,
+  "fields": {
+    "name": "Can change maintenance schedule",
+    "content_type": 41,
+    "codename": "change_maintenanceschedule"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 163,
+  "fields": {
+    "name": "Can delete maintenance schedule",
+    "content_type": 41,
+    "codename": "delete_maintenanceschedule"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 164,
+  "fields": {
+    "name": "Can view maintenance schedule",
+    "content_type": 41,
+    "codename": "view_maintenanceschedule"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 165,
+  "fields": {
+    "name": "Can add storage unit",
+    "content_type": 42,
+    "codename": "add_storageunit"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 166,
+  "fields": {
+    "name": "Can change storage unit",
+    "content_type": 42,
+    "codename": "change_storageunit"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 167,
+  "fields": {
+    "name": "Can delete storage unit",
+    "content_type": 42,
+    "codename": "delete_storageunit"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 168,
+  "fields": {
+    "name": "Can view storage unit",
+    "content_type": 42,
+    "codename": "view_storageunit"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 169,
+  "fields": {
+    "name": "Can add storage booking",
+    "content_type": 43,
+    "codename": "add_storagebooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 170,
+  "fields": {
+    "name": "Can change storage booking",
+    "content_type": 43,
+    "codename": "change_storagebooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 171,
+  "fields": {
+    "name": "Can delete storage booking",
+    "content_type": 43,
+    "codename": "delete_storagebooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 172,
+  "fields": {
+    "name": "Can view storage booking",
+    "content_type": 43,
+    "codename": "view_storagebooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 173,
+  "fields": {
+    "name": "Can add locker",
+    "content_type": 44,
+    "codename": "add_locker"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 174,
+  "fields": {
+    "name": "Can change locker",
+    "content_type": 44,
+    "codename": "change_locker"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 175,
+  "fields": {
+    "name": "Can delete locker",
+    "content_type": 44,
+    "codename": "delete_locker"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 176,
+  "fields": {
+    "name": "Can view locker",
+    "content_type": 44,
+    "codename": "view_locker"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 177,
+  "fields": {
+    "name": "Can add locker type",
+    "content_type": 45,
+    "codename": "add_lockertype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 178,
+  "fields": {
+    "name": "Can change locker type",
+    "content_type": 45,
+    "codename": "change_lockertype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 179,
+  "fields": {
+    "name": "Can delete locker type",
+    "content_type": 45,
+    "codename": "delete_lockertype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 180,
+  "fields": {
+    "name": "Can view locker type",
+    "content_type": 45,
+    "codename": "view_lockertype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 181,
+  "fields": {
+    "name": "Can add locker booking",
+    "content_type": 46,
+    "codename": "add_lockerbooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 182,
+  "fields": {
+    "name": "Can change locker booking",
+    "content_type": 46,
+    "codename": "change_lockerbooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 183,
+  "fields": {
+    "name": "Can delete locker booking",
+    "content_type": 46,
+    "codename": "delete_lockerbooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 184,
+  "fields": {
+    "name": "Can view locker booking",
+    "content_type": 46,
+    "codename": "view_lockerbooking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 185,
+  "fields": {
+    "name": "Can add locker access log",
+    "content_type": 47,
+    "codename": "add_lockeraccesslog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 186,
+  "fields": {
+    "name": "Can change locker access log",
+    "content_type": 47,
+    "codename": "change_lockeraccesslog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 187,
+  "fields": {
+    "name": "Can delete locker access log",
+    "content_type": 47,
+    "codename": "delete_lockeraccesslog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 188,
+  "fields": {
+    "name": "Can view locker access log",
+    "content_type": 47,
+    "codename": "view_lockeraccesslog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 189,
+  "fields": {
+    "name": "Can add credit profile",
+    "content_type": 48,
+    "codename": "add_creditprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 190,
+  "fields": {
+    "name": "Can change credit profile",
+    "content_type": 48,
+    "codename": "change_creditprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 191,
+  "fields": {
+    "name": "Can delete credit profile",
+    "content_type": 48,
+    "codename": "delete_creditprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 192,
+  "fields": {
+    "name": "Can view credit profile",
+    "content_type": 48,
+    "codename": "view_creditprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 193,
+  "fields": {
+    "name": "Can add credit transaction",
+    "content_type": 49,
+    "codename": "add_credittransaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 194,
+  "fields": {
+    "name": "Can change credit transaction",
+    "content_type": 49,
+    "codename": "change_credittransaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 195,
+  "fields": {
+    "name": "Can delete credit transaction",
+    "content_type": 49,
+    "codename": "delete_credittransaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 196,
+  "fields": {
+    "name": "Can view credit transaction",
+    "content_type": 49,
+    "codename": "view_credittransaction"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 197,
+  "fields": {
+    "name": "Can add coupon",
+    "content_type": 50,
+    "codename": "add_coupon"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 198,
+  "fields": {
+    "name": "Can change coupon",
+    "content_type": 50,
+    "codename": "change_coupon"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 199,
+  "fields": {
+    "name": "Can delete coupon",
+    "content_type": 50,
+    "codename": "delete_coupon"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 200,
+  "fields": {
+    "name": "Can view coupon",
+    "content_type": 50,
+    "codename": "view_coupon"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 201,
+  "fields": {
+    "name": "Can add audit log",
+    "content_type": 51,
+    "codename": "add_auditlog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 202,
+  "fields": {
+    "name": "Can change audit log",
+    "content_type": 51,
+    "codename": "change_auditlog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 203,
+  "fields": {
+    "name": "Can delete audit log",
+    "content_type": 51,
+    "codename": "delete_auditlog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 204,
+  "fields": {
+    "name": "Can view audit log",
+    "content_type": 51,
+    "codename": "view_auditlog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 205,
+  "fields": {
+    "name": "Can add category",
+    "content_type": 52,
+    "codename": "add_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 206,
+  "fields": {
+    "name": "Can change category",
+    "content_type": 52,
+    "codename": "change_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 207,
+  "fields": {
+    "name": "Can delete category",
+    "content_type": 52,
+    "codename": "delete_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 208,
+  "fields": {
+    "name": "Can view category",
+    "content_type": 52,
+    "codename": "view_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 209,
+  "fields": {
+    "name": "Can add invoice",
+    "content_type": 53,
+    "codename": "add_invoice"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 210,
+  "fields": {
+    "name": "Can change invoice",
+    "content_type": 53,
+    "codename": "change_invoice"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 211,
+  "fields": {
+    "name": "Can delete invoice",
+    "content_type": 53,
+    "codename": "delete_invoice"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 212,
+  "fields": {
+    "name": "Can view invoice",
+    "content_type": 53,
+    "codename": "view_invoice"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 213,
+  "fields": {
+    "name": "Can add invoice comment",
+    "content_type": 54,
+    "codename": "add_invoicecomment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 214,
+  "fields": {
+    "name": "Can change invoice comment",
+    "content_type": 54,
+    "codename": "change_invoicecomment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 215,
+  "fields": {
+    "name": "Can delete invoice comment",
+    "content_type": 54,
+    "codename": "delete_invoicecomment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 216,
+  "fields": {
+    "name": "Can view invoice comment",
+    "content_type": 54,
+    "codename": "view_invoicecomment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 217,
+  "fields": {
+    "name": "Can add invoice item",
+    "content_type": 55,
+    "codename": "add_invoiceitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 218,
+  "fields": {
+    "name": "Can change invoice item",
+    "content_type": 55,
+    "codename": "change_invoiceitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 219,
+  "fields": {
+    "name": "Can delete invoice item",
+    "content_type": 55,
+    "codename": "delete_invoiceitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 220,
+  "fields": {
+    "name": "Can view invoice item",
+    "content_type": 55,
+    "codename": "view_invoiceitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 221,
+  "fields": {
+    "name": "Can add receipt",
+    "content_type": 56,
+    "codename": "add_receipt"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 222,
+  "fields": {
+    "name": "Can change receipt",
+    "content_type": 56,
+    "codename": "change_receipt"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 223,
+  "fields": {
+    "name": "Can delete receipt",
+    "content_type": 56,
+    "codename": "delete_receipt"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 224,
+  "fields": {
+    "name": "Can view receipt",
+    "content_type": 56,
+    "codename": "view_receipt"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 225,
+  "fields": {
+    "name": "Can add Team",
+    "content_type": 57,
+    "codename": "add_team"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 226,
+  "fields": {
+    "name": "Can change Team",
+    "content_type": 57,
+    "codename": "change_team"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 227,
+  "fields": {
+    "name": "Can delete Team",
+    "content_type": 57,
+    "codename": "delete_team"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 228,
+  "fields": {
+    "name": "Can view Team",
+    "content_type": 57,
+    "codename": "view_team"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 229,
+  "fields": {
+    "name": "Can add user activity",
+    "content_type": 58,
+    "codename": "add_useractivity"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 230,
+  "fields": {
+    "name": "Can change user activity",
+    "content_type": 58,
+    "codename": "change_useractivity"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 231,
+  "fields": {
+    "name": "Can delete user activity",
+    "content_type": 58,
+    "codename": "delete_useractivity"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 232,
+  "fields": {
+    "name": "Can view user activity",
+    "content_type": 58,
+    "codename": "view_useractivity"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 233,
+  "fields": {
+    "name": "Can add User Profile",
+    "content_type": 59,
+    "codename": "add_userprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 234,
+  "fields": {
+    "name": "Can change User Profile",
+    "content_type": 59,
+    "codename": "change_userprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 235,
+  "fields": {
+    "name": "Can delete User Profile",
+    "content_type": 59,
+    "codename": "delete_userprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 236,
+  "fields": {
+    "name": "Can view User Profile",
+    "content_type": 59,
+    "codename": "view_userprofile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 237,
+  "fields": {
+    "name": "Can add user role",
+    "content_type": 60,
+    "codename": "add_userrole"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 238,
+  "fields": {
+    "name": "Can change user role",
+    "content_type": 60,
+    "codename": "change_userrole"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 239,
+  "fields": {
+    "name": "Can delete user role",
+    "content_type": 60,
+    "codename": "delete_userrole"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 240,
+  "fields": {
+    "name": "Can view user role",
+    "content_type": 60,
+    "codename": "view_userrole"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 241,
+  "fields": {
+    "name": "Can add access request",
+    "content_type": 61,
+    "codename": "add_accessrequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 242,
+  "fields": {
+    "name": "Can change access request",
+    "content_type": 61,
+    "codename": "change_accessrequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 243,
+  "fields": {
+    "name": "Can delete access request",
+    "content_type": 61,
+    "codename": "delete_accessrequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 244,
+  "fields": {
+    "name": "Can view access request",
+    "content_type": 61,
+    "codename": "view_accessrequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 245,
+  "fields": {
+    "name": "Can add analytics report",
+    "content_type": 62,
+    "codename": "add_analyticsreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 246,
+  "fields": {
+    "name": "Can change analytics report",
+    "content_type": 62,
+    "codename": "change_analyticsreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 247,
+  "fields": {
+    "name": "Can delete analytics report",
+    "content_type": 62,
+    "codename": "delete_analyticsreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 248,
+  "fields": {
+    "name": "Can view analytics report",
+    "content_type": 62,
+    "codename": "view_analyticsreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 249,
+  "fields": {
+    "name": "Can add dashboard widget",
+    "content_type": 63,
+    "codename": "add_dashboardwidget"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 250,
+  "fields": {
+    "name": "Can change dashboard widget",
+    "content_type": 63,
+    "codename": "change_dashboardwidget"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 251,
+  "fields": {
+    "name": "Can delete dashboard widget",
+    "content_type": 63,
+    "codename": "delete_dashboardwidget"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 252,
+  "fields": {
+    "name": "Can view dashboard widget",
+    "content_type": 63,
+    "codename": "view_dashboardwidget"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 253,
+  "fields": {
+    "name": "Can add coupon",
+    "content_type": 64,
+    "codename": "add_coupon"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 254,
+  "fields": {
+    "name": "Can change coupon",
+    "content_type": 64,
+    "codename": "change_coupon"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 255,
+  "fields": {
+    "name": "Can delete coupon",
+    "content_type": 64,
+    "codename": "delete_coupon"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 256,
+  "fields": {
+    "name": "Can view coupon",
+    "content_type": 64,
+    "codename": "view_coupon"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 257,
+  "fields": {
+    "name": "Can add cart",
+    "content_type": 65,
+    "codename": "add_cart"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 258,
+  "fields": {
+    "name": "Can change cart",
+    "content_type": 65,
+    "codename": "change_cart"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 259,
+  "fields": {
+    "name": "Can delete cart",
+    "content_type": 65,
+    "codename": "delete_cart"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 260,
+  "fields": {
+    "name": "Can view cart",
+    "content_type": 65,
+    "codename": "view_cart"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 261,
+  "fields": {
+    "name": "Can add cart item",
+    "content_type": 66,
+    "codename": "add_cartitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 262,
+  "fields": {
+    "name": "Can change cart item",
+    "content_type": 66,
+    "codename": "change_cartitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 263,
+  "fields": {
+    "name": "Can delete cart item",
+    "content_type": 66,
+    "codename": "delete_cartitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 264,
+  "fields": {
+    "name": "Can view cart item",
+    "content_type": 66,
+    "codename": "view_cartitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 265,
+  "fields": {
+    "name": "Can add wishlist",
+    "content_type": 67,
+    "codename": "add_wishlist"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 266,
+  "fields": {
+    "name": "Can change wishlist",
+    "content_type": 67,
+    "codename": "change_wishlist"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 267,
+  "fields": {
+    "name": "Can delete wishlist",
+    "content_type": 67,
+    "codename": "delete_wishlist"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 268,
+  "fields": {
+    "name": "Can view wishlist",
+    "content_type": 67,
+    "codename": "view_wishlist"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 269,
+  "fields": {
+    "name": "Can add wishlist item",
+    "content_type": 68,
+    "codename": "add_wishlistitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 270,
+  "fields": {
+    "name": "Can change wishlist item",
+    "content_type": 68,
+    "codename": "change_wishlistitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 271,
+  "fields": {
+    "name": "Can delete wishlist item",
+    "content_type": 68,
+    "codename": "delete_wishlistitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 272,
+  "fields": {
+    "name": "Can view wishlist item",
+    "content_type": 68,
+    "codename": "view_wishlistitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 273,
+  "fields": {
+    "name": "Can add payment",
+    "content_type": 69,
+    "codename": "add_payment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 274,
+  "fields": {
+    "name": "Can change payment",
+    "content_type": 69,
+    "codename": "change_payment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 275,
+  "fields": {
+    "name": "Can delete payment",
+    "content_type": 69,
+    "codename": "delete_payment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 276,
+  "fields": {
+    "name": "Can view payment",
+    "content_type": 69,
+    "codename": "view_payment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 277,
+  "fields": {
+    "name": "Can add maintenance mode",
+    "content_type": 70,
+    "codename": "add_maintenancemode"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 278,
+  "fields": {
+    "name": "Can change maintenance mode",
+    "content_type": 70,
+    "codename": "change_maintenancemode"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 279,
+  "fields": {
+    "name": "Can delete maintenance mode",
+    "content_type": 70,
+    "codename": "delete_maintenancemode"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 280,
+  "fields": {
+    "name": "Can view maintenance mode",
+    "content_type": 70,
+    "codename": "view_maintenancemode"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 281,
+  "fields": {
+    "name": "Can add system settings",
+    "content_type": 71,
+    "codename": "add_systemsettings"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 282,
+  "fields": {
+    "name": "Can change system settings",
+    "content_type": 71,
+    "codename": "change_systemsettings"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 283,
+  "fields": {
+    "name": "Can delete system settings",
+    "content_type": 71,
+    "codename": "delete_systemsettings"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 284,
+  "fields": {
+    "name": "Can view system settings",
+    "content_type": 71,
+    "codename": "view_systemsettings"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 285,
+  "fields": {
+    "name": "Can add announcement",
+    "content_type": 72,
+    "codename": "add_announcement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 286,
+  "fields": {
+    "name": "Can change announcement",
+    "content_type": 72,
+    "codename": "change_announcement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 287,
+  "fields": {
+    "name": "Can delete announcement",
+    "content_type": 72,
+    "codename": "delete_announcement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 288,
+  "fields": {
+    "name": "Can view announcement",
+    "content_type": 72,
+    "codename": "view_announcement"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 289,
+  "fields": {
+    "name": "Can add carrier",
+    "content_type": 73,
+    "codename": "add_carrier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 290,
+  "fields": {
+    "name": "Can change carrier",
+    "content_type": 73,
+    "codename": "change_carrier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 291,
+  "fields": {
+    "name": "Can delete carrier",
+    "content_type": 73,
+    "codename": "delete_carrier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 292,
+  "fields": {
+    "name": "Can view carrier",
+    "content_type": 73,
+    "codename": "view_carrier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 293,
+  "fields": {
+    "name": "Can add shipment",
+    "content_type": 74,
+    "codename": "add_shipment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 294,
+  "fields": {
+    "name": "Can change shipment",
+    "content_type": 74,
+    "codename": "change_shipment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 295,
+  "fields": {
+    "name": "Can delete shipment",
+    "content_type": 74,
+    "codename": "delete_shipment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 296,
+  "fields": {
+    "name": "Can view shipment",
+    "content_type": 74,
+    "codename": "view_shipment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 297,
+  "fields": {
+    "name": "Can add tracking event",
+    "content_type": 75,
+    "codename": "add_trackingevent"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 298,
+  "fields": {
+    "name": "Can change tracking event",
+    "content_type": 75,
+    "codename": "change_trackingevent"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 299,
+  "fields": {
+    "name": "Can delete tracking event",
+    "content_type": 75,
+    "codename": "delete_trackingevent"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 300,
+  "fields": {
+    "name": "Can view tracking event",
+    "content_type": 75,
+    "codename": "view_trackingevent"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 301,
+  "fields": {
+    "name": "Can add shipping rate",
+    "content_type": 76,
+    "codename": "add_shippingrate"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 302,
+  "fields": {
+    "name": "Can change shipping rate",
+    "content_type": 76,
+    "codename": "change_shippingrate"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 303,
+  "fields": {
+    "name": "Can delete shipping rate",
+    "content_type": 76,
+    "codename": "delete_shippingrate"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 304,
+  "fields": {
+    "name": "Can view shipping rate",
+    "content_type": 76,
+    "codename": "view_shippingrate"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 305,
+  "fields": {
+    "name": "Can add forum category",
+    "content_type": 77,
+    "codename": "add_forumcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 306,
+  "fields": {
+    "name": "Can change forum category",
+    "content_type": 77,
+    "codename": "change_forumcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 307,
+  "fields": {
+    "name": "Can delete forum category",
+    "content_type": 77,
+    "codename": "delete_forumcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 308,
+  "fields": {
+    "name": "Can view forum category",
+    "content_type": 77,
+    "codename": "view_forumcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 309,
+  "fields": {
+    "name": "Can add topic",
+    "content_type": 78,
+    "codename": "add_topic"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 310,
+  "fields": {
+    "name": "Can change topic",
+    "content_type": 78,
+    "codename": "change_topic"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 311,
+  "fields": {
+    "name": "Can delete topic",
+    "content_type": 78,
+    "codename": "delete_topic"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 312,
+  "fields": {
+    "name": "Can view topic",
+    "content_type": 78,
+    "codename": "view_topic"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 313,
+  "fields": {
+    "name": "Can add post",
+    "content_type": 79,
+    "codename": "add_post"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 314,
+  "fields": {
+    "name": "Can change post",
+    "content_type": 79,
+    "codename": "change_post"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 315,
+  "fields": {
+    "name": "Can delete post",
+    "content_type": 79,
+    "codename": "delete_post"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 316,
+  "fields": {
+    "name": "Can view post",
+    "content_type": 79,
+    "codename": "view_post"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 317,
+  "fields": {
+    "name": "Can add gallery",
+    "content_type": 80,
+    "codename": "add_gallery"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 318,
+  "fields": {
+    "name": "Can change gallery",
+    "content_type": 80,
+    "codename": "change_gallery"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 319,
+  "fields": {
+    "name": "Can delete gallery",
+    "content_type": 80,
+    "codename": "delete_gallery"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 320,
+  "fields": {
+    "name": "Can view gallery",
+    "content_type": 80,
+    "codename": "view_gallery"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 321,
+  "fields": {
+    "name": "Can add team member",
+    "content_type": 81,
+    "codename": "add_teammember"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 322,
+  "fields": {
+    "name": "Can change team member",
+    "content_type": 81,
+    "codename": "change_teammember"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 323,
+  "fields": {
+    "name": "Can delete team member",
+    "content_type": 81,
+    "codename": "delete_teammember"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 324,
+  "fields": {
+    "name": "Can view team member",
+    "content_type": 81,
+    "codename": "view_teammember"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 325,
+  "fields": {
+    "name": "Can add about section",
+    "content_type": 82,
+    "codename": "add_aboutsection"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 326,
+  "fields": {
+    "name": "Can change about section",
+    "content_type": 82,
+    "codename": "change_aboutsection"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 327,
+  "fields": {
+    "name": "Can delete about section",
+    "content_type": 82,
+    "codename": "delete_aboutsection"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 328,
+  "fields": {
+    "name": "Can view about section",
+    "content_type": 82,
+    "codename": "view_aboutsection"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 329,
+  "fields": {
+    "name": "Can add static content",
+    "content_type": 83,
+    "codename": "add_staticcontent"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 330,
+  "fields": {
+    "name": "Can change static content",
+    "content_type": 83,
+    "codename": "change_staticcontent"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 331,
+  "fields": {
+    "name": "Can delete static content",
+    "content_type": 83,
+    "codename": "delete_staticcontent"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 332,
+  "fields": {
+    "name": "Can view static content",
+    "content_type": 83,
+    "codename": "view_staticcontent"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 333,
+  "fields": {
+    "name": "Can add profile",
+    "content_type": 84,
+    "codename": "add_profile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 334,
+  "fields": {
+    "name": "Can change profile",
+    "content_type": 84,
+    "codename": "change_profile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 335,
+  "fields": {
+    "name": "Can delete profile",
+    "content_type": 84,
+    "codename": "delete_profile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 336,
+  "fields": {
+    "name": "Can view profile",
+    "content_type": 84,
+    "codename": "view_profile"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 337,
+  "fields": {
+    "name": "Can add review",
+    "content_type": 85,
+    "codename": "add_review"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 338,
+  "fields": {
+    "name": "Can change review",
+    "content_type": 85,
+    "codename": "change_review"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 339,
+  "fields": {
+    "name": "Can delete review",
+    "content_type": 85,
+    "codename": "delete_review"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 340,
+  "fields": {
+    "name": "Can view review",
+    "content_type": 85,
+    "codename": "view_review"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 341,
+  "fields": {
+    "name": "Can add ticket",
+    "content_type": 86,
+    "codename": "add_ticket"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 342,
+  "fields": {
+    "name": "Can change ticket",
+    "content_type": 86,
+    "codename": "change_ticket"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 343,
+  "fields": {
+    "name": "Can delete ticket",
+    "content_type": 86,
+    "codename": "delete_ticket"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 344,
+  "fields": {
+    "name": "Can view ticket",
+    "content_type": 86,
+    "codename": "view_ticket"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 345,
+  "fields": {
+    "name": "Can add ticket message",
+    "content_type": 87,
+    "codename": "add_ticketmessage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 346,
+  "fields": {
+    "name": "Can change ticket message",
+    "content_type": 87,
+    "codename": "change_ticketmessage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 347,
+  "fields": {
+    "name": "Can delete ticket message",
+    "content_type": 87,
+    "codename": "delete_ticketmessage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 348,
+  "fields": {
+    "name": "Can view ticket message",
+    "content_type": 87,
+    "codename": "view_ticketmessage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 349,
+  "fields": {
+    "name": "Can add quotation",
+    "content_type": 88,
+    "codename": "add_quotation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 350,
+  "fields": {
+    "name": "Can change quotation",
+    "content_type": 88,
+    "codename": "change_quotation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 351,
+  "fields": {
+    "name": "Can delete quotation",
+    "content_type": 88,
+    "codename": "delete_quotation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 352,
+  "fields": {
+    "name": "Can view quotation",
+    "content_type": 88,
+    "codename": "view_quotation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 353,
+  "fields": {
+    "name": "Can add quotation item",
+    "content_type": 89,
+    "codename": "add_quotationitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 354,
+  "fields": {
+    "name": "Can change quotation item",
+    "content_type": 89,
+    "codename": "change_quotationitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 355,
+  "fields": {
+    "name": "Can delete quotation item",
+    "content_type": 89,
+    "codename": "delete_quotationitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 356,
+  "fields": {
+    "name": "Can view quotation item",
+    "content_type": 89,
+    "codename": "view_quotationitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 357,
+  "fields": {
+    "name": "Can add stock adjustment",
+    "content_type": 90,
+    "codename": "add_stockadjustment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 358,
+  "fields": {
+    "name": "Can change stock adjustment",
+    "content_type": 90,
+    "codename": "change_stockadjustment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 359,
+  "fields": {
+    "name": "Can delete stock adjustment",
+    "content_type": 90,
+    "codename": "delete_stockadjustment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 360,
+  "fields": {
+    "name": "Can view stock adjustment",
+    "content_type": 90,
+    "codename": "view_stockadjustment"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 361,
+  "fields": {
+    "name": "Can add return request",
+    "content_type": 91,
+    "codename": "add_returnrequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 362,
+  "fields": {
+    "name": "Can change return request",
+    "content_type": 91,
+    "codename": "change_returnrequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 363,
+  "fields": {
+    "name": "Can delete return request",
+    "content_type": 91,
+    "codename": "delete_returnrequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 364,
+  "fields": {
+    "name": "Can view return request",
+    "content_type": 91,
+    "codename": "view_returnrequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 365,
+  "fields": {
+    "name": "Can add stock transfer",
+    "content_type": 92,
+    "codename": "add_stocktransfer"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 366,
+  "fields": {
+    "name": "Can change stock transfer",
+    "content_type": 92,
+    "codename": "change_stocktransfer"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 367,
+  "fields": {
+    "name": "Can delete stock transfer",
+    "content_type": 92,
+    "codename": "delete_stocktransfer"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 368,
+  "fields": {
+    "name": "Can view stock transfer",
+    "content_type": 92,
+    "codename": "view_stocktransfer"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 369,
+  "fields": {
+    "name": "Can add site",
+    "content_type": 93,
+    "codename": "add_site"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 370,
+  "fields": {
+    "name": "Can change site",
+    "content_type": 93,
+    "codename": "change_site"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 371,
+  "fields": {
+    "name": "Can delete site",
+    "content_type": 93,
+    "codename": "delete_site"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 372,
+  "fields": {
+    "name": "Can view site",
+    "content_type": 93,
+    "codename": "view_site"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 373,
+  "fields": {
+    "name": "Can add email address",
+    "content_type": 94,
+    "codename": "add_emailaddress"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 374,
+  "fields": {
+    "name": "Can change email address",
+    "content_type": 94,
+    "codename": "change_emailaddress"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 375,
+  "fields": {
+    "name": "Can delete email address",
+    "content_type": 94,
+    "codename": "delete_emailaddress"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 376,
+  "fields": {
+    "name": "Can view email address",
+    "content_type": 94,
+    "codename": "view_emailaddress"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 377,
+  "fields": {
+    "name": "Can add email confirmation",
+    "content_type": 95,
+    "codename": "add_emailconfirmation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 378,
+  "fields": {
+    "name": "Can change email confirmation",
+    "content_type": 95,
+    "codename": "change_emailconfirmation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 379,
+  "fields": {
+    "name": "Can delete email confirmation",
+    "content_type": 95,
+    "codename": "delete_emailconfirmation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 380,
+  "fields": {
+    "name": "Can view email confirmation",
+    "content_type": 95,
+    "codename": "view_emailconfirmation"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 381,
+  "fields": {
+    "name": "Can add social account",
+    "content_type": 96,
+    "codename": "add_socialaccount"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 382,
+  "fields": {
+    "name": "Can change social account",
+    "content_type": 96,
+    "codename": "change_socialaccount"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 383,
+  "fields": {
+    "name": "Can delete social account",
+    "content_type": 96,
+    "codename": "delete_socialaccount"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 384,
+  "fields": {
+    "name": "Can view social account",
+    "content_type": 96,
+    "codename": "view_socialaccount"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 385,
+  "fields": {
+    "name": "Can add social application",
+    "content_type": 97,
+    "codename": "add_socialapp"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 386,
+  "fields": {
+    "name": "Can change social application",
+    "content_type": 97,
+    "codename": "change_socialapp"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 387,
+  "fields": {
+    "name": "Can delete social application",
+    "content_type": 97,
+    "codename": "delete_socialapp"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 388,
+  "fields": {
+    "name": "Can view social application",
+    "content_type": 97,
+    "codename": "view_socialapp"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 389,
+  "fields": {
+    "name": "Can add social application token",
+    "content_type": 98,
+    "codename": "add_socialtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 390,
+  "fields": {
+    "name": "Can change social application token",
+    "content_type": 98,
+    "codename": "change_socialtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 391,
+  "fields": {
+    "name": "Can delete social application token",
+    "content_type": 98,
+    "codename": "delete_socialtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 392,
+  "fields": {
+    "name": "Can view social application token",
+    "content_type": 98,
+    "codename": "view_socialtoken"
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$v5hXVzE54BeEREhiRt2WYe$egUXJxxmGFP3pxEoy8LZgxG8lxZWpmDyK8SU5+k1vB8=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@multistock.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-03-12T16:15:36.896Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$XRLRudRkrDvOAqPDke2lmb$SxG64v9QvKC/3eziKKU64XYZS85/OwtdRQ00MV2CEis=",
+    "last_login": "2026-03-27T13:10:32.841Z",
+    "is_superuser": false,
+    "username": "customer",
+    "first_name": "",
+    "last_name": "",
+    "email": "customer@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-18T20:55:02.105Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 1,
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 2,
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 3,
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 4,
+  "fields": {
+    "app_label": "auth",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 5,
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 6,
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 7,
+  "fields": {
+    "app_label": "authtoken",
+    "model": "token"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 8,
+  "fields": {
+    "app_label": "authtoken",
+    "model": "tokenproxy"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 9,
+  "fields": {
+    "app_label": "goods",
+    "model": "listmodel"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 10,
+  "fields": {
+    "app_label": "stock",
+    "model": "stocklistmodel"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 11,
+  "fields": {
+    "app_label": "stock",
+    "model": "stockalert"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 12,
+  "fields": {
+    "app_label": "stock",
+    "model": "stockmovement"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 13,
+  "fields": {
+    "app_label": "warehouse",
+    "model": "listmodel"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 14,
+  "fields": {
+    "app_label": "customer",
+    "model": "listmodel"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 15,
+  "fields": {
+    "app_label": "supplier",
+    "model": "listmodel"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 16,
+  "fields": {
+    "app_label": "barcode",
+    "model": "barcodelabel"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 17,
+  "fields": {
+    "app_label": "orders",
+    "model": "order"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 18,
+  "fields": {
+    "app_label": "orders",
+    "model": "orderitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 19,
+  "fields": {
+    "app_label": "orders",
+    "model": "orderstatushistory"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 20,
+  "fields": {
+    "app_label": "notifications",
+    "model": "notification"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 21,
+  "fields": {
+    "app_label": "notifications",
+    "model": "notificationpreference"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 22,
+  "fields": {
+    "app_label": "reports",
+    "model": "report"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 23,
+  "fields": {
+    "app_label": "reports",
+    "model": "scheduledreport"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 24,
+  "fields": {
+    "app_label": "pos",
+    "model": "possale"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 25,
+  "fields": {
+    "app_label": "pos",
+    "model": "possaleitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 26,
+  "fields": {
+    "app_label": "expenses",
+    "model": "expensecategory"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 27,
+  "fields": {
+    "app_label": "expenses",
+    "model": "expense"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 28,
+  "fields": {
+    "app_label": "inventory",
+    "model": "inventoryreport"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 29,
+  "fields": {
+    "app_label": "inventory",
+    "model": "inventorytransaction"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 30,
+  "fields": {
+    "app_label": "inventory",
+    "model": "stockalert"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 31,
+  "fields": {
+    "app_label": "messaging",
+    "model": "conversation"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 32,
+  "fields": {
+    "app_label": "messaging",
+    "model": "message"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 33,
+  "fields": {
+    "app_label": "messaging",
+    "model": "userstatus"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 34,
+  "fields": {
+    "app_label": "messaging",
+    "model": "messagereaction"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 35,
+  "fields": {
+    "app_label": "messaging",
+    "model": "messageactivity"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 36,
+  "fields": {
+    "app_label": "messaging",
+    "model": "groupaction"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 37,
+  "fields": {
+    "app_label": "messaging",
+    "model": "conversationsettings"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 38,
+  "fields": {
+    "app_label": "rentals",
+    "model": "rentalcategory"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 39,
+  "fields": {
+    "app_label": "rentals",
+    "model": "rentalitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 40,
+  "fields": {
+    "app_label": "rentals",
+    "model": "rentalbooking"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 41,
+  "fields": {
+    "app_label": "rentals",
+    "model": "maintenanceschedule"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 42,
+  "fields": {
+    "app_label": "storage",
+    "model": "storageunit"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 43,
+  "fields": {
+    "app_label": "storage",
+    "model": "storagebooking"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 44,
+  "fields": {
+    "app_label": "lockers",
+    "model": "locker"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 45,
+  "fields": {
+    "app_label": "lockers",
+    "model": "lockertype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 46,
+  "fields": {
+    "app_label": "lockers",
+    "model": "lockerbooking"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 47,
+  "fields": {
+    "app_label": "lockers",
+    "model": "lockeraccesslog"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 48,
+  "fields": {
+    "app_label": "credit",
+    "model": "creditprofile"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 49,
+  "fields": {
+    "app_label": "credit",
+    "model": "credittransaction"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 50,
+  "fields": {
+    "app_label": "coupons",
+    "model": "coupon"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 51,
+  "fields": {
+    "app_label": "audit",
+    "model": "auditlog"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 52,
+  "fields": {
+    "app_label": "categories",
+    "model": "category"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 53,
+  "fields": {
+    "app_label": "billing",
+    "model": "invoice"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 54,
+  "fields": {
+    "app_label": "billing",
+    "model": "invoicecomment"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 55,
+  "fields": {
+    "app_label": "billing",
+    "model": "invoiceitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 56,
+  "fields": {
+    "app_label": "billing",
+    "model": "receipt"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 57,
+  "fields": {
+    "app_label": "users",
+    "model": "team"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 58,
+  "fields": {
+    "app_label": "users",
+    "model": "useractivity"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 59,
+  "fields": {
+    "app_label": "users",
+    "model": "userprofile"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 60,
+  "fields": {
+    "app_label": "permissions",
+    "model": "userrole"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 61,
+  "fields": {
+    "app_label": "team",
+    "model": "accessrequest"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 62,
+  "fields": {
+    "app_label": "analytics",
+    "model": "analyticsreport"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 63,
+  "fields": {
+    "app_label": "analytics",
+    "model": "dashboardwidget"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 64,
+  "fields": {
+    "app_label": "cart",
+    "model": "coupon"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 65,
+  "fields": {
+    "app_label": "cart",
+    "model": "cart"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 66,
+  "fields": {
+    "app_label": "cart",
+    "model": "cartitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 67,
+  "fields": {
+    "app_label": "wishlist",
+    "model": "wishlist"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 68,
+  "fields": {
+    "app_label": "wishlist",
+    "model": "wishlistitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 69,
+  "fields": {
+    "app_label": "payments",
+    "model": "payment"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 70,
+  "fields": {
+    "app_label": "settings",
+    "model": "maintenancemode"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 71,
+  "fields": {
+    "app_label": "settings",
+    "model": "systemsettings"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 72,
+  "fields": {
+    "app_label": "settings",
+    "model": "announcement"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 73,
+  "fields": {
+    "app_label": "shipping",
+    "model": "carrier"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 74,
+  "fields": {
+    "app_label": "shipping",
+    "model": "shipment"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 75,
+  "fields": {
+    "app_label": "shipping",
+    "model": "trackingevent"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 76,
+  "fields": {
+    "app_label": "shipping",
+    "model": "shippingrate"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 77,
+  "fields": {
+    "app_label": "forums",
+    "model": "forumcategory"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 78,
+  "fields": {
+    "app_label": "forums",
+    "model": "topic"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 79,
+  "fields": {
+    "app_label": "forums",
+    "model": "post"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 80,
+  "fields": {
+    "app_label": "about",
+    "model": "gallery"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 81,
+  "fields": {
+    "app_label": "about",
+    "model": "teammember"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 82,
+  "fields": {
+    "app_label": "about",
+    "model": "aboutsection"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 83,
+  "fields": {
+    "app_label": "about",
+    "model": "staticcontent"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 84,
+  "fields": {
+    "app_label": "profile",
+    "model": "profile"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 85,
+  "fields": {
+    "app_label": "reviews",
+    "model": "review"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 86,
+  "fields": {
+    "app_label": "tickets",
+    "model": "ticket"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 87,
+  "fields": {
+    "app_label": "tickets",
+    "model": "ticketmessage"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 88,
+  "fields": {
+    "app_label": "quotations",
+    "model": "quotation"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 89,
+  "fields": {
+    "app_label": "quotations",
+    "model": "quotationitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 90,
+  "fields": {
+    "app_label": "adjustments",
+    "model": "stockadjustment"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 91,
+  "fields": {
+    "app_label": "returns",
+    "model": "returnrequest"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 92,
+  "fields": {
+    "app_label": "transfers",
+    "model": "stocktransfer"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 93,
+  "fields": {
+    "app_label": "sites",
+    "model": "site"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 94,
+  "fields": {
+    "app_label": "account",
+    "model": "emailaddress"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 95,
+  "fields": {
+    "app_label": "account",
+    "model": "emailconfirmation"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 96,
+  "fields": {
+    "app_label": "socialaccount",
+    "model": "socialaccount"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 97,
+  "fields": {
+    "app_label": "socialaccount",
+    "model": "socialapp"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 98,
+  "fields": {
+    "app_label": "socialaccount",
+    "model": "socialtoken"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 1,
+  "fields": {
+    "goods_code": "PRD-1001",
+    "goods_desc": "iPhone 15 Pro",
+    "goods_supplier": "Apple Distribution",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Electronics",
+    "goods_brand": "Apple",
+    "safety_stock": 10,
+    "goods_cost": 980.0,
+    "goods_price": 1299.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.363Z",
+    "update_time": "2026-03-12T16:15:38.363Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 2,
+  "fields": {
+    "goods_code": "PRD-1002",
+    "goods_desc": "Samsung Galaxy S24",
+    "goods_supplier": "Samsung Trade Hub",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Electronics",
+    "goods_brand": "Samsung",
+    "safety_stock": 10,
+    "goods_cost": 850.0,
+    "goods_price": 1199.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.707Z",
+    "update_time": "2026-03-12T16:15:38.707Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 3,
+  "fields": {
+    "goods_code": "PRD-1003",
+    "goods_desc": "MacBook Pro M3",
+    "goods_supplier": "Apple Distribution",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Electronics",
+    "goods_brand": "Apple",
+    "safety_stock": 10,
+    "goods_cost": 1450.0,
+    "goods_price": 1899.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:39.056Z",
+    "update_time": "2026-03-12T16:15:39.056Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 4,
+  "fields": {
+    "goods_code": "PRD-1004",
+    "goods_desc": "Dell XPS 15",
+    "goods_supplier": "Home Essentials Ltd",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Electronics",
+    "goods_brand": "Dell",
+    "safety_stock": 10,
+    "goods_cost": 1100.0,
+    "goods_price": 1549.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:39.090Z",
+    "update_time": "2026-03-12T16:15:39.090Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 5,
+  "fields": {
+    "goods_code": "PRD-1005",
+    "goods_desc": "Wireless Earbuds",
+    "goods_supplier": "Smart Home Imports",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Accessories",
+    "goods_brand": "SoundCore",
+    "safety_stock": 10,
+    "goods_cost": 45.0,
+    "goods_price": 89.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:39.141Z",
+    "update_time": "2026-03-12T16:15:39.141Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 6,
+  "fields": {
+    "goods_code": "PRD-1006",
+    "goods_desc": "Bluetooth Speaker",
+    "goods_supplier": "Smart Home Imports",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Accessories",
+    "goods_brand": "JBL",
+    "safety_stock": 10,
+    "goods_cost": 55.0,
+    "goods_price": 99.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:39.800Z",
+    "update_time": "2026-03-12T16:15:39.800Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 7,
+  "fields": {
+    "goods_code": "PRD-1007",
+    "goods_desc": "Running Shoes",
+    "goods_supplier": "Athletic Pro Supply",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Sports",
+    "goods_brand": "Kalenji",
+    "safety_stock": 10,
+    "goods_cost": 38.0,
+    "goods_price": 79.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:40.154Z",
+    "update_time": "2026-03-12T16:15:40.154Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 8,
+  "fields": {
+    "goods_code": "PRD-1008",
+    "goods_desc": "Smartwatch Pro",
+    "goods_supplier": "Smart Home Imports",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Wearables",
+    "goods_brand": "FitPro",
+    "safety_stock": 10,
+    "goods_cost": 120.0,
+    "goods_price": 219.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:40.847Z",
+    "update_time": "2026-03-12T16:15:40.847Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 9,
+  "fields": {
+    "goods_code": "PRD-1009",
+    "goods_desc": "Cordless Drill",
+    "goods_supplier": "Home Essentials Ltd",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Tools",
+    "goods_brand": "Bosch",
+    "safety_stock": 10,
+    "goods_cost": 68.0,
+    "goods_price": 129.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:40.894Z",
+    "update_time": "2026-03-12T16:15:40.894Z"
+  }
+},
+{
+  "model": "goods.listmodel",
+  "pk": 10,
+  "fields": {
+    "goods_code": "PRD-1010",
+    "goods_desc": "Laser Measure",
+    "goods_supplier": "Home Essentials Ltd",
+    "goods_weight": 1.0,
+    "goods_w": 10.0,
+    "goods_d": 10.0,
+    "goods_h": 10.0,
+    "goods_unit": "pcs",
+    "goods_class": "Tools",
+    "goods_brand": "Bosch",
+    "safety_stock": 10,
+    "goods_cost": 28.0,
+    "goods_price": 59.0,
+    "bar_code": "",
+    "min_stock_level": 10,
+    "reorder_point": 15,
+    "expiry_date": null,
+    "openid": "system",
+    "created_by": 1,
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:40.938Z",
+    "update_time": "2026-03-12T16:15:40.938Z"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 1,
+  "fields": {
+    "goods_code": "PRD-1001",
+    "goods_desc": "iPhone 15 Pro",
+    "goods_qty": 133,
+    "onhand_stock": 133,
+    "can_order_stock": 130,
+    "ordered_stock": 0,
+    "damage_stock": 3,
+    "supplier": "Apple Distribution",
+    "goods_image": "stock_images/iPhone_15_Pro_Max.webp",
+    "create_time": "2026-03-12T16:15:38.381Z",
+    "update_time": "2026-03-12T16:15:38.396Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 2,
+  "fields": {
+    "goods_code": "PRD-1002",
+    "goods_desc": "Samsung Galaxy S24",
+    "goods_qty": 149,
+    "onhand_stock": 149,
+    "can_order_stock": 148,
+    "ordered_stock": 0,
+    "damage_stock": 1,
+    "supplier": "Samsung Trade Hub",
+    "goods_image": "stock_images/Samsung_Galaxy_S24_Ultra.jpg",
+    "create_time": "2026-03-12T16:15:39.021Z",
+    "update_time": "2026-03-12T16:15:39.039Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 3,
+  "fields": {
+    "goods_code": "PRD-1003",
+    "goods_desc": "MacBook Pro M3",
+    "goods_qty": 142,
+    "onhand_stock": 142,
+    "can_order_stock": 137,
+    "ordered_stock": 0,
+    "damage_stock": 5,
+    "supplier": "Apple Distribution",
+    "goods_image": "stock_images/MacBook_Pro_M3.webp",
+    "create_time": "2026-03-12T16:15:39.070Z",
+    "update_time": "2026-03-12T16:15:39.080Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 4,
+  "fields": {
+    "goods_code": "PRD-1004",
+    "goods_desc": "Dell XPS 15",
+    "goods_qty": 162,
+    "onhand_stock": 162,
+    "can_order_stock": 160,
+    "ordered_stock": 0,
+    "damage_stock": 2,
+    "supplier": "Home Essentials Ltd",
+    "goods_image": "stock_images/Dell_XPS_15.jpg",
+    "create_time": "2026-03-12T16:15:39.104Z",
+    "update_time": "2026-03-12T16:15:39.122Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 5,
+  "fields": {
+    "goods_code": "PRD-1005",
+    "goods_desc": "Wireless Earbuds",
+    "goods_qty": 183,
+    "onhand_stock": 183,
+    "can_order_stock": 178,
+    "ordered_stock": 0,
+    "damage_stock": 5,
+    "supplier": "Smart Home Imports",
+    "goods_image": "stock_images/Wireless_Earbuds.webp",
+    "create_time": "2026-03-12T16:15:39.157Z",
+    "update_time": "2026-03-12T16:15:39.782Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 6,
+  "fields": {
+    "goods_code": "PRD-1006",
+    "goods_desc": "Bluetooth Speaker",
+    "goods_qty": 102,
+    "onhand_stock": 102,
+    "can_order_stock": 99,
+    "ordered_stock": 0,
+    "damage_stock": 3,
+    "supplier": "Smart Home Imports",
+    "goods_image": "stock_images/Bluetooth_Speaker.webp",
+    "create_time": "2026-03-12T16:15:39.814Z",
+    "update_time": "2026-03-12T16:15:40.136Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 7,
+  "fields": {
+    "goods_code": "PRD-1007",
+    "goods_desc": "Running Shoes",
+    "goods_qty": 139,
+    "onhand_stock": 139,
+    "can_order_stock": 134,
+    "ordered_stock": 0,
+    "damage_stock": 5,
+    "supplier": "Athletic Pro Supply",
+    "goods_image": "stock_images/Running_Shoes.webp",
+    "create_time": "2026-03-12T16:15:40.169Z",
+    "update_time": "2026-03-12T16:15:40.820Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 8,
+  "fields": {
+    "goods_code": "PRD-1008",
+    "goods_desc": "Smartwatch Pro",
+    "goods_qty": 133,
+    "onhand_stock": 133,
+    "can_order_stock": 131,
+    "ordered_stock": 0,
+    "damage_stock": 2,
+    "supplier": "Smart Home Imports",
+    "goods_image": "stock_images/Smartwatch_Pro.webp",
+    "create_time": "2026-03-12T16:15:40.867Z",
+    "update_time": "2026-03-12T16:15:40.882Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 9,
+  "fields": {
+    "goods_code": "PRD-1009",
+    "goods_desc": "Cordless Drill",
+    "goods_qty": 150,
+    "onhand_stock": 150,
+    "can_order_stock": 146,
+    "ordered_stock": 0,
+    "damage_stock": 4,
+    "supplier": "Home Essentials Ltd",
+    "goods_image": "stock_images/Cordless_Drill.webp",
+    "create_time": "2026-03-12T16:15:40.907Z",
+    "update_time": "2026-03-12T16:15:40.922Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "stock.stocklistmodel",
+  "pk": 10,
+  "fields": {
+    "goods_code": "PRD-1010",
+    "goods_desc": "Laser Measure",
+    "goods_qty": 164,
+    "onhand_stock": 164,
+    "can_order_stock": 160,
+    "ordered_stock": 0,
+    "damage_stock": 4,
+    "supplier": "Home Essentials Ltd",
+    "goods_image": "stock_images/Laser_Measure.webp",
+    "create_time": "2026-03-12T16:15:41.257Z",
+    "update_time": "2026-03-12T16:15:41.275Z",
+    "openid": "system"
+  }
+},
+{
+  "model": "warehouse.listmodel",
+  "pk": 1,
+  "fields": {
+    "warehouse_name": "Main Warehouse",
+    "warehouse_city": "Lagos",
+    "warehouse_address": "1 Logistics Avenue",
+    "warehouse_contact": "+2340000000",
+    "warehouse_manager": "Warehouse Manager",
+    "warehouse_image": null,
+    "creater": "admin",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:37.286Z",
+    "update_time": "2026-03-12T16:15:37.286Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 1,
+  "fields": {
+    "customer_name": "Prime Retail",
+    "customer_city": "Lagos",
+    "customer_address": "Lagos Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:37.979Z",
+    "update_time": "2026-03-12T16:15:37.979Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 2,
+  "fields": {
+    "customer_name": "City Market",
+    "customer_city": "Abuja",
+    "customer_address": "Abuja Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:37.998Z",
+    "update_time": "2026-03-12T16:15:37.998Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 3,
+  "fields": {
+    "customer_name": "HomePro Stores",
+    "customer_city": "Kano",
+    "customer_address": "Kano Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.015Z",
+    "update_time": "2026-03-12T16:15:38.015Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 4,
+  "fields": {
+    "customer_name": "Mega Mart",
+    "customer_city": "Port Harcourt",
+    "customer_address": "Port Harcourt Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.027Z",
+    "update_time": "2026-03-12T16:15:38.027Z"
+  }
+},
+{
+  "model": "customer.listmodel",
+  "pk": 5,
+  "fields": {
+    "customer_name": "Urban Commerce",
+    "customer_city": "Lagos",
+    "customer_address": "Lagos Central",
+    "customer_contact": "+2340000000",
+    "customer_manager": "Sales Manager",
+    "customer_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "create_time": "2026-03-12T16:15:38.339Z",
+    "update_time": "2026-03-12T16:15:38.339Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 1,
+  "fields": {
+    "supplier_name": "Apple Distribution",
+    "supplier_city": "Lagos",
+    "supplier_address": "Lagos Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.299Z",
+    "update_time": "2026-03-12T16:15:37.299Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 2,
+  "fields": {
+    "supplier_name": "Samsung Trade Hub",
+    "supplier_city": "Abuja",
+    "supplier_address": "Abuja Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.614Z",
+    "update_time": "2026-03-12T16:15:37.614Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 3,
+  "fields": {
+    "supplier_name": "Home Essentials Ltd",
+    "supplier_city": "Port Harcourt",
+    "supplier_address": "Port Harcourt Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.633Z",
+    "update_time": "2026-03-12T16:15:37.633Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 4,
+  "fields": {
+    "supplier_name": "Athletic Pro Supply",
+    "supplier_city": "Ibadan",
+    "supplier_address": "Ibadan Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.654Z",
+    "update_time": "2026-03-12T16:15:37.654Z"
+  }
+},
+{
+  "model": "supplier.listmodel",
+  "pk": 5,
+  "fields": {
+    "supplier_name": "Smart Home Imports",
+    "supplier_city": "Enugu",
+    "supplier_address": "Enugu Business District",
+    "supplier_contact": "+2340000000",
+    "supplier_manager": "Supplier Manager",
+    "supplier_level": 1,
+    "openid": "system",
+    "is_delete": false,
+    "is_marketplace_seller": true,
+    "can_list_rentals": true,
+    "can_list_storage": true,
+    "create_time": "2026-03-12T16:15:37.668Z",
+    "update_time": "2026-03-12T16:15:37.668Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 1,
+  "fields": {
+    "order_number": "ORD-2026-0001",
+    "order_type": "sale",
+    "customer": 3,
+    "customer_user": null,
+    "supplier": 3,
+    "status": "delivered",
+    "payment_status": "paid",
+    "total_amount": "8081.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "8121.00",
+    "delivery_address": "Kano Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "bank_transfer",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.550Z",
+    "updated_at": "2026-03-27T11:01:53.287Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 2,
+  "fields": {
+    "order_number": "ORD-2026-0002",
+    "order_type": "sale",
+    "customer": 1,
+    "customer_user": null,
+    "supplier": 4,
+    "status": "confirmed",
+    "payment_status": "unpaid",
+    "total_amount": "8971.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "9011.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "cash",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.634Z",
+    "updated_at": "2026-03-27T11:01:53.296Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 3,
+  "fields": {
+    "order_number": "ORD-2026-0003",
+    "order_type": "sale",
+    "customer": 2,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "shipped",
+    "payment_status": "paid",
+    "total_amount": "7971.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "8011.00",
+    "delivery_address": "Abuja Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "bank_transfer",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.697Z",
+    "updated_at": "2026-03-27T11:01:53.304Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 4,
+  "fields": {
+    "order_number": "ORD-2026-0004",
+    "order_type": "sale",
+    "customer": 1,
+    "customer_user": null,
+    "supplier": 3,
+    "status": "confirmed",
+    "payment_status": "unpaid",
+    "total_amount": "2664.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "2704.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.762Z",
+    "updated_at": "2026-03-27T11:01:53.309Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 5,
+  "fields": {
+    "order_number": "ORD-2026-0005",
+    "order_type": "sale",
+    "customer": 5,
+    "customer_user": null,
+    "supplier": 4,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "total_amount": "3423.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "3463.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "cash",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.828Z",
+    "updated_at": "2026-03-27T11:01:53.314Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 6,
+  "fields": {
+    "order_number": "ORD-2026-0006",
+    "order_type": "sale",
+    "customer": 3,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "confirmed",
+    "payment_status": "paid",
+    "total_amount": "2853.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "2893.00",
+    "delivery_address": "Kano Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.879Z",
+    "updated_at": "2026-03-27T11:01:53.319Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 7,
+  "fields": {
+    "order_number": "ORD-2026-0007",
+    "order_type": "sale",
+    "customer": 1,
+    "customer_user": null,
+    "supplier": 4,
+    "status": "processing",
+    "payment_status": "paid",
+    "total_amount": "10691.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "10731.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:41.938Z",
+    "updated_at": "2026-03-27T11:01:53.324Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 8,
+  "fields": {
+    "order_number": "ORD-2026-0008",
+    "order_type": "sale",
+    "customer": 3,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "total_amount": "8195.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "8235.00",
+    "delivery_address": "Kano Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.004Z",
+    "updated_at": "2026-03-27T11:01:53.329Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 9,
+  "fields": {
+    "order_number": "ORD-2026-0009",
+    "order_type": "sale",
+    "customer": 4,
+    "customer_user": null,
+    "supplier": 2,
+    "status": "delivered",
+    "payment_status": "unpaid",
+    "total_amount": "6870.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "6910.00",
+    "delivery_address": "Port Harcourt Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "bank_transfer",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.083Z",
+    "updated_at": "2026-03-27T11:01:53.337Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 10,
+  "fields": {
+    "order_number": "ORD-2026-0010",
+    "order_type": "sale",
+    "customer": 4,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "pending",
+    "payment_status": "paid",
+    "total_amount": "7831.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "7871.00",
+    "delivery_address": "Port Harcourt Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "cash",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.157Z",
+    "updated_at": "2026-03-27T11:01:53.343Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 11,
+  "fields": {
+    "order_number": "ORD-2026-0011",
+    "order_type": "sale",
+    "customer": 5,
+    "customer_user": null,
+    "supplier": 5,
+    "status": "pending",
+    "payment_status": "unpaid",
+    "total_amount": "1311.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "1351.00",
+    "delivery_address": "Lagos Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "card",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.219Z",
+    "updated_at": "2026-03-27T11:01:53.348Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 12,
+  "fields": {
+    "order_number": "ORD-2026-0012",
+    "order_type": "sale",
+    "customer": 3,
+    "customer_user": null,
+    "supplier": 1,
+    "status": "delivered",
+    "payment_status": "paid",
+    "total_amount": "12550.00",
+    "discount_amount": "0.00",
+    "delivery_fee": "40.00",
+    "grand_total": "12590.00",
+    "delivery_address": "Kano Central",
+    "delivery_phone": "+2340000000",
+    "payment_method": "bank_transfer",
+    "delivery_date": null,
+    "assigned_to": 1,
+    "internal_notes": "",
+    "openid": "system",
+    "created_by": 1,
+    "created_at": "2026-03-12T16:15:42.287Z",
+    "updated_at": "2026-03-27T11:01:53.356Z"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "product": 5,
+    "product_name": "Wireless Earbuds",
+    "quantity": 1,
+    "unit_price": "89.00",
+    "total_price": "89.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 2,
+  "fields": {
+    "order": 1,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 4,
+    "unit_price": "1899.00",
+    "total_price": "7596.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 3,
+  "fields": {
+    "order": 1,
+    "product": 6,
+    "product_name": "Bluetooth Speaker",
+    "quantity": 4,
+    "unit_price": "99.00",
+    "total_price": "396.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 4,
+  "fields": {
+    "order": 2,
+    "product": 8,
+    "product_name": "Smartwatch Pro",
+    "quantity": 4,
+    "unit_price": "219.00",
+    "total_price": "876.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 5,
+  "fields": {
+    "order": 2,
+    "product": 4,
+    "product_name": "Dell XPS 15",
+    "quantity": 4,
+    "unit_price": "1549.00",
+    "total_price": "6196.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 6,
+  "fields": {
+    "order": 2,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 1,
+    "unit_price": "1899.00",
+    "total_price": "1899.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 7,
+  "fields": {
+    "order": 3,
+    "product": 7,
+    "product_name": "Running Shoes",
+    "quantity": 4,
+    "unit_price": "79.00",
+    "total_price": "316.00",
+    "seller": "Athletic Pro Supply"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 8,
+  "fields": {
+    "order": 3,
+    "product": 10,
+    "product_name": "Laser Measure",
+    "quantity": 1,
+    "unit_price": "59.00",
+    "total_price": "59.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 9,
+  "fields": {
+    "order": 3,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 4,
+    "unit_price": "1899.00",
+    "total_price": "7596.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 10,
+  "fields": {
+    "order": 4,
+    "product": 5,
+    "product_name": "Wireless Earbuds",
+    "quantity": 1,
+    "unit_price": "89.00",
+    "total_price": "89.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 11,
+  "fields": {
+    "order": 4,
+    "product": 10,
+    "product_name": "Laser Measure",
+    "quantity": 3,
+    "unit_price": "59.00",
+    "total_price": "177.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 12,
+  "fields": {
+    "order": 4,
+    "product": 2,
+    "product_name": "Samsung Galaxy S24",
+    "quantity": 2,
+    "unit_price": "1199.00",
+    "total_price": "2398.00",
+    "seller": "Samsung Trade Hub"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 13,
+  "fields": {
+    "order": 5,
+    "product": 10,
+    "product_name": "Laser Measure",
+    "quantity": 4,
+    "unit_price": "59.00",
+    "total_price": "236.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 14,
+  "fields": {
+    "order": 5,
+    "product": 5,
+    "product_name": "Wireless Earbuds",
+    "quantity": 1,
+    "unit_price": "89.00",
+    "total_price": "89.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 15,
+  "fields": {
+    "order": 5,
+    "product": 4,
+    "product_name": "Dell XPS 15",
+    "quantity": 2,
+    "unit_price": "1549.00",
+    "total_price": "3098.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 16,
+  "fields": {
+    "order": 6,
+    "product": 8,
+    "product_name": "Smartwatch Pro",
+    "quantity": 3,
+    "unit_price": "219.00",
+    "total_price": "657.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 17,
+  "fields": {
+    "order": 6,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 1,
+    "unit_price": "1899.00",
+    "total_price": "1899.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 18,
+  "fields": {
+    "order": 6,
+    "product": 6,
+    "product_name": "Bluetooth Speaker",
+    "quantity": 3,
+    "unit_price": "99.00",
+    "total_price": "297.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 19,
+  "fields": {
+    "order": 7,
+    "product": 6,
+    "product_name": "Bluetooth Speaker",
+    "quantity": 2,
+    "unit_price": "99.00",
+    "total_price": "198.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 20,
+  "fields": {
+    "order": 7,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 3,
+    "unit_price": "1899.00",
+    "total_price": "5697.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 21,
+  "fields": {
+    "order": 7,
+    "product": 2,
+    "product_name": "Samsung Galaxy S24",
+    "quantity": 4,
+    "unit_price": "1199.00",
+    "total_price": "4796.00",
+    "seller": "Samsung Trade Hub"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 22,
+  "fields": {
+    "order": 8,
+    "product": 1,
+    "product_name": "iPhone 15 Pro",
+    "quantity": 1,
+    "unit_price": "1299.00",
+    "total_price": "1299.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 23,
+  "fields": {
+    "order": 8,
+    "product": 4,
+    "product_name": "Dell XPS 15",
+    "quantity": 2,
+    "unit_price": "1549.00",
+    "total_price": "3098.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 24,
+  "fields": {
+    "order": 8,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 2,
+    "unit_price": "1899.00",
+    "total_price": "3798.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 25,
+  "fields": {
+    "order": 9,
+    "product": 9,
+    "product_name": "Cordless Drill",
+    "quantity": 4,
+    "unit_price": "129.00",
+    "total_price": "516.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 26,
+  "fields": {
+    "order": 9,
+    "product": 7,
+    "product_name": "Running Shoes",
+    "quantity": 2,
+    "unit_price": "79.00",
+    "total_price": "158.00",
+    "seller": "Athletic Pro Supply"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 27,
+  "fields": {
+    "order": 9,
+    "product": 4,
+    "product_name": "Dell XPS 15",
+    "quantity": 4,
+    "unit_price": "1549.00",
+    "total_price": "6196.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 28,
+  "fields": {
+    "order": 10,
+    "product": 7,
+    "product_name": "Running Shoes",
+    "quantity": 3,
+    "unit_price": "79.00",
+    "total_price": "237.00",
+    "seller": "Athletic Pro Supply"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 29,
+  "fields": {
+    "order": 10,
+    "product": 2,
+    "product_name": "Samsung Galaxy S24",
+    "quantity": 2,
+    "unit_price": "1199.00",
+    "total_price": "2398.00",
+    "seller": "Samsung Trade Hub"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 30,
+  "fields": {
+    "order": 10,
+    "product": 1,
+    "product_name": "iPhone 15 Pro",
+    "quantity": 4,
+    "unit_price": "1299.00",
+    "total_price": "5196.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 31,
+  "fields": {
+    "order": 11,
+    "product": 6,
+    "product_name": "Bluetooth Speaker",
+    "quantity": 4,
+    "unit_price": "99.00",
+    "total_price": "396.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 32,
+  "fields": {
+    "order": 11,
+    "product": 8,
+    "product_name": "Smartwatch Pro",
+    "quantity": 3,
+    "unit_price": "219.00",
+    "total_price": "657.00",
+    "seller": "Smart Home Imports"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 33,
+  "fields": {
+    "order": 11,
+    "product": 9,
+    "product_name": "Cordless Drill",
+    "quantity": 2,
+    "unit_price": "129.00",
+    "total_price": "258.00",
+    "seller": "Home Essentials Ltd"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 34,
+  "fields": {
+    "order": 12,
+    "product": 2,
+    "product_name": "Samsung Galaxy S24",
+    "quantity": 4,
+    "unit_price": "1199.00",
+    "total_price": "4796.00",
+    "seller": "Samsung Trade Hub"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 35,
+  "fields": {
+    "order": 12,
+    "product": 3,
+    "product_name": "MacBook Pro M3",
+    "quantity": 4,
+    "unit_price": "1899.00",
+    "total_price": "7596.00",
+    "seller": "Apple Distribution"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 36,
+  "fields": {
+    "order": 12,
+    "product": 7,
+    "product_name": "Running Shoes",
+    "quantity": 2,
+    "unit_price": "79.00",
+    "total_price": "158.00",
+    "seller": "Athletic Pro Supply"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0001 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.556Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0001 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.618Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0002 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.641Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0003 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.702Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 5,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0004 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.765Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 6,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0005 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.830Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 7,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0006 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.885Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 8,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0007 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:41.942Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 9,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0008 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.008Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 10,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0009 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.086Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 11,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0009 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.141Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 12,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0010 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.160Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 13,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0011 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.226Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 14,
+  "fields": {
+    "user": 1,
+    "title": "New Order Created",
+    "message": "Order ORD-2026-0012 has been created successfully.",
+    "type": "info",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.292Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 15,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0012 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-12T16:15:42.360Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 16,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0009 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-27T11:01:53.331Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 17,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0009 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-27T11:01:53.335Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 18,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0009 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-27T11:01:53.337Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 19,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0012 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-27T11:01:53.351Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 20,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0012 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-27T11:01:53.354Z"
+  }
+},
+{
+  "model": "notifications.notification",
+  "pk": 21,
+  "fields": {
+    "user": 1,
+    "title": "Order Delivered",
+    "message": "Order ORD-2026-0012 has been delivered.",
+    "type": "success",
+    "category": "order",
+    "link": "",
+    "icon": "",
+    "is_read": false,
+    "is_archived": false,
+    "read_at": null,
+    "created_at": "2026-03-27T11:01:53.356Z"
+  }
+},
+{
+  "model": "messaging.userstatus",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "is_online": true,
+    "last_seen": "2026-03-18T21:12:43.966Z",
+    "is_typing_in": null
+  }
+},
+{
+  "model": "rentals.rentalcategory",
+  "pk": 1,
+  "fields": {
+    "name": "Equipment",
+    "category_type": "equipment",
+    "description": "Construction and industrial equipment",
+    "image": "",
+    "specifications": {},
+    "created_at": "2026-03-18T20:55:45.806Z"
+  }
+},
+{
+  "model": "rentals.rentalcategory",
+  "pk": 2,
+  "fields": {
+    "name": "Vehicles",
+    "category_type": "vehicle",
+    "description": "Cars, trucks, and transportation",
+    "image": "",
+    "specifications": {},
+    "created_at": "2026-03-18T20:55:45.837Z"
+  }
+},
+{
+  "model": "rentals.rentalcategory",
+  "pk": 3,
+  "fields": {
+    "name": "Events",
+    "category_type": "event",
+    "description": "Event and party equipment",
+    "image": "",
+    "specifications": {},
+    "created_at": "2026-03-18T20:55:45.855Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 1,
+  "fields": {
+    "category": 1,
+    "name": "Power Drill Set",
+    "description": "Professional cordless power drill with multiple bits and carrying case. Perfect for construction and DIY projects.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "50.00",
+    "daily_rate": "300.00",
+    "weekly_rate": "1800.00",
+    "monthly_rate": "6000.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.875Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.875Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 2,
+  "fields": {
+    "category": 1,
+    "name": "Concrete Mixer",
+    "description": "Heavy-duty concrete mixer for construction sites. 150L capacity with electric motor.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "100.00",
+    "daily_rate": "600.00",
+    "weekly_rate": "3500.00",
+    "monthly_rate": "12000.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.887Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.887Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 3,
+  "fields": {
+    "category": 1,
+    "name": "Scaffolding Set",
+    "description": "Complete scaffolding system with platforms and safety rails. Suitable for 3-story buildings.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "0.00",
+    "daily_rate": "800.00",
+    "weekly_rate": "5000.00",
+    "monthly_rate": "18000.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.898Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.898Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 4,
+  "fields": {
+    "category": 2,
+    "name": "Pickup Truck",
+    "description": "Toyota Hilux 4x4 pickup truck with 1-ton payload capacity. Ideal for material transport.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "200.00",
+    "daily_rate": "1500.00",
+    "weekly_rate": "9000.00",
+    "monthly_rate": "30000.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.906Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.906Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 5,
+  "fields": {
+    "category": 2,
+    "name": "Cargo Van",
+    "description": "Spacious cargo van with 3m³ loading space. Perfect for deliveries and moving.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "150.00",
+    "daily_rate": "1000.00",
+    "weekly_rate": "6000.00",
+    "monthly_rate": "20000.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.916Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.916Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 6,
+  "fields": {
+    "category": 2,
+    "name": "Forklift",
+    "description": "3-ton capacity forklift with 5m lift height. Diesel powered for warehouse operations.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "250.00",
+    "daily_rate": "1800.00",
+    "weekly_rate": "11000.00",
+    "monthly_rate": "40000.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.927Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.927Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 7,
+  "fields": {
+    "category": 3,
+    "name": "Wedding Tent Package",
+    "description": "Complete wedding tent setup for 200 guests including tables, chairs, and lighting.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "0.00",
+    "daily_rate": "5000.00",
+    "weekly_rate": "30000.00",
+    "monthly_rate": "0.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.942Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.942Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 8,
+  "fields": {
+    "category": 3,
+    "name": "Sound System Pro",
+    "description": "Professional PA system with speakers, mixer, and microphones. Suitable for events up to 500 people.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "300.00",
+    "daily_rate": "2000.00",
+    "weekly_rate": "12000.00",
+    "monthly_rate": "40000.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.962Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.962Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 9,
+  "fields": {
+    "category": 3,
+    "name": "LED Stage Lighting",
+    "description": "Complete LED stage lighting package with DMX controller and moving heads.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "200.00",
+    "daily_rate": "1500.00",
+    "weekly_rate": "9000.00",
+    "monthly_rate": "30000.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.974Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.974Z"
+  }
+},
+{
+  "model": "rentals.rentalitem",
+  "pk": 10,
+  "fields": {
+    "category": 1,
+    "name": "Generator 10KVA",
+    "description": "Silent diesel generator with 10KVA output. Automatic voltage regulation and fuel efficiency.",
+    "image": "",
+    "specifications": {},
+    "status": "available",
+    "hourly_rate": "150.00",
+    "daily_rate": "1000.00",
+    "weekly_rate": "6000.00",
+    "monthly_rate": "20000.00",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:45.985Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:45.985Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 1,
+  "fields": {
+    "unit_number": "CS-101",
+    "type": "locker",
+    "size_sqft": "50.00",
+    "location": "Building A",
+    "floor": 1,
+    "zone": "Zone A",
+    "status": "available",
+    "price_per_month": "3000.00",
+    "features": {
+      "humidity_control": true,
+      "temperature_monitoring": true,
+      "access_logs": true,
+      "fireproofing": false,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": true,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:47.944Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:47.944Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 2,
+  "fields": {
+    "unit_number": "DS-102",
+    "type": "mini",
+    "size_sqft": "100.00",
+    "location": "Building A",
+    "floor": 1,
+    "zone": "Zone B",
+    "status": "available",
+    "price_per_month": "2500.00",
+    "features": {
+      "humidity_control": false,
+      "temperature_monitoring": false,
+      "access_logs": true,
+      "fireproofing": false,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": false,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:47.957Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:47.958Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 3,
+  "fields": {
+    "unit_number": "PR-201",
+    "type": "standard",
+    "size_sqft": "200.00",
+    "location": "Building B",
+    "floor": 2,
+    "zone": "Zone A",
+    "status": "available",
+    "price_per_month": "5000.00",
+    "features": {
+      "humidity_control": false,
+      "temperature_monitoring": false,
+      "access_logs": true,
+      "fireproofing": true,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": false,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:47.975Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:47.975Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 4,
+  "fields": {
+    "unit_number": "BC-202",
+    "type": "large",
+    "size_sqft": "500.00",
+    "location": "Building B",
+    "floor": 2,
+    "zone": "Zone B",
+    "status": "available",
+    "price_per_month": "10000.00",
+    "features": {
+      "humidity_control": false,
+      "temperature_monitoring": false,
+      "access_logs": true,
+      "fireproofing": true,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": false,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:47.991Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:47.991Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 5,
+  "fields": {
+    "unit_number": "AV-301",
+    "type": "standard",
+    "size_sqft": "150.00",
+    "location": "Building C",
+    "floor": 3,
+    "zone": "Zone A",
+    "status": "available",
+    "price_per_month": "4000.00",
+    "features": {
+      "humidity_control": true,
+      "temperature_monitoring": true,
+      "access_logs": true,
+      "fireproofing": true,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": true,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:48.003Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:48.003Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 6,
+  "fields": {
+    "unit_number": "ML-302",
+    "type": "locker",
+    "size_sqft": "25.00",
+    "location": "Building C",
+    "floor": 3,
+    "zone": "Zone B",
+    "status": "available",
+    "price_per_month": "1500.00",
+    "features": {
+      "humidity_control": false,
+      "temperature_monitoring": false,
+      "access_logs": true,
+      "fireproofing": false,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": false,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:48.011Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:48.011Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 7,
+  "fields": {
+    "unit_number": "SL-401",
+    "type": "mini",
+    "size_sqft": "75.00",
+    "location": "Building D",
+    "floor": 4,
+    "zone": "Zone A",
+    "status": "available",
+    "price_per_month": "2000.00",
+    "features": {
+      "humidity_control": false,
+      "temperature_monitoring": false,
+      "access_logs": true,
+      "fireproofing": false,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": false,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:48.017Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:48.017Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 8,
+  "fields": {
+    "unit_number": "LL-402",
+    "type": "standard",
+    "size_sqft": "120.00",
+    "location": "Building D",
+    "floor": 4,
+    "zone": "Zone B",
+    "status": "available",
+    "price_per_month": "3500.00",
+    "features": {
+      "humidity_control": false,
+      "temperature_monitoring": false,
+      "access_logs": true,
+      "fireproofing": true,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": false,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:48.024Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:48.024Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 9,
+  "fields": {
+    "unit_number": "CC-103",
+    "type": "large",
+    "size_sqft": "300.00",
+    "location": "Building A",
+    "floor": 1,
+    "zone": "Zone C",
+    "status": "available",
+    "price_per_month": "8000.00",
+    "features": {
+      "humidity_control": true,
+      "temperature_monitoring": true,
+      "access_logs": true,
+      "fireproofing": true,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": true,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:48.034Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:48.034Z"
+  }
+},
+{
+  "model": "storage.storageunit",
+  "pk": 10,
+  "fields": {
+    "unit_number": "SV-203",
+    "type": "standard",
+    "size_sqft": "180.00",
+    "location": "Building B",
+    "floor": 2,
+    "zone": "Zone C",
+    "status": "available",
+    "price_per_month": "6000.00",
+    "features": {
+      "humidity_control": true,
+      "temperature_monitoring": true,
+      "access_logs": true,
+      "fireproofing": true,
+      "insurance_coverage": true
+    },
+    "access_code": "",
+    "is_climate_controlled": true,
+    "image": "",
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:48.047Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:48.047Z"
+  }
+},
+{
+  "model": "lockers.lockertype",
+  "pk": 1,
+  "fields": {
+    "name": "Personal Locker",
+    "size": "small",
+    "description": "",
+    "hourly_rate": "20.00",
+    "daily_rate": "100.00",
+    "weekly_rate": "600.00",
+    "monthly_rate": "2000.00",
+    "has_climate_control": false,
+    "has_security_monitoring": true,
+    "is_active": true,
+    "created_at": "2026-03-18T20:55:50.035Z",
+    "updated_at": "2026-03-18T20:55:50.035Z"
+  }
+},
+{
+  "model": "lockers.lockertype",
+  "pk": 2,
+  "fields": {
+    "name": "Parcel Locker",
+    "size": "medium",
+    "description": "",
+    "hourly_rate": "30.00",
+    "daily_rate": "150.00",
+    "weekly_rate": "900.00",
+    "monthly_rate": "3000.00",
+    "has_climate_control": false,
+    "has_security_monitoring": true,
+    "is_active": true,
+    "created_at": "2026-03-18T20:55:50.063Z",
+    "updated_at": "2026-03-18T20:55:50.063Z"
+  }
+},
+{
+  "model": "lockers.lockertype",
+  "pk": 3,
+  "fields": {
+    "name": "Refrigerated Locker",
+    "size": "medium",
+    "description": "",
+    "hourly_rate": "50.00",
+    "daily_rate": "250.00",
+    "weekly_rate": "1500.00",
+    "monthly_rate": "5000.00",
+    "has_climate_control": true,
+    "has_security_monitoring": true,
+    "is_active": true,
+    "created_at": "2026-03-18T20:55:50.072Z",
+    "updated_at": "2026-03-18T20:55:50.072Z"
+  }
+},
+{
+  "model": "lockers.lockertype",
+  "pk": 4,
+  "fields": {
+    "name": "Document Vault",
+    "size": "small",
+    "description": "",
+    "hourly_rate": "25.00",
+    "daily_rate": "120.00",
+    "weekly_rate": "700.00",
+    "monthly_rate": "2500.00",
+    "has_climate_control": true,
+    "has_security_monitoring": true,
+    "is_active": true,
+    "created_at": "2026-03-18T20:55:50.083Z",
+    "updated_at": "2026-03-18T20:55:50.083Z"
+  }
+},
+{
+  "model": "lockers.lockertype",
+  "pk": 5,
+  "fields": {
+    "name": "Luggage Locker",
+    "size": "large",
+    "description": "",
+    "hourly_rate": "40.00",
+    "daily_rate": "200.00",
+    "weekly_rate": "1200.00",
+    "monthly_rate": "4000.00",
+    "has_climate_control": false,
+    "has_security_monitoring": true,
+    "is_active": true,
+    "created_at": "2026-03-18T20:55:50.097Z",
+    "updated_at": "2026-03-18T20:55:50.097Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 1,
+  "fields": {
+    "locker_number": "L-A101",
+    "locker_type": 1,
+    "location": "Building A, Floor 1, Section A",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.116Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.116Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 2,
+  "fields": {
+    "locker_number": "L-A102",
+    "locker_type": 2,
+    "location": "Building A, Floor 1, Section A",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.139Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.139Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 3,
+  "fields": {
+    "locker_number": "L-B201",
+    "locker_type": 3,
+    "location": "Building B, Floor 2, Section A",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.150Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.150Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 4,
+  "fields": {
+    "locker_number": "L-B202",
+    "locker_type": 4,
+    "location": "Building B, Floor 2, Section B",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.161Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.161Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 5,
+  "fields": {
+    "locker_number": "L-C301",
+    "locker_type": 5,
+    "location": "Building C, Floor 3, Section A",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.168Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.168Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 6,
+  "fields": {
+    "locker_number": "L-C302",
+    "locker_type": 1,
+    "location": "Building C, Floor 3, Section B",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.176Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.176Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 7,
+  "fields": {
+    "locker_number": "L-D401",
+    "locker_type": 2,
+    "location": "Building D, Floor 4, Section A",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.185Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.185Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 8,
+  "fields": {
+    "locker_number": "L-D402",
+    "locker_type": 3,
+    "location": "Building D, Floor 4, Section B",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.197Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.197Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 9,
+  "fields": {
+    "locker_number": "L-A103",
+    "locker_type": 4,
+    "location": "Building A, Floor 1, Section B",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.213Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.213Z"
+  }
+},
+{
+  "model": "lockers.locker",
+  "pk": 10,
+  "fields": {
+    "locker_number": "L-B203",
+    "locker_type": 5,
+    "location": "Building B, Floor 2, Section C",
+    "status": "available",
+    "access_code": "",
+    "image": "",
+    "notes": "",
+    "last_maintenance": null,
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:55:50.228Z",
+    "updated_by": null,
+    "updated_at": "2026-03-18T20:55:50.228Z"
+  }
+},
+{
+  "model": "coupons.coupon",
+  "pk": 1,
+  "fields": {
+    "code": "WELCOME10",
+    "description": "Welcome offer - 10% off on first order",
+    "discount_type": "percent",
+    "discount_value": "10.00",
+    "min_amount": "500.00",
+    "max_discount": null,
+    "applicable_to": "all",
+    "usage_limit": 100,
+    "usage_count": 0,
+    "valid_from": "2026-03-18T20:58:36.038Z",
+    "valid_until": "2026-04-17T20:58:36.038Z",
+    "is_active": true,
+    "created_by": null,
+    "created_at": "2026-03-18T20:58:36.039Z"
+  }
+},
+{
+  "model": "coupons.coupon",
+  "pk": 2,
+  "fields": {
+    "code": "SAVE20",
+    "description": 
