@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Frontend%20Live%20on%20Vercel-brightgreen?style=for-the-badge)](https://vercel.com)
 
-**[🌐 Frontend Demo (Vercel)](https://vercel.com)** &nbsp;•&nbsp; **[🐛 Report Bug](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)** &nbsp;•&nbsp; **[💡 Request Feature](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)**
+**[🌐 Frontend Demo (Vercel)](#)** &nbsp;•&nbsp; **[🐛 Report Bug](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)** &nbsp;•&nbsp; **[💡 Request Feature](https://github.com/AshishCherian15/Multi-Stock-Logistics-Platform/issues)**
 
 ---
 
@@ -41,6 +41,50 @@
 **Multi-Stock Logistics Platform** is a comprehensive, production-ready warehouse and logistics management system built with Django and PostgreSQL. It covers the full lifecycle of a logistics business — from inventory tracking and multi-vendor marketplace to equipment rentals, smart locker bookings, POS billing, analytics dashboards, and customer support.
 
 Built as a Final Year CS Engineering project, it demonstrates enterprise software engineering patterns: role-based access control, RESTful APIs, signal-driven data consistency, audit logging, real-time notifications, and a clean multi-app Django architecture with 40+ apps.
+
+---
+
+## 🖼️ Screenshots
+
+> The Vercel frontend is a pixel-accurate clone of the Django guest interface.
+
+### 🏠 Guest Dashboard
+- Blue gradient background (`#0014A8 → #1e40af → #3b82f6`, fixed)
+- Glassmorphism navbar with blur + animated floating particles
+- Hero section with animated stat cards (glassmorphism, hover float effect)
+- Guest mode info banner and CTA section
+
+### 🛒 Marketplace
+- Product grid with search, category filter, sort controls
+- Product cards with stock badges and ₹ pricing
+- "Login to Purchase" gate
+
+### 🔑 Rentals
+- Rental equipment cards with 4-tier pricing (hourly/daily/weekly/monthly)
+- Blue gradient price-tag badges
+- Search + sort filters
+
+### 🏗️ Storage Units
+- 4-stat dashboard (total/available/occupied/maintenance)
+- Storage unit cards with gradient headers, climate control badge
+- ₹ price per month
+
+### 📦 Smart Lockers
+- Same 4-stat dashboard pattern
+- Locker cards with gradient header, locker number, 60px icon
+- Feature badges (climate control, security monitoring)
+- Detailed pricing box
+
+### 🎨 Design System
+| Element | Value |
+|---------|-------|
+| Background | `linear-gradient(135deg, #0014A8 0%, #1e40af 50%, #3b82f6 100%)` fixed |
+| Font | Inter (Google Fonts, 300–800) |
+| CSS framework | Bootstrap 5.3.0 + Font Awesome 6.4.0 |
+| Navbar | Glassmorphism: `backdrop-filter: blur(10px)`, `rgba(255,255,255,0.1)` |
+| Cards | `rgba(255,255,255,0.15)` glass, hover `translateY(-15px) scale(1.05)` |
+| Prices | `#0014A8 → #000E75` gradient badges |
+| Footer | `rgba(30,41,59,0.95)` dark glass |
 
 ---
 
@@ -177,6 +221,14 @@ python manage.py runserver
 ```
 
 Visit **http://127.0.0.1:8000**
+
+### Demo Credentials (after seeding)
+
+| Role | Username | Password | Login Portal |
+|------|----------|----------|-------------|
+| Superadmin / Admin | `admin` | `admin123` | `/auth/team-login/` |
+| Customer | `customer` | `customer123` | `/auth/login/` |
+| Guest | *(no login needed)* | — | `/enter-as-guest/` |
 
 ---
 

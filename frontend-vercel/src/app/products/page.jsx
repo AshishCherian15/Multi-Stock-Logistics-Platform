@@ -1,127 +1,135 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Package, Search, ShoppingCart, Filter } from 'lucide-react';
 import { loadAllData, filterByModel } from '../../lib/dataLoader';
-import { addToCart } from '../../lib/cart';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [query, setQuery] = useState('');
-  const [sortBy, setSortBy] = useState('name');
-  const [added, setAdded] = useState(null);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
+  const [sortBy, setSortBy] = useState('');
 
   useEffect(() => {
     loadAllData().then((data) => {
-      const p = filterByModel(data, 'goods.listmodel');
-      setProducts(p);
-      setFiltered(p);
+      const items = filterByModel(data, 'goods.listmodel');
+      setProducts(items);
+      setFiltered(items);
     });
   }, []);
 
   useEffect(() => {
-    let result = products.filter((p) =>
-      (p.goods_desc || p.goods_name || '').toLowerCase().includes(query.toLowerCase()) ||
-      (p.goods_code || '').toLowerCase().includes(query.toLowerCase())
-    );
-    if (sortBy === 'price_asc') result = [...result].sort((a, b) => (parseFloat(a.goods_price) || 0) - (parseFloat(b.goods_price) || 0));
-    if (sortBy === 'price_desc') result = [...result].sort((a, b) => (parseFloat(b.goods_price) || 0) - (parseFloat(a.goods_price) || 0));
-    if (sortBy === 'stock') result = [...result].sort((a, b) => (b.onhand_stock || 0) - (a.onhand_stock || 0));
+    let result = [...products];
+    if (search) {
+      result = result.filter((p) =>
+        p.goods_desc.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    if (category) {
+      result = result.filter((p) => p.goods_class === category);
+    }
+    if (sortBy === 'price-low') result.sort((a, b) => a.goods_price - b.goods_price);
+    else if (sortBy === 'price-high') result.sort((a, b) => b.goods_price - a.goods_price);
+    else if (sortBy === 'name') result.sort((a, b) => a.goods_desc.localeCompare(b.goods_desc));
     setFiltered(result);
-  }, [query, sortBy, products]);
+  }, [search, category, sortBy, products]);
 
-  const handleAdd = (p) => {
-    addToCart({
-      id: p.id,
-      type: 'product',
-      name: p.goods_desc || p.goods_name || 'Product',
-      price: p.goods_price || 0,
-      sku: p.goods_code,
-    });
-    setAdded(p.id);
-    setTimeout(() => setAdded(null), 1500);
-  };
+  const categories = [...new Set(products.map((p) => p.goods_class))];
+
+  function clearFilters() {
+    setSearch('');
+    setCategory('');
+    setSortBy('');
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="section-heading">Product Marketplace</h1>
-        <p className="text-slate-500">Browse {products.length} products from verified suppliers</p>
+    <div className="container-fluid p-4 mt-5">
+      <div className="alert alert-warning text-center mb-4">
+        <i className="fas fa-lock me-2"></i>
+        <strong>Login Required:</strong> Please <a href="#" className="alert-link">login</a> to purchase products, add to cart, or add to wishlist.
       </div>
 
-      {/* Filters */}
-      <div className="bg-white border rounded-2xl p-4 mb-8 flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 style={{ color: '#fff' }}><i className="fas fa-store me-2"></i>Product Marketplace</h2>
+        <a href="#" className="btn btn-primary">
+          <i className="fas fa-sign-in-alt me-1"></i>Login
+        </a>
+      </div>
+
+      <div className="row mb-4">
+        <div className="col-md-3">
           <input
             type="text"
+            className="form-control"
             placeholder="Search products..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-        >
-          <option value="name">Sort: Name</option>
-          <option value="price_asc">Price: Low → High</option>
-          <option value="price_desc">Price: High → Low</option>
-          <option value="stock">Most Stock</option>
-        </select>
-        <div className="flex items-center gap-2 text-sm text-slate-400">
-          <Filter size={14} />
-          {filtered.length} results
+        <div className="col-md-3">
+          <select
+            className="form-select"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            {categories.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-3">
+          <select
+            className="form-select"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="">Sort By</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name">Name: A-Z</option>
+          </select>
+        </div>
+        <div className="col-md-3">
+          <button className="btn btn-outline-secondary w-100" onClick={clearFilters}>
+            <i className="fas fa-times me-1"></i>Clear
+          </button>
         </div>
       </div>
 
-      {/* Grid */}
-      {filtered.length === 0 ? (
-        <div className="text-center py-20 text-slate-400">
-          <Package size={48} className="mx-auto mb-4 opacity-40" />
-          <p className="text-lg font-medium">No products found</p>
-          <p className="text-sm">Try changing your search query</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filtered.map((p) => (
-            <div key={p.id} className="bg-white border rounded-2xl overflow-hidden card-hover flex flex-col">
-              <div className="h-40 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                <Package size={48} className="text-blue-400" />
-              </div>
-              <div className="p-4 flex flex-col flex-1">
-                <span className="badge badge-green text-xs mb-2">
-                  {(p.onhand_stock ?? 0) > 0 ? 'In Stock' : 'Out of Stock'}
-                </span>
-                <h3 className="font-semibold text-slate-800 text-sm leading-snug mb-1 flex-1">
-                  {p.goods_desc || p.goods_name || 'Product'}
-                </h3>
-                <p className="text-xs text-slate-400 mb-1">SKU: {p.goods_code || '—'}</p>
-                <p className="text-xs text-slate-400 mb-3">Unit: {p.goods_unit || '—'} · Stock: {p.onhand_stock ?? '—'}</p>
-                <div className="flex items-center justify-between mt-auto">
-                  <span className="font-bold text-blue-700 text-lg">
-                    ₹{p.goods_price || '0'}
-                  </span>
-                  <button
-                    onClick={() => handleAdd(p)}
-                    className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition ${
-                      added === p.id
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-blue-700 text-white hover:bg-blue-800'
-                    }`}
-                  >
-                    <ShoppingCart size={13} />
-                    {added === p.id ? 'Added!' : 'Add to Cart'}
-                  </button>
+      <div className="row" id="productGrid">
+        {filtered.map((product) => (
+          <div key={product.id} className="col-md-3 mb-4">
+            <div className="card product-card">
+              <div className="position-relative">
+                <div style={{ height: 200, background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="fas fa-box fa-3x text-muted"></i>
                 </div>
+                <span className="badge bg-success position-absolute top-0 end-0 m-2">In Stock</span>
+              </div>
+              <div className="card-body">
+                <h6 className="card-title">{product.goods_desc}</h6>
+                <p className="text-muted small">{product.goods_class}</p>
+                <h5 style={{ color: 'var(--zaffre)' }}>{'\u20B9'}{product.goods_price}</h5>
+                <small className="text-muted">Code: {product.goods_code}</small>
+                <p className="text-success small mb-0">
+                  <i className="fas fa-check-circle me-1"></i>Available
+                </p>
+              </div>
+              <div className="card-footer bg-white">
+                <a href="#" className="btn btn-primary w-100">
+                  <i className="fas fa-sign-in-alt me-1"></i>Login to Purchase
+                </a>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <div className="col-12 text-center py-5">
+            <i className="fas fa-box-open fa-3x text-muted mb-3" style={{ display: 'block' }}></i>
+            <p className="text-muted">No products available</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
